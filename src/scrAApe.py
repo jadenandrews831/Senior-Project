@@ -9,6 +9,18 @@ NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 bs = BeautifulSoup
 
 class Authenticate():
+  """
+  Authenticate: Creates a session with Aggie Access and logs in to the Main Menu.
+
+  Parameters
+  __________
+  usrnme: string - the SID passed to the server
+  psswd: string (int-like) - the PIN passed to the server
+  session: Session - the current requests.Session object
+   
+
+
+  """
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
     self.psswd = psswd

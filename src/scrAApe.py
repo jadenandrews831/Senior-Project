@@ -51,9 +51,9 @@ class Authenticate():
 
 
 if __name__ == "__main__"():
-  parser = argparse.ArgumentParser(description='Aggie Access Authenticator')
+  parser = argparse.ArgumentParser(prog="scrAApe", description=' The Aggie Access Authenticator and Web Scraper')
 
-  print('Aggie Access Authenticator\n\n')
+  print('Aggie Access Authenticator\n')
   sid = input('SID: ')
   pin = getpass('PIN: ')
   a = Authenticate(sid, pin)

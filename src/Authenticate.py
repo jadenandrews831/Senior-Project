@@ -37,7 +37,7 @@ class Authenticate():
                                                                 'Te': 'trailers',
                                                                 'Connection': 'close'})
 
-    [print(f'{header}: {val}') for header, val in response.request.headers.items()]
+    (print(f'{header}: {val}') for header, val in response.request.headers.items())
     print()
     print(response.request.body)
     print(response.status_code)
@@ -50,11 +50,12 @@ class Authenticate():
     return s
 
 
-parser = argparse.ArgumentParser(description='Aggie Access Authenticator')
+if __name__ == "__main__"():
+  parser = argparse.ArgumentParser(description='Aggie Access Authenticator')
 
-print('Aggie Access Authenticator\n\n')
-sid = input('SID: ')
-pin = getpass('PIN: ')
-a = Authenticate(sid, pin)
-a.login(NCAT_URI)
+  print('Aggie Access Authenticator\n\n')
+  sid = input('SID: ')
+  pin = getpass('PIN: ')
+  a = Authenticate(sid, pin)
+  a.login(NCAT_URI)
 

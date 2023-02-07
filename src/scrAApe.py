@@ -56,7 +56,7 @@ class Authenticate():
     print(response.text)
 
     soup = bs(response.content, 'html.parser')
-    url = soup.meta.attrs['content'][6:]          # url for second page after authentication
+    url = soup.meta.attrs['content'][6:]          # url for second page after authentication FIXME: make this a regex
     print(url)
     print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
 

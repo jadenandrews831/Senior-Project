@@ -2,11 +2,9 @@ import argparse
 
 from getpass import getpass
 from requests import Session
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bsß
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
-
-bs = BeautifulSoup
 
 class Authenticate():
   """
@@ -30,10 +28,10 @@ class Authenticate():
     site = self.session.get(uri)
     print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
     print()
-    cookies = self.session.cookies.get_dict()
+    self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = self.session.post(uri, data=login_data, headers={'Host': 'ssbprod-ncat.uncecs.edu',
-                                                                'Cookie': self.format_cookies(cookies),
+                                                                'Cookie': self.format_cookies(self.cookies_),
                                                                 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
                                                                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
                                                                 'Accept-Language': 'en-US,en;q=0.5',
@@ -54,6 +52,8 @@ class Authenticate():
     print(response.request.body)
     print(response.status_code)
     print(response.text)
+
+
     # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
     # print(page.content); print('\n'*3)
 
@@ -62,7 +62,7 @@ class Authenticate():
     return s
 
 
-if __name__ == "__main__"():
+if __name__ == "__main__":
   parser = argparse.ArgumentParser(prog="scrAApe", description=' The Aggie Access Authenticator and Web Scraper')
 
   print('Aggie Access Authenticator\n')

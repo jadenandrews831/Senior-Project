@@ -2,7 +2,7 @@ import argparse
 
 from getpass import getpass
 from requests import Session
-from bs4 import BeautifulSoup as bsß
+from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 
@@ -17,7 +17,6 @@ class Authenticate():
   session: Session - the current requests.Session object
    
 
-
   """
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
@@ -26,7 +25,9 @@ class Authenticate():
 
   def login(self, uri):
     site = self.session.get(uri)
+    print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
     print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
+    print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
     print()
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
@@ -47,12 +48,17 @@ class Authenticate():
                                                                 'Te': 'trailers',
                                                                 'Connection': 'close'})
 
+    print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
     (print(f'{header}: {val}') for header, val in response.request.headers.items())
     print()
     print(response.request.body)
     print(response.status_code)
     print(response.text)
 
+    soup = bs(response.content, 'html.parser')
+    url = soup.meta.attrs['content'][6:]          # url for second page after authentication
+    print(url)
+    print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
 
     # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
     # print(page.content); print('\n'*3)

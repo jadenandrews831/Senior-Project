@@ -9,12 +9,6 @@ NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 bs = BeautifulSoup
 
 class Authenticate():
-  def format_cookies(cls, dic):
-    s = ''
-    for key, val in dic.items():
-      s+=f'{key}={val};'
-    return s
-
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
     self.psswd = psswd
@@ -50,6 +44,11 @@ class Authenticate():
     print(response.text)
     # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
     # print(page.content); print('\n'*3)
+
+  def format_cookies(self, dic):
+    s = ''.join([f'{key}={val};' for key, val in dic.items()])
+    return s
+
 
 parser = argparse.ArgumentParser(description='Aggie Access Authenticator')
 

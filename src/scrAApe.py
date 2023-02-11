@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import os
 import pickle
@@ -9,8 +11,11 @@ from bs4 import BeautifulSoup as bs
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 
 def post_request(auth, uri, data, referer):
+    """
+    post_request: takes an authenticated session, and posts data to the given uri
+    """
     print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
-    print('Cookies:',auth.cookies_)
+    print('Cookies:', auth.cookies_)
     response = auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': auth.format_cookies(auth.cookies_),
                                                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
@@ -106,6 +111,9 @@ class ScrAApe():
   __________
   get_terms: dict - gets a list of school terms from aggie access
   get_subject:  dict - posts data from user, then gets the choices of subject
+
+  
+
   """
   def __init__(self, auth):
     self.auth = auth
@@ -152,14 +160,76 @@ class ScrAApe():
   
 
 if __name__ == "__main__":
+  """
+  Usage
+  ______
+    scrAApe.py                                                                      # authenticate a session manually, then serialize it for future use
+    scrAApe.py auth -d .shadow                                                      # authenticate to Aggie Access with credentials from a protected file
+    scrAApe.py auth -u <username> -p <pin>                                          # authenticate to Aggie Access with a given username and password
+    scrAApe.py get <uri> --session-file .<username>-sess.pickle                      # get data from a given uri in a pickled session
+    scrAApe.py post <uri> -d <data> --session-file .<username>-sess.pickle           # post data to the given uri from a pickled session
+  """  
+  
   parser = argparse.ArgumentParser(prog="scrAApe", description='The Aggie Access Authenticator and Web Scraper')
 
-  print('Aggie Access Authenticator\n')
-  sid = input('SID: ')
-  pin = getpass('PIN: ')
-  a = Authenticate(sid, pin)
-  a.login(NCAT_URI)
-  scrape = ScrAApe(a)
-  terms = scrape.get_terms()
-  scrape.get_subject('Summer I 2023')
+  subparser = parser.add_subparsers(dest="command")
+  authenticate = subparser.add_parser('auth', help="option to authenticate. Either use credentials or '.shadow'")
+  get = subparser.add_parser('get', help="get data from the given uri")
+  post = subparser.add_parser('post', help="post data to the given uri")
+
+  group = authenticate.add_mutually_exclusive_group()
+  group.add_argument('-d', '--destfile', type=str, help='file where login credentials are located')
+  subgroup = group.add_argument_group()
+  subgroup.add_argument('-u', '--username', type=str, help="Aggie Access SID (Student ID)")
+  subgroup.add_argument('-p', '--pin', type=str, help='Aggie Access Pin')
+
+  get.add_argument('uri', type=str, help='target uri')
+  get.add_argument('--session-file', type=str, help='session file address', required=True)
+  
+  post.add_argument('uri', type=str, help='target uri')
+  post.add_argument('--session-file', type=str, help='session file address', required=True)
+
+  args = parser.parse_args()
+
+  if not args.command:
+    parser.print_help()
+    print('Aggie Access Authenticator\n')
+    sid = input('SID: ')
+    pin = getpass('PIN: ')
+    a = Authenticate(sid, pin)
+    a.login(NCAT_URI)
+
+    pickle_name = f'.{sid}-sess.pickle'
+    with open(pickle_name, 'wb') as file:
+      pickle.dump(a, file)
+      print(f"Session Created! Saved to >>> {pickle_name}")
+      exit()
+
+  if args.command == 'auth':
+    if args.destfile:
+      with open('.shadow', 'r') as file:
+        text = file.readlines()
+        for t in text: print(t)
+    elif args.username and args.pin:
+      print(args.username, args.pin)
+    else:
+      print('Hmm... something went wrong')
+      print(args)
+
+  if args.command == 'get':
+    if args.uri and args.session_file:
+      print(args.uri, args.session_file)
+    else:
+      print(args)
+
+  if args.command == 'post':
+    if args.uri and args.session_file:
+      print(args.uri, args.session_file)
+    else:
+      print('Hmm... something went wrong')
+      print(args)
+
+  # scrape = ScrAApe(a)
+  # terms = scrape.get_terms()
+  # scrape.get_subject('Summer I 2023')
 

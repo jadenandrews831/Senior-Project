@@ -1,0 +1,5 @@
+# ignore .shadow file
+.shadow
+
+# ignore any session files
+.*-sess.pickle

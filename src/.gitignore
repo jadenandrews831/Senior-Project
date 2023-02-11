@@ -3,3 +3,6 @@
 
 # ignore any session files
 .*-sess.pickle
+
+# ignore itself
+.gitignore

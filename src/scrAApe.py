@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from getpass import getpass
 from requests import Session
@@ -14,10 +15,14 @@ class Authenticate():
   __________
   usrnme: string - the SID passed to the server
   psswd: string (int-like) - the PIN passed to the server
-  session: Session - the current requests.Session object
-   
+  session: requests.Session - the current with Aggie Access
+
+  Attributes
+  ____________
+  # cookies_ : dictionary - stores the cookies for the current session
 
   """
+
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
     self.psswd = psswd
@@ -47,33 +52,72 @@ class Authenticate():
                                                                 'Sec-Fetch-User': '?1',
                                                                 'Te': 'trailers',
                                                                 'Connection': 'close'})
-
-    print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
     (print(f'{header}: {val}') for header, val in response.request.headers.items())
-    print()
-    print(response.request.body)
-    print(response.status_code)
-    print(response.text)
+    url, status = self.get_main(response)
 
-    soup = bs(response.content, 'html.parser')
-    url = soup.meta.attrs['content'][6:]          # url for second page after authentication FIXME: make this a regex
-    print(url)
-    print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
 
     # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
     # print(page.content); print('\n'*3)
 
   def format_cookies(self, dic):
     s = ''.join([f'{key}={val};' for key, val in dic.items()])
-    return s
+    return s 
+  
+  def get_main(self, response):
+    print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
+    (print(f'{header}: {val}') for header, val in response.request.headers.items())
+    print()
+    print(response.request.body)
+    print(response.status_code)
+    print(response.text)
+    # FIXME: add logic here for successful and unsuccessful logins
+    soup = bs(response.content, 'html.parser')
+    url = soup.meta.attrs['content'][6:]          # url for second page after authentication FIXME: make this a regex
+    print(url)
+    print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
+    return url, response.status_code
 
+class ScrAApe():
+  """
+  ScrAApe: scrape data from aggie access with the authenticated session.
 
+  post request for 'SELECT A TERM'
+  call_proc_in=bwskfcls.p_disp_dyn_ctlg&cat_term_in=202330
+    - bwskfcls.p_disp_dyn_ctlg : the name of the resource retrieved at the 
+
+  Parameters
+  __________
+  auth: Authenticate - authenticated session with aggie access
+  scraped: list - scraped data from previous requests 
+  """
+  def __init__(self, auth, scraped=[]):
+    self.auth = auth
+    self.scraped = scraped
+
+  def get_terms(self):
+    print('>'*8+'get_term() DEBUG STARTS'+'<'*8)
+    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'
+    call_proc_in = os.path.basename(uri)
+    response = self.auth.session.get(uri)
+    content = response.text
+    print(response.request.body)
+    print(response.status_code)
+    soup = bs(content, 'html.parser')
+    select = soup.find('select', {'name': 'cat_term_in'})
+    terms = select.findChildren()[1:6]
+    terms_w_codes = [(term.text, term.get('value')) for term in terms]
+    print(terms_w_codes)
+    print('>'*8+'get_term() DEBUG ENDS'+'<'*8)
+
+    return terms_w_codes
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(prog="scrAApe", description=' The Aggie Access Authenticator and Web Scraper')
+  parser = argparse.ArgumentParser(prog="scrAApe", description='The Aggie Access Authenticator and Web Scraper')
 
   print('Aggie Access Authenticator\n')
   sid = input('SID: ')
   pin = getpass('PIN: ')
   a = Authenticate(sid, pin)
   a.login(NCAT_URI)
+  scrape = ScrAApe(a)
+  terms = scrape.get_terms()
 

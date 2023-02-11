@@ -1,5 +1,6 @@
 import argparse
 import os
+import pickle
 
 from getpass import getpass
 from requests import Session
@@ -58,22 +59,6 @@ class Authenticate():
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = post_request(self, uri, data=login_data, referer='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
-    # response = self.session.post(uri, data=login_data, headers={'Host': 'ssbprod-ncat.uncecs.edu',
-    #                                                             'Cookie': self.format_cookies(self.cookies_),
-    #                                                             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
-    #                                                             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    #                                                             'Accept-Language': 'en-US,en;q=0.5',
-    #                                                             'Accept-Encoding': 'gzip, deflate',
-    #                                                             'Content-Type': 'application/x-www-form-urlencoded',
-    #                                                             'Orgin': 'https://ssbprod-ncat.uncecs.edu',
-    #                                                             'Referer': 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin',
-    #                                                             'Upgrade-Insecure-Requests': '1',
-    #                                                             'Sec-Fetch-Dest': 'document',
-    #                                                             'Sec-Fetch-Mode': 'navigate', 
-    #                                                             'Sec-Fetch-Site': 'same-origin',
-    #                                                             'Sec-Fetch-User': '?1',
-    #                                                             'Te': 'trailers',
-    #                                                             'Connection': 'close'})
     self.cookies_ = self.session.cookies.get_dict()
     (print(f'{header}: {val}') for header, val in response.request.headers.items())
     url, status = self.verify(response)
@@ -99,6 +84,10 @@ class Authenticate():
     print(url)
     print('>'*8+'DEBUG SECTION ENDS'+'<'*8)
     return url, response.status_code
+  
+  # pickle data for ScrAApe and database use
+  def save_data(self):
+    pass
 
 class ScrAApe():
   """
@@ -116,7 +105,7 @@ class ScrAApe():
   Attributes
   __________
   get_terms: dict - gets a list of school terms from aggie access
-  set_terms:  
+  get_subject:  dict - posts data from user, then gets the choices of subject
   """
   def __init__(self, auth):
     self.auth = auth
@@ -135,9 +124,9 @@ class ScrAApe():
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'cat_term_in'})
     terms = select.findChildren()[1:6]
-    terms_w_codes = {};
+    terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
-    print(terms_w_codes)
+    print('terms_w_codes', terms_w_codes)
     print('>'*8+'get_term() DEBUG ENDS'+'<'*8)
 
     self.terms_w_codes_ = terms_w_codes

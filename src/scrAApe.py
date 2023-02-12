@@ -10,30 +10,6 @@ from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn']
-def post_request(auth, uri, data, referer):
-    """
-    post_request: takes an authenticated session, and posts data to the given uri
-    """
-    print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
-    print('Cookies:', auth.cookies_)
-    response = auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
-                                                    'Cookies': auth.format_cookies(auth.cookies_),
-                                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
-                                                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                                                    'Accept-Language': 'en-US,en;q=0.5',
-                                                    'Accept-Encoding': 'gzip, deflate',
-                                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                                    'Orgin': 'https://ssbprod-ncat.uncecs.edu',
-                                                    'Referer': referer,
-                                                    'Upgrade-Insecure-Requests': '1',
-                                                    'Sec-Fetch-Dest': 'document',
-                                                    'Sec-Fetch-Mode': 'navigate', 
-                                                    'Sec-Fetch-Site': 'same-origin',
-                                                    'Sec-Fetch-User': '?1',
-                                                    'Te': 'trailers',
-                                                    'Connection': 'close'})
-    print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
-    return response
 
 def file_to_dict(filename):
   """
@@ -72,14 +48,14 @@ class Authenticate():
     self.session = Session()
 
   def login(self, uri):
-    site = self.session.get(uri)
+    self.site_ = self.session.get(uri)
     print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
     print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
     print('>'*8+'DEBUG SECTION ENDS'+'<'*8+'\n')
     print()
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
-    response = ScrAApe().post_request(self, uri, data=login_data, referer='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
+    response = ScrAApe(self).post_request(uri, login_data, 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
     self.cookies_ = self.session.cookies.get_dict()
     (print(f'{header}: {val}') for header, val in response.request.headers.items())
     url, status = self.verify(response)
@@ -111,6 +87,7 @@ class Authenticate():
   self.usrnme = {self.usrnme}
   self.psswd = {self.psswd}
   self.session = {self.session}
+  self.__dict__ = {self.__dict__}
     """
   
   # pickle data for ScrAApe and database use
@@ -194,6 +171,7 @@ class ScrAApe():
     """
     print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
     print('Cookies:', self.auth.cookies_)
+    print(data)
     self.response_ = self.auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
                                                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
@@ -267,9 +245,10 @@ if __name__ == "__main__":
 
   if args.command == 'auth':
     if args.destfile:
-      with open('.shadow', 'r') as file:
-        text = file.readlines()
-        for t in text: print(t)
+      d = file_to_dict(args.destfile)
+      print(d.items())
+      a = Authenticate(list(d.items())[0][0], list(d.items())[0][1])
+      a.login(NCAT_URI)
     elif args.username and args.pin:
       print(args.username, args.pin)
     else:

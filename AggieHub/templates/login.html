@@ -1,0 +1,22 @@
+{% load static %}
+
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Log In</title>
+        <link rel="stylesheet" href={% static 'css/loginpage.css' %}>
+    </head>
+
+    <body>
+        <form method="POST" action={%url 'login'%} enctype="multipart/form-data">
+            <div class="login">
+                <h1>Log In</h1>
+                {%csrf_token%}
+                {{form.as_p}}
+                <button class = "submit">Enter Site</button>
+            </div>
+        </form>
+    </body>
+</html>
+

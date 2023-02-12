@@ -1,4 +1,4 @@
-# Aggie Hub (SENIOR PROJECT) -- TITLE IN THE WORKS --
+# Aggie Hub (SENIOR PROJECT) -- Working Title --
 
 This is a web utility which aims to make the daily lives of students easier.
 
@@ -12,7 +12,8 @@ python3 -m pip install -r requirements.txt
 python3 scrAApe.py
 ```
 
-## Usage
+## scrAApe: The Aggie Access Authenticator and Web Scraper
+### Usage
 
 ```
 scrAApe.py                                                                                          # authenticate a session manually, then serialize it for future use

@@ -13,6 +13,7 @@ python3 scrAApe.py
 ```
 
 ## scrAApe: The Aggie Access Authenticator and Web Scraper
+
 ### Usage
 
 ```
@@ -20,5 +21,5 @@ scrAApe.py                                                                      
 scrAApe.py auth -d .shadow                                                                          # authenticate to Aggie Access with credentials from a protected file
 scrAApe.py auth -u <username> -p <pin>                                                              # authenticate to Aggie Access with a given username and password
 scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
-scrAApe.py post {term, subject} <data> .<username>-sess.pickle                                      # post data to the given uri from a pickled session
+scrAApe.py post {term, subject} <datafile> .<username>-sess.pickle                                   # post data to the given uri from a pickled session
 ```

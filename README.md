@@ -12,7 +12,8 @@ python3 -m pip install -r requirements.txt
 python3 scrAApe.py
 ```
 
-## Usage
+## scrAApe
+### Usage
 
 ```
 scrAApe.py                                                                      # authenticate a session manually, then serialize it for future use

@@ -12,7 +12,7 @@ python3 -m pip install -r requirements.txt
 python3 scrAApe.py
 ```
 
-## scrAApe
+## scrAApe: The Aggie Access Authenticator and Web Scraper
 ### Usage
 
 ```

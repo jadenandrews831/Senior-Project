@@ -129,7 +129,7 @@ class ScrAApe():
     try:
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
     except:
-      print('Didn\'t find Set-Cookie >> ', self.auth.cookies_)
+      print('Didn\'t find Set-Cookie >> ', response.headers.items())
     print('cookies >>> ',self.auth.cookies_)
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):
@@ -141,9 +141,22 @@ class ScrAApe():
       return self.terms_w_codes_
     print(uri)
     prev_site = uri
-    response = self.auth.session.get(uri)
+    response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
+                                                    'Cookies': self.auth.format_cookies(self.auth.cookies_),
+                                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+                                                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                                                    'Accept-Language': 'en-US,en;q=0.5',
+                                                    'Accept-Encoding': 'gzip, deflate',
+                                                    'Upgrade-Insecure-Requests': '1',
+                                                    'Sec-Fetch-Dest': 'document',
+                                                    'Sec-Fetch-Mode': 'navigate', 
+                                                    'Sec-Fetch-Site': 'same-origin',
+                                                    'Te': 'trailers',
+                                                    'Connection': 'close'})
     content = response.text
-    print(response.status_code)
+    print(response.request.headers.items())
+    print()
+    print(response.headers.items())
     self.update_cookies(response)
     print(auth)
     soup = bs(content, 'html.parser')

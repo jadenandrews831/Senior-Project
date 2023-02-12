@@ -49,17 +49,16 @@ class Authenticate():
 
   def login(self, uri):
     self.site_ = self.session.get(uri)
-    print('>'*8+'DEBUG SECTION STARTS'+'<'*8)
+    print('>'*8+'login() DEBUG SECTION STARTS'+'<'*8)
     print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
-    print('>'*8+'DEBUG SECTION ENDS'+'<'*8+'\n')
-    print()
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = ScrAApe(self).post_request(uri, login_data, 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
     self.cookies_ = self.session.cookies.get_dict()
-    (print(f'{header}: {val}') for header, val in response.request.headers.items())
+    for header, val in response.request.headers.items():
+      print(f'{header}: {val}')
     url, status = self.verify(response)
-
+    print('>'*8+'login() DEBUG SECTION ENDS'+'<'*8+'\n')
 
     # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
     # print(page.content); print('\n'*3)
@@ -70,9 +69,9 @@ class Authenticate():
   
   def verify(self, response):
     print('>'*8+'verify() DEBUG SECTION STARTS'+'<'*8)
-    (print(f'{header}: {val}') for header, val in response.request.headers.items())
-    print()
-    print(response.request.body)
+    for header, val in response.headers.items():
+      print(f'{header}: {val}')
+    print(self.cookies_)
     print(response.status_code)
     print(response.text)
     # FIXME: add logic here for successful and unsuccessful logins
@@ -125,6 +124,11 @@ class ScrAApe():
   def __init__(self, auth):
     self.auth = auth
 
+  def update_cookies(self, response):
+    print(response.headers.items())
+    self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
+    print('cookies >>> ',self.auth.cookies_)
+
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):
     global prev_site 
     print('>'*8+'get_terms() DEBUG STARTS'+'<'*8)
@@ -136,6 +140,8 @@ class ScrAApe():
     response = self.auth.session.get(uri)
     content = response.text
     print(response.status_code)
+    self.update_cookies(response)
+    print(auth)
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'cat_term_in'})
     terms = select.findChildren()[1:6]
@@ -171,7 +177,6 @@ class ScrAApe():
     """
     print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
     print('Cookies:', self.auth.cookies_)
-    print(data)
     self.response_ = self.auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
                                                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
@@ -189,6 +194,7 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     print(self.response_.text)
+    print(self.response.headers.items())
     print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
     return self.response_
   
@@ -196,6 +202,7 @@ class ScrAApe():
     return f"""ScrAApe Object:
   prev_site = {prev_site}
   self.auth = {self.auth.cookies_}
+  self.__dict__{self.__dict__}
     """
   
 
@@ -245,12 +252,22 @@ if __name__ == "__main__":
 
   if args.command == 'auth':
     if args.destfile:
-      d = file_to_dict(args.destfile)
-      print(d.items())
-      a = Authenticate(list(d.items())[0][0], list(d.items())[0][1])
+      d = list(file_to_dict(args.destfile).items())[0]
+      sid = d[0]
+      pin = d[1]
+      a = Authenticate(sid, pin)
       a.login(NCAT_URI)
+
+      pickle_name = f'.{sid}-sess.pickle'
+      a.save_data(pickle_name)
     elif args.username and args.pin:
-      print(args.username, args.pin)
+      sid = args.username
+      pin = args.pin
+      a = Authenticate(sid, pin)
+      a.login(NCAT_URI)
+
+      pickle_name = f'.{sid}-sess.pickle'
+      a.save_data(pickle_name)
     else:
       print('Hmm... something went wrong')
       print(args)

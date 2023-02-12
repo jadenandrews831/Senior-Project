@@ -46,6 +46,8 @@ class Authenticate():
     self.usrnme = usrnme
     self.psswd = psswd
     self.session = Session()
+    self.login(NCAT_URI)
+    print(self)
 
   def login(self, uri):
     self.site_ = self.session.get(uri)
@@ -55,8 +57,6 @@ class Authenticate():
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = ScrAApe(self).post_request(uri, login_data, 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
     self.cookies_ = self.session.cookies.get_dict()
-    for header, val in response.request.headers.items():
-      print(f'{header}: {val}')
     url, status = self.verify(response)
     print('>'*8+'login() DEBUG SECTION ENDS'+'<'*8+'\n')
 
@@ -126,7 +126,10 @@ class ScrAApe():
 
   def update_cookies(self, response):
     print(response.headers.items())
-    self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
+    try:
+      self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
+    except:
+      print('Didn\'t find Set-Cookie >> ', self.auth.cookies_)
     print('cookies >>> ',self.auth.cookies_)
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):
@@ -136,6 +139,7 @@ class ScrAApe():
       print('get_terms(): found it!')
       print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
       return self.terms_w_codes_
+    print(uri)
     prev_site = uri
     response = self.auth.session.get(uri)
     content = response.text
@@ -194,7 +198,8 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     print(self.response_.text)
-    print(self.response.headers.items())
+    for header, item in self.response_.headers.items():
+      print(header,':', item)
     print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
     return self.response_
   
@@ -256,7 +261,6 @@ if __name__ == "__main__":
       sid = d[0]
       pin = d[1]
       a = Authenticate(sid, pin)
-      a.login(NCAT_URI)
 
       pickle_name = f'.{sid}-sess.pickle'
       a.save_data(pickle_name)
@@ -264,7 +268,6 @@ if __name__ == "__main__":
       sid = args.username
       pin = args.pin
       a = Authenticate(sid, pin)
-      a.login(NCAT_URI)
 
       pickle_name = f'.{sid}-sess.pickle'
       a.save_data(pickle_name)
@@ -280,7 +283,6 @@ if __name__ == "__main__":
       auth = pickle.load(file)
       print(auth)
       scrape = ScrAApe(auth)
-      
       file.close()                                      # close the file
       
       if args.resource == 'term':
@@ -289,6 +291,8 @@ if __name__ == "__main__":
       if args.resource == 'subject':
         scrape.get_subject()
 
+      pickle_name = f'.{auth.usrnme}-sess.pickle'
+      auth.save_data(pickle_name)
     else:
       print('Hmm... something went wrong')
       print(args)

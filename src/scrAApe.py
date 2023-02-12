@@ -130,6 +130,8 @@ class ScrAApe():
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
     except:
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
+      print('Session was not Authenticated. Please Authenticate before trying again')
+      exit()
     print('cookies >>> ',self.auth.cookies_)
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):

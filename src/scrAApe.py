@@ -278,6 +278,7 @@ if __name__ == "__main__":
       sess = args.session
       file = open(sess, 'rb')
       auth = pickle.load(file)
+      print(auth)
       scrape = ScrAApe(auth)
       
       file.close()                                      # close the file

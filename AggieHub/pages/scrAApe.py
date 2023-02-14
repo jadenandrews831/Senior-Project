@@ -26,6 +26,26 @@ def file_to_dict(filename):
     print('d >>>',d)
     print('>'*8+'file_to_dict() DEBUG ENDS'+'<'*8+'\n')
     return d
+  
+
+class Profile():
+  """
+  
+  """
+  def __init__(self):
+    print('New Profile Created')
+
+  def set_name(self, first, last):
+    self.first = first
+    self.last = last
+
+  def set_class(self, classification):
+    self.classification = classification
+
+  def set_dept(self, dept):
+    self.dept = dept
+
+
 class Authenticate():
   """
   Authenticate: Creates a session with Aggie Access and logs in to the Main Menu.
@@ -133,6 +153,29 @@ class ScrAApe():
       print('Session was not Authenticated. Please Authenticate before trying again')
       exit()
     print('cookies >>> ',self.auth.cookies_)
+
+  def get_profile(self, profile):
+    print('>'*8+'get_profile() DEBUG SECTION STARTS'+'<'*8)
+    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
+    response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
+                                                    'Cookies': self.auth.format_cookies(self.auth.cookies_),
+                                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+                                                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                                                    'Accept-Language': 'en-US,en;q=0.5',
+                                                    'Accept-Encoding': 'gzip, deflate',
+                                                    'Upgrade-Insecure-Requests': '1',
+                                                    'Sec-Fetch-Dest': 'document',
+                                                    'Sec-Fetch-Mode': 'navigate', 
+                                                    'Sec-Fetch-Site': 'same-origin',
+                                                    'Te': 'trailers',
+                                                    'Connection': 'close'})
+    content = response.text
+    print(response.request.headers.items())
+    print()
+    print(response.headers.items())
+    self.update_cookies(response)
+    print(response.text)
+    profile
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):
     global prev_site 
@@ -301,7 +344,9 @@ if __name__ == "__main__":
       file.close()                                      # close the file
       
       if args.resource == 'term':
-        scrape.get_terms()
+        profile = scrape.get_profile()
+        terms = scrape.get_terms()
+        
 
       if args.resource == 'subject':
         scrape.get_subject()

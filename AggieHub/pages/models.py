@@ -1,7 +1,7 @@
 from django.db import models
 
 class StudentData(models.Model):
-    banner_id = models.CharField(max_length=9)
+    banner_id = models.CharField(max_length=9, primary_key=True)
     pin = models.CharField(max_length=6)
     
     ordering = ['banner_id']
@@ -12,6 +12,7 @@ class StudentData(models.Model):
     def __str__(self):
         return self.pin
     
+    '''
 class StudentInfo(models.Model):
     banner_id = models.CharField(max_length=9)
     pin = models.CharField(max_length=6)
@@ -22,13 +23,49 @@ class StudentInfo(models.Model):
     classification = models.CharField(max_length=15)
     
     ordering = [last_name]
+    '''
     
-class SummerI(models.Model):
-    subjects = models.CharField(max_length=100)
-    titles = models.CharField(max_length=50)
-    course = models.CharField(max_length=3)
-    sections = models.CharField(max_length=3)
-    CRN = models.CharField(max_length=5)
+class Term (models.Model):
+    term = models.CharField(max_length=6)
+
+    def __str__(self):
+        if self.term.endswith('10'):
+            return 'Fall ' + self.term[:-2]
+        elif self.term.endswith('20'):
+            return 'Spring ' + self.term[:-2]
+        elif self.term.endswith('30'):
+            return 'Summer I ' + self.term[:-2]
+        elif self.term.endswith('40'):
+            return 'Summer II ' + self.term[:-2]
+        
+class Subject (models.Model):
+    term = models.ForeignKey(Term, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=100)
+    
+    ordering = [subject]
+    
+    def __str__(self):
+        return self.subject
+    
+class Course (models.Model):
+    term = models.ForeignKey(Term, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    course_id = models.CharField(max_length=3)
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=1000)
+        
+    ordering = [course_id]
+    
+    def __str__(self):
+        return f'[{self.course_id}] - {self.title}'
+    
+class Section (models.Model):
+    term = models.ForeignKey(Term, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    section = models.CharField(max_length=3)
+    abbr = models.CharField(max_length=4)
+    crn = models.CharField(max_length=5)
     campus = models.CharField(max_length=2)
     credits = models.CharField(max_length=1)
     days = models.CharField(max_length=5)
@@ -36,35 +73,4 @@ class SummerI(models.Model):
     instructor = models.CharField(max_length=70)
     location = models.CharField(max_length=10)
     
-    ordering = [subjects]
-    
-    
-class SummerII(models.Model):
-    subjects = models.CharField(max_length=100)
-    titles = models.CharField(max_length=50)
-    course = models.CharField(max_length=3)
-    sections = models.CharField(max_length=3)
-    CRN = models.CharField(max_length=5)
-    campus = models.CharField(max_length=2)
-    credits = models.CharField(max_length=1)
-    days = models.CharField(max_length=5)
-    time = models.CharField(max_length=20)
-    instructor = models.CharField(max_length=70)
-    location = models.CharField(max_length=10)
-    
-    ordering = [subjects]
-    
-class SpringFall(models.Model):
-    subjects = models.CharField(max_length=100)
-    titles = models.CharField(max_length=50)
-    course = models.CharField(max_length=3)
-    sections = models.CharField(max_length=3)
-    CRN = models.CharField(max_length=5)
-    campus = models.CharField(max_length=2)
-    credits = models.CharField(max_length=1)
-    days = models.CharField(max_length=5)
-    time = models.CharField(max_length=20)
-    instructor = models.CharField(max_length=70)
-    location = models.CharField(max_length=10)
-    
-    ordering = [subjects]
+    ordering = [section]

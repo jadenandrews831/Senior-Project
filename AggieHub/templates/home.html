@@ -9,8 +9,17 @@
     <link rel="stylesheet" href={% static 'css/pages.css' %}>
 </head>
 <body>
-    <h1>Aggie Hub</h1>
-    <p>Aggie Hub is a website that allows students to have an easier time creating their schedules.</p>
+    <h1>Schedule Builder</h1>
+    <p>This page will allow students to see their schedules graphically while they're creating it.</p>
+    <form  method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <p class="description">Course Description</p>
+    <div id = "select_section">
+        <p>Section Selection Goes Here</p>
+       <!-- {{form2.as_p}}-->
+    </div>
+    <button id = "do_something">Do Something</button>
+</form>
 </body>
 </html>
-

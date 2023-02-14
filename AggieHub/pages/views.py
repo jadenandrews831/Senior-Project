@@ -2,9 +2,10 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
 from .models import *
 from .forms import *
+from .tasks import *
 
 def home(request):
-    if (request.method == 'POST'): 
+    if (request.method == 'POST'):
         form = selectCourse(request.POST)
         if(form.is_valid()):
             return redirect('override')
@@ -15,9 +16,12 @@ def login(request):
     if (request.method == 'POST'): 
         form = loginForm(request.POST)
         if(form.is_valid()):
-            log_in = form.save(commit=False)
-            log_in.pin = make_password(form.cleaned_data['pin'])
-            log_in.save()
+            form.banner_id = form.cleaned_data['banner_id']
+            form.pin = form.cleaned_data['pin']
+            authenticate(form.banner_id, form.pin)
+            #log_in.pin = make_password(form.cleaned_data['pin'])
+            #log_in.save()
+    
         return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
 

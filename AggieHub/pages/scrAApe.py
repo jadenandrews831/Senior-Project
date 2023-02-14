@@ -68,6 +68,8 @@ class Authenticate():
     self.session = Session()
     self.login(NCAT_URI)
     print(self)
+    
+    #if logged in return true otherwise return false
 
   def login(self, uri):
     self.site_ = self.session.get(uri)

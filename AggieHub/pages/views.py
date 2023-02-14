@@ -1,10 +1,14 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
-from .models import StudentData
-from .forms import loginForm
+from .models import *
+from .forms import *
 
 def home(request):
-    return render(request, 'home.html')
+    if (request.method == 'POST'): 
+        form = selectCourse(request.POST)
+        if(form.is_valid()):
+            return redirect('override')
+    return render(request, 'home.html', {'form': selectCourse})
 
 #form data should be used to autheticate session for user through scrAApe and redirect to home page
 def login(request):

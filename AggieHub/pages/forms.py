@@ -13,15 +13,16 @@ class loginForm(ModelForm):
             'banner_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Banner ID'}),
             'pin': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'PIN'})
         }
-        
-class selectCourse(ModelForm):
+'''        
+TERMS = [(term, term) for term in listterms]
+
+class termForm(Form):
+    term = forms.ChoiceField(choices=TERMS)
     class Meta:
-        model = Section
-        fields = "term", "subject", "course_id"
-        labels = {"term": "Term", "subject": "Subject", "course_id": "Course"}
-        
-    def __init__(self, *args, **kwargs):
-        super(selectCourse, self).__init__(*args, **kwargs)
-        self.fields['term'].empty_label = "Select Term"
-        self.fields['subject'].empty_label = "Select Subject"
-        self.fields['course_id'].empty_label = "Select Course"
+        model = Term
+        fields = "__all__"
+        labels = {"term": ""}
+        widgets = {
+            'term': forms.Select(attrs={'class': 'form-control'})
+        }
+'''

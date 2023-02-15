@@ -13,7 +13,11 @@
     <p>This page will allow students to see their schedules graphically while they're creating it.</p>
     <form  method="POST">
     {% csrf_token %}
-    {{form.as_p}}
+    <select = "select_term">
+        {% for term in terms %}
+            <option value="{{term}}">{{term}}</option>
+        {% endfor %}
+    </select>
     <p class="description">Course Description</p>
     <div id = "select_section">
         <p>Section Selection Goes Here</p>

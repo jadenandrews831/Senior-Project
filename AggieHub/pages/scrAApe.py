@@ -104,10 +104,10 @@ class Authenticate():
     print(response.text)
     # FIXME: add logic here for successful and unsuccessful logins
     soup = bs(response.content, 'html.parser')
-    url = soup.meta          # url for second page after authentication FIXME: make this a regex
+    url = soup.meta['content']          # url for second page after authentication FIXME: make this a regex
     print(url)
     print('>'*8+'verify() DEBUG SECTION ENDS'+'<'*8+'\n')
-    return True if url == '<meta http-equiv="refresh" content="0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login">' else False, response.status_code
+    return True if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else False, response.status_code
   
   def __str__(self):
     return f"""Authenticate Object:
@@ -211,7 +211,7 @@ class ScrAApe():
     print()
     print(response.headers.items())
     self.update_cookies(response)
-    print(auth)
+    #print(auth)
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'cat_term_in'})
     terms = select.findChildren()[1:6]

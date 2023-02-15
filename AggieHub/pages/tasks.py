@@ -1,5 +1,5 @@
-import scrAApe
+from .scrAApe import *
 
-def authenticate(banner, pin):
-    success = scrAApe.authenticate(banner, pin)
-    return success
+def task1(banner, pin):
+    success = Authenticate(banner, pin)
+    return success.auth()

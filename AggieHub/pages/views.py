@@ -18,11 +18,11 @@ def login(request):
         if(form.is_valid()):
             form.banner_id = form.cleaned_data['banner_id']
             form.pin = form.cleaned_data['pin']
-            authenticate(form.banner_id, form.pin)
+            response = authenticate(form.banner_id, form.pin)
             #log_in.pin = make_password(form.cleaned_data['pin'])
             #log_in.save()
-    
-        return redirect('home')
+            if (response == True):
+                return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
 
 #WIP

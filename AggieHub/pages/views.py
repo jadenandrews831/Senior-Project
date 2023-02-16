@@ -4,8 +4,8 @@ from .models import *
 from .forms import *
 from .tasks import *
 
+#login required?
 def home(request):
-    #add values from task2() to options in form
         terms = task2()
         context = {'terms': terms}
         return render(request, 'home.html', context)
@@ -18,10 +18,6 @@ def login(request):
             form.banner_id = form.cleaned_data['banner_id']
             form.pin = form.cleaned_data['pin']
             response = task1(form.banner_id, form.pin)
-            
-            #log_in.pin = make_password(form.cleaned_data['pin'])
-            #log_in.save()
-            print('Reponse >>>', response)
             if (response == True):
                 return redirect('home')
     return render(request, 'login.html', {'form': loginForm})

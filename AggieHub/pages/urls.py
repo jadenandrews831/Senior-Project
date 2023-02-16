@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.login, name='home'), #redirects to login page, change to home page with log in option there?
+    path('', views.login, name='home'),
     path('login/', views.login, name='login'), 
     path('home/', views.home, name='home'),
     path('guides/', views.guides, name='guides'), 

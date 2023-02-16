@@ -13,5 +13,4 @@ def task2():
     global success
     scrape = ScrAApe(success)
     terms = scrape.get_terms()
-    print("TEST TERMS >>>> ", terms.keys())
     return list(terms.keys())

@@ -5,8 +5,10 @@ from .forms import *
 from .tasks import *
 
 def home(request):
-    
-    return render(request, 'home.html')
+    #add values from task2() to options in form
+        terms = task2()
+        context = {'terms': terms}
+        return render(request, 'home.html', context)
 
 #form data should be used to autheticate session for user through scrAApe and redirect to home page
 def login(request):
@@ -21,10 +23,9 @@ def login(request):
             #log_in.save()
             print('Reponse >>>', response)
             if (response == True):
-                #listterms = task2()
                 return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
-
+    
 #WIP
 def override(request):
     return render(request, 'override.html')

@@ -7,23 +7,27 @@
     <meta charset="UTF-8">
     <title>Aggie Hub</title>
     <link rel="stylesheet" href={% static 'css/pages.css' %}>
+    <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
+    <script type="text/javascript">
+        
+    </script>
 </head>
 <body>
     <h1>Schedule Builder</h1>
     <p>This page will allow students to see their schedules graphically while they're creating it.</p>
-    <form  method="POST">
     {% csrf_token %}
-    <select = "select_term">
+    <select id = "select_term">
+        <option disabled="disabled" selected="selected">Select Term</option>
         {% for term in terms %}
-            <option value="{{term}}">{{term}}</option>
+        <option value="{{term}}">{{term}}</option>
         {% endfor %}
     </select>
+    <p id="test response"></p>
     <p class="description">Course Description</p>
     <div id = "select_section">
         <p>Section Selection Goes Here</p>
        <!-- {{form2.as_p}}-->
     </div>
     <button id = "do_something">Do Something</button>
-</form>
 </body>
 </html>

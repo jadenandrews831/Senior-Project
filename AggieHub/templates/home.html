@@ -5,54 +5,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Aggie Hub</title>
-    <link rel="stylesheet" href={% static 'css/pages.css' %}>
+    <title>Aggie Bridge</title>
+    <link rel="stylesheet" href={% static 'css/homepage.css' %}>
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <script type="text/javascript">
-        /*
-        TODO: create a function that will load the subjects when a term is selected
-         and the courses when a subject is selected
-         */
-
-         /*
-        TODO: create a function that will load the course description when a course is selected
-        function will load section options when a course is selected
-         */
+        //gets available subjects based on term selection
+        $(document).ready(function(){
+            $("#select_term").change(function(){
+                var term = $(this).children("option:selected").val();
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'get_subjects' %}",
+                    data: {
+                        'term': term,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        var subjects = JSON.parse(response)
+                        var subject_select = $("#select_subject");
+                        subject_select.empty();
+                        subject_select.append('<option disabled="disabled" selected="selected">Select Subject</option>');
+                        for (var i = 0; i < subjects.length; i++) {
+                            subject_select.append('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
+                        }
+                    }
+                });
+            });
+        });
+        //gets available courses based on subject selection
+        $(document).ready(function(){
+            $("#select_subject").change(function(){
+                var subject = $(this).children("option:selected").val();
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'get_courses' %}",
+                    data: {
+                        'subject': subject,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        var courses = JSON.parse(response);
+                        var course_select = $("#select_course");
+                        course_select.empty();
+                        course_select.append('<option disabled="disabled" selected="selected">Select Course</option>');
+                        for (var i = 0; i < courses.length; i++) {
+                            course_select.append('<option value="' + courses[i] + '">' + courses[i] + '</option>');
+                        }
+                    }
+                });
+            });
+        });
+        //gets course description based on course selection
+        $(document).ready(function(){
+            $("#select_course").change(function(){
+                var course = $(this).children("option:selected").val();
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'get_description' %}",
+                    data: {
+                        'course': course,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        var description = JSON.parse(response);
+                        var course_description = $("#description");
+                        course_description.empty();
+                        course_description.append('<p>' + description + '</p>');
+                    }
+                });
+            });
+        });
     </script>
 </head>
 <body>
-    <h1>Schedule Builder</h1>
-    <p>This page will allow students to see their schedules graphically while they're creating it.</p>
+    <div class = "header">
+        <h2>Course Registration</h2>
+        <p>This schedule builder will allow students to see their schedules graphically while they're registering.</p>
+    </div>
     {% csrf_token %}
-    <div id "class_dropdowns">
-        <select id = "select_term">
-            <option disabled="disabled" selected="selected">Select Term</option>
-            {% for term in terms %}
-            <option value="{{term}}">{{term}}</option>
-            {% endfor %}
-        </select>
-        <select id = "select_subject">
-            <option disabled="disabled" selected="selected">Select Subject</option>
-            {% for subject in subjects %}
-            <option value="{{subject}}">{{subject}}</option>
-            {% endfor %}
-        </select>
-        <select id = "select_course">
-            <option disabled="disabled" selected="selected">Select Course</option>
-            {% for course in courses %}
-            <option value="{{course}}">{{course}}</option>
-            {% endfor %}
-        </select>
+    <div id = "row">
+        <div id = "class_selection">
+            <select id = "select_term">
+                <option disabled="disabled" selected="selected">Select Term</option>
+                {% for term in terms %}
+                <option value="{{term}}">{{term}}</option>
+                {% endfor %}
+            </select>
+            <select id = "select_subject">
+                <option disabled="disabled" selected="selected">Select Subject</option>
+                {% for subject in subjects %}
+                <option value="{{subject}}">{{subject}}</option>
+                {% endfor %}
+            </select>
+            <select id = "select_course">
+                <option disabled="disabled" selected="selected">Select Course</option>
+                {% for course in courses %}
+                <option value="{{course}}">{{course}}</option>
+                {% endfor %}
+            </select>
+            <!--Load description based on course selection-->
+            <p id="description">Course Description will go here</p>
+        </div>
+        <div id = "schedule">
+            <!--TODO: graphic representation of schedule-->
+            <p>Schedule displaying selected classes will go here<p>
+        </div>
     </div>
-    <div id = "description">
-        <!--TODO: course description is dependent on course selection-->
-        <p>Course Description Goes Here</p>
-    </div>
+
     <div id = "section_info">
         <!--TODO: section option show up after course selection-->
         <p>Section Selection Goes Here</p>
     </div>
-    <!--TODO: add button function (add course to schedule? reset dropdown selections?) -->
+
+    <!--TODO: add button function (add course to schedule? reset dropdown selections? register) -->
     <button id = "do_something">Do Something</button>
 </body>
 </html>

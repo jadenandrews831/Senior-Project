@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
 from .models import *
@@ -22,6 +23,30 @@ def login(request):
                 return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
     
+def get_subjects(request):
+    if (request.method == 'POST'):
+        term = request.POST['term']
+        response = {
+            'subjects': task3(term)
+        }
+    return JsonResponse(response)
+
+def get_courses(request):
+    if (request.method == 'POST'):
+        subject = request.POST.get('subject')
+        response = {
+            'courses': task4(subject)
+        }
+    return JsonResponse(response)
+
+def get_description(request):
+    if (request.method == "POST"):
+        course = request.POST.get('course')
+        response = {
+            'description': task5(course)
+        }
+    return JsonResponse(response)
+
 #WIP
 def override(request):
     return render(request, 'override.html')

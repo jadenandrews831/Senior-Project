@@ -2,7 +2,7 @@ from django.db import models
 
 class StudentData(models.Model):
     banner_id = models.CharField(max_length=9, primary_key=True)
-    pin = models.CharField(max_length=6)
+    pin = models.CharField(max_length=15)
     
     ordering = ['banner_id']
     

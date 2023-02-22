@@ -3,15 +3,17 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 <nav class="navigation-bar">
-  <img src="/static/images/logo.png">  <!-- Image -->
+  <img src= "\static\images\logo.png" width: "500" alt="Logo">  <!-- Image -->
   <div class="student_info"></div> <!-- Display student info after logging in (name & (classification?)) -->
-  <div class="site_name">Aggie Bridge</div>  <!--Name of website-->
+  <div class="site_name">
+    <img src="\static\images\Aggie Bridge Title.png"  alt="Website Title">
+  </div>  <!--Name of website-->
     <!--Font Awesome icons for full page selection? Scaling? Will have to create text for collapsible menu-->
     <div class="links">
     <ul>
-      <li><a href="{% url 'contact'%}">FAQ</a></li>
-      <li><a href="{% url 'guides'%}">Curriculum Guides</a></li>
-      <li><a href="{% url 'override'%}">Override Forms</a></li>
+      <li><a href="{% url 'contact'%}"><b>FAQ</b></a></li>
+      <li><a href="{% url 'guides'%}"><b>Curriculum Guides</b></a></li>
+      <li><a href="{% url 'override'%}"><b>Override Forms</b></a></li>
     </ul>
   </div>
   </nav>

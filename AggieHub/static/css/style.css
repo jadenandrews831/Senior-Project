@@ -38,7 +38,7 @@
     
     .links ul
     {
-        font-size: 17px;
+        font-size: 20px;
         text-decoration: none;
     }
     
@@ -50,8 +50,7 @@
 
     .navigation-bar img {
         float: left;
-        width: 50px;
-        height: 60px;
+        height: 70px;
         padding : 0;
         margin: 5px 0 0 15px;
     }
@@ -66,3 +65,12 @@
         transform: translate(-50%, -50%);
     }
     
+    .site_name img {
+        height: 300;
+
+    }
+
+    body {
+
+        background-color: #e6e9ed;
+    }

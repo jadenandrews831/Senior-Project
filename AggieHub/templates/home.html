@@ -1,4 +1,4 @@
-{% include 'navigation.html' %}
+
 {% load static %}
 
 <!DOCTYPE html>
@@ -80,14 +80,19 @@
         });
     </script>
 </head>
+
 <body>
-    <div class = "header">
-        <h2>Course Registration</h2>
-        <p>This schedule builder will allow students to see their schedules graphically while they're registering.</p>
-    </div>
-    {% csrf_token %}
-    <div id = "row">
-        <div id = "class_selection">
+    <nav class = "banner">
+        {% include 'navigation.html' %}
+    </nav>
+
+    <aside class = "options">
+        <div id = "pageinfo">
+            <h2>Course Registration</h2>
+            <p id = "reg_status">FULL-TIME STATUS</p>
+        </div>
+        {% csrf_token %}
+        <section class = "dropdowns">
             <select id = "select_term">
                 <option disabled="disabled" selected="selected">Select Term</option>
                 {% for term in terms %}
@@ -96,31 +101,352 @@
             </select>
             <select id = "select_subject">
                 <option disabled="disabled" selected="selected">Select Subject</option>
-                {% for subject in subjects %}
-                <option value="{{subject}}">{{subject}}</option>
-                {% endfor %}
             </select>
             <select id = "select_course">
                 <option disabled="disabled" selected="selected">Select Course</option>
-                {% for course in courses %}
-                <option value="{{course}}">{{course}}</option>
+            </select>
+        </section>
+
+        <section class = "description">
+            <p>Course Description</p>
+        </section>
+
+        <section class = "select_section">
+            <select id="available" size="5">
+                {% for choice in sections %}
+                <option value="{{choice}}">{{choice}}</option>
                 {% endfor %}
             </select>
-            <!--Load description based on course selection-->
-            <p id="description">Course Description will go here</p>
+        </section>
+        <div id = "update">
+        <button id = "add">Add to Schedule</button>
         </div>
-        <div id = "schedule">
-            <!--TODO: graphic representation of schedule-->
-            <p>Schedule displaying selected classes will go here<p>
+    </aside>
+
+    <main class = "view">
+        <div class = "scheduleview">
+            <table border>
+                <thead>
+                    <tr>
+                        <th width = "10%"></th>
+                        <th width = "18%">Monday</th>
+                        <th width = "18%">Tuesday</th>
+                        <th width = "18%">Wednesday</th>
+                        <th width = "18%">Thursday</th>
+                        <th width = "18%">Friday</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <th>8:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>8:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>9:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>9:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>10:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>10:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>11:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>11:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>12:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>12:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>1:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>1:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>2:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>2:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>3:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>3:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>4:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>4:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>5:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>5:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>6:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>6:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>7:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>7:30</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>8:00</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
         </div>
-    </div>
+    </main>
 
-    <div id = "section_info">
-        <!--TODO: section option show up after course selection-->
-        <p>Section Selection Goes Here</p>
-    </div>
-
-    <!--TODO: add button function (add course to schedule? reset dropdown selections? register) -->
-    <button id = "do_something">Do Something</button>
+    <section class = "detailview">
+        <table border>
+            <thead>
+                <tr>
+                    <th width = "8%">CRN</th>
+                    <th width = "12%">Section</th>
+                    <th width = "25">Title</th>
+                    <th width = "8%">Days</th>
+                    <th width = "8%">Time</th>
+                    <th width = "18%">Instructor</th>
+                    <th width = "9%">Location</th>
+                    <th width = "4%">Credits</th>
+                    <th width = "4%"></th>
+                </tr>
+            </thead>
+                <tr>
+                    <td>12345</td>
+                    <td>01</td>
+                    <td>Intro to Computer Science</td>
+                    <td>MWF</td>
+                    <td>9:00-9:50</td>
+                    <td>John Doe</td>
+                    <td>1234</td>
+                    <td>3</td>
+                    <td class="close">x</td>
+                </tr>
+                <tr>
+                    <td>12445</td>
+                    <td>02</td>
+                    <td>Intro to Computer Science</td>
+                    <td>MWF</td>
+                    <td>10:00-10:50</td>
+                    <td>John Doe</td>
+                    <td>1234</td>
+                    <td>3</td>
+                    <td class="close">x</td>
+                </tr>
+                <tr>
+                    <td>12545</td>
+                    <td>03</td>
+                    <td>Intro to Computer Science</td>
+                    <td>MWF</td>
+                    <td>11:00-11:50</td>
+                    <td>John Doe</td>
+                    <td>1234</td>
+                    <td>3</td>
+                    <td class = "close">x</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+        </table>
+    </section>
+    <footer class  = "more">
+        <p>Footer</p>
+    </footer>
 </body>
 </html>

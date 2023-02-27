@@ -1,76 +1,68 @@
-    .navigation-bar{
-        background-color: #FDB927;
-        margin: 0;
-        height: 70px;
-        position: relative;
-    }
+.navigation-bar{
+    margin: 0;
+    height: 70px;
+    position: relative;
+}
 
-    .navigation-bar ul {
-        padding: 0;
-        margin: 0;
-    
-    }
+.navigation-bar ul {
+    padding: 0;
+    margin: 0;
 
-    ul {   
-        padding: 0;
-        overflow: hidden;
-        text-decoration: none;
-    }
-    
-    li {
-        float: right;
-        list-style-type: none;
-    }
-            
-    li a {
-        display: inline-block;
-        color: black;
-        text-align: center;
-        text-decoration: none;
-        padding: 15px;
-        height: 40px;
+}
+
+.navigation-bar img {
+    float: left;
+    height: 70px;
+    padding : 0;
+    margin: 0 0 0 15px;
+}
+
+.site_name {
+    margin: 0;
+    position: absolute;
+    top : 50%;
+    left: 50%;
+    -ms-transform:(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.site_name img {
+    height: 70px;
+    padding: 0 0 5px 0;
+}
+
+ul {   
+    padding: 0;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+li {
+    float: right;
+    list-style-type: none;
+}
         
-    }
-    
-    li a:hover {
-        background-color: #EFA402;
-    }
-    
-    .links ul
-    {
-        font-size: 20px;
-        text-decoration: none;
-    }
-    
-    .links ul li
-    {
-        display: inline;
-        color:white;
-    }
+li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    padding: 15px;
+    height: 40px;
+}
 
-    .navigation-bar img {
-        float: left;
-        height: 70px;
-        padding : 0;
-        margin: 5px 0 0 15px;
-    }
+li a:hover {
+    background-color: #EFA402;
+}
 
-    .site_name {
-        margin: 0;
-        font-size: 30px;
-        position: absolute;
-        top : 50%;
-        left: 50%;
-        -ms-transform:(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
-    
-    .site_name img {
-        height: 300;
+.links ul
+{
+    font-size: 20px;
+    text-decoration: none;
+}
 
-    }
-
-    body {
-
-        background-color: #e6e9ed;
-    }
+.links ul li
+{
+    display: inline;
+    color:white;
+}

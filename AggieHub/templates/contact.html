@@ -1,15 +1,20 @@
-{% include 'navigation.html' %}
+
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>FAQ/Contact</title>
-    <link rel="stylesheet" href={% static 'css/pages.css' %}>
-</head>
-<body>
-    <h1>FAQ/Contact</h1>
-    <p>This is the page where students can see frequently asked questions and submit other questions, concerns, comments, suggestions, bugs.</p>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Contact Us</title>
+        <link rel="stylesheet" href={% static 'css/pages.css' %}>
+    </head>
+    <body>
+        <header>
+            {% include 'navigation.html' %}
+        </header>
+
+        <h1>FAQ/Contact</h1>
+        <p>This is the page where students can see frequently asked questions and submit other questions, concerns, comments, suggestions, bugs.</p>
+
+    </body>
 </html>

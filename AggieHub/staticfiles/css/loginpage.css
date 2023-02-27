@@ -50,6 +50,7 @@ body{
   }
   
   .submit{
+    cursor: pointer;
     background:#FDB927;
     width:125px;
     padding-top:5px;

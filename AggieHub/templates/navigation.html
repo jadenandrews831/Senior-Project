@@ -1,21 +1,22 @@
+<!DOCTYPE html>
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 <nav class="navigation-bar">
-  <img src= "\static\images\logo.png" width: "500" alt="Logo">  <!-- Image -->
-  <div class="student_info"></div> <!-- Display student info after logging in (name & (classification?)) -->
+  <a href = "{% url 'home'%}"><img src= "\static\images\logo.png" width: "500" alt="Logo"></a>
+  <div class="student_info"></div>
   <div class="site_name">
-    <img src="\static\images\Aggie Bridge Title.png"  alt="Website Title">
-  </div>  <!--Name of website-->
-    <!--Font Awesome icons for full page selection? Scaling? Will have to create text for collapsible menu-->
-    <div class="links">
+    <a href = "{% url 'home'%}"><img src="\static\images\Aggie Bridge Title.png"  alt="Website Title"></a>
+  </div>  
+
+  <div class="links">
     <ul>
       <li><a href="{% url 'contact'%}"><b>FAQ</b></a></li>
       <li><a href="{% url 'guides'%}"><b>Curriculum Guides</b></a></li>
       <li><a href="{% url 'override'%}"><b>Override Forms</b></a></li>
     </ul>
   </div>
-  </nav>
-  
+</nav>
+
   

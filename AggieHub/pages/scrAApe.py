@@ -9,7 +9,7 @@ from requests import Session
 from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
-rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn']
+rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile']
 
 def file_to_dict(filename):
   """
@@ -28,7 +28,7 @@ def file_to_dict(filename):
     return d
   
 
-class Profile():
+class User_Profile():
   """
   
   """
@@ -36,14 +36,32 @@ class Profile():
     print('New Profile Created')
 
   def set_name(self, first, last):
-    self.first = first
-    self.last = last
+    self.first_ = first
+    self.last_ = last
 
   def set_class(self, classification):
-    self.classification = classification
+    self.class_ = classification
 
   def set_dept(self, dept):
-    self.dept = dept
+    self.dept_ = dept
+
+  def set_banner(self, banner):
+    self.banner_ = banner
+
+  def set_major(self, major):
+    self.major_ = major
+
+  def __str__(self):
+    return f"""
+>>>User_Profile Object<<<
+ Name: {self.first_} {self.last_}
+ Class: {self.class_}
+ Dept: {self.dept_}   
+ Major: {self.major_}
+ Banner: {self.banner_}
+>>>User_Profile Object<<<
+
+    """
 
 
 class Authenticate():
@@ -146,8 +164,6 @@ class ScrAApe():
   
 
   """
-  global prev_site
-  prev_site = 'no sites yet'
 
   def __init__(self, auth):
     self.auth = auth
@@ -183,17 +199,15 @@ class ScrAApe():
     print(response.headers.items())
     self.update_cookies(response)
     print(response.text)
-    profile
 
-  def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'):
-    global prev_site 
+  def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
     print('>'*8+'get_terms() DEBUG STARTS'+'<'*8)
     if 'terms_w_codes_' in self.__dict__:
       print('get_terms(): found it!')
       print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
       return self.terms_w_codes_
     print(uri)
-    prev_site = uri
+    self.auth.prev_site_ = uri
     response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
                                                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
@@ -210,21 +224,22 @@ class ScrAApe():
     print(response.request.headers.items())
     print()
     print(response.headers.items())
+    print(response.text)
     self.update_cookies(response)
     #print(auth)
     soup = bs(content, 'html.parser')
-    select = soup.find('select', {'name': 'cat_term_in'})
+    select = soup.find('select', {'name': 'p_term'})
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
     print('terms_w_codes', terms_w_codes)
     print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
 
-    self.terms_w_codes_ = terms_w_codes
+    self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
   
   # data should be selected term from get_terms()
-  def get_subject(self, data):
+  def get_subject(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckgens.p_proc_term_date'):
     """
     get_subject: 
 
@@ -233,18 +248,43 @@ class ScrAApe():
     data: dict - data to be posted
     """
     print('>'*8+'get_subject() DEBUG STARTS'+'<'*8)
-    if self.terms_w_codes_:
-      code = self.terms_w_codes_[data]
+    if not data:
+      data = input("Data: ")
+    if self.auth.terms_w_codes_:
+      code = self.auth.terms_w_codes_[data]
+      print("Code:",code)
     else:
       print('Needs a valid term')
       return
-    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckctlg.p_disp_cat_term_date'
+    
+    response = self.post_request(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':code, 'p_by_date':'Y','p_from_date':'','p_to_date':''})
+    content = response.text
+    self.update_cookies(response)
+    soup = bs(content, 'html.parser')
+    select = soup.find('select', {'name': 'sel_subj'})
+    print("Select: ", select, soup)
+    subjs = select.findChildren()
+    subjs_w_codes = {}
+    for subj in subjs: subjs_w_codes[subj.text] = subj.get('value')
+    print('subjs_w_codes', subjs_w_codes)
+
     print('>'*8+'get_subject() DEBUG ENDS'+'<'*8+'\n')
 
-  def post_request(self, uri, data, referer=prev_site):
+    self.auth.subjs_w_codes = subjs_w_codes
+    return subjs_w_codes
+  
+  def get_user_profile(self):
+    profile = User_Profile()
+
+    profile.set_name()
+
+    return profile
+
+  def post_request(self, uri, data, referer=None):
     """
     post_request: takes an authenticated session, and posts data to the given uri
     """
+    if not referer: referer = self.auth.prev_site_
     print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
     print('Cookies:', self.auth.cookies_)
     self.response_ = self.auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
@@ -271,10 +311,11 @@ class ScrAApe():
   
   def __str__(self):
     return f"""ScrAApe Object:
-  prev_site = {prev_site}
-  self.auth = {self.auth.cookies_}
+  prev_site = {self.auth.prev_site}
+  cookies = {self.auth.cookies_}
   self.__dict__{self.__dict__}
     """
+  
   
 
 if __name__ == "__main__":
@@ -357,7 +398,7 @@ if __name__ == "__main__":
         
 
       if args.resource == 'subject':
-        scrape.get_subject()
+        subjs = scrape.get_subject()
 
       pickle_name = f'.{auth.usrnme}-sess.pickle'
       auth.save_data(pickle_name)

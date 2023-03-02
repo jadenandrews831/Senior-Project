@@ -7,7 +7,7 @@ body {
         "aside section"
         "footer footer";
     grid-template-rows: 77px 700px 260px 40px;
-    grid-template-columns: 25% 1fr;
+    grid-template-columns: 27% 1fr;
     gap: 10px;
     margin: 10px;
 }
@@ -61,7 +61,7 @@ nav, aside, main, section, footer {
     grid-area: section;
 }
 
-.more {
+.footer {
     grid-area: footer;
     display: flex;
     align-items: center;
@@ -124,12 +124,6 @@ tr {
 }
 
 #add:hover{background: #EFA402;}
-
-.close {
-    cursor: pointer;
-  }
-  
-  .close:hover {background: #BBB;}
 
 @media all and (max-width: 575px) {
     body {

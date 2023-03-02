@@ -1,4 +1,4 @@
-# Aggie Hub (SENIOR PROJECT) -- Working Title --
+# Aggie Bridge (SENIOR PROJECT)
 
 This is a web utility which aims to make the daily lives of students easier.
 

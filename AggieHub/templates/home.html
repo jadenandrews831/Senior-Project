@@ -22,11 +22,13 @@
                     },
                     success: function (response) {
                         console.log(response);
-                        var subjects = JSON.parse(response)
+                        var subjects = response;
                         var subject_select = $("#select_subject");
                         subject_select.empty();
                         subject_select.append('<option disabled="disabled" selected="selected">Select Subject</option>');
+                        //add each subject in subjects to the subject select drop dropdown
                         for (var i = 0; i < subjects.length; i++) {
+                            print(subjects[i]);
                             subject_select.append('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
                         }
                     }
@@ -445,7 +447,7 @@
                 </tr>
         </table>
     </section>
-    <footer class  = "more">
+    <footer class  = "footer">
         <p>Footer</p>
     </footer>
 </body>

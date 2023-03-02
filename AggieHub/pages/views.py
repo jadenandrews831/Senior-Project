@@ -33,7 +33,7 @@ def get_subjects(request):
 
 def get_courses(request):
     if (request.method == 'POST'):
-        subject = request.POST.get('subject')
+        subject = request.POST['subject']
         response = {
             'courses': task4(subject)
         }

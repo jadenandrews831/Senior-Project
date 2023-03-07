@@ -3,20 +3,28 @@
 
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-<nav class="navigation-bar">
-  <a href = "{% url 'home'%}"><img src= "\static\images\logo.png" width: "500" alt="Logo"></a>
-  <div class="student_info"></div>
-  <div class="site_name">
-    <a href = "{% url 'home'%}"><img src="\static\images\Aggie Bridge Title.png"  alt="Website Title"></a>
-  </div>  
+<a href = "{% url 'home'%}"><img src="\static\images\logo.png" alt= "Logo" style="height:70px; float: left; padding: 9px"></a>
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="{% url 'contact'%}">FAQ</a>
+  <a href="{% url 'guides'%}">Curriculum Guides</a>
+  <a href="{% url 'override'%}">Override Forms</a>
+</div>
+<span style="font-size:30px;cursor:pointer; float:right; margin-right: 15px; padding: 15px" onclick="openNav()">&#9776;</span>
+<script>
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
-  <div class="links">
-    <ul>
-      <li><a href="{% url 'contact'%}"><b>FAQ</b></a></li>
-      <li><a href="{% url 'guides'%}"><b>Curriculum Guides</b></a></li>
-      <li><a href="{% url 'override'%}"><b>Override Forms</b></a></li>
-    </ul>
-  </div>
-</nav>
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+</script>
+
+<div class="navigation-bar">
+  <a href = "{% url 'home'%}"><img src="\static\images\Aggie Bridge Title.png" alt="Website Title"></a>
+</div>
+
+
 
   

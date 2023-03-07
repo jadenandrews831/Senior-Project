@@ -126,7 +126,11 @@ class Authenticate():
     print(url)
     print('>'*8+'verify() DEBUG SECTION ENDS'+'<'*8+'\n')
     return True if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else False, response.status_code
-  
+
+  # def get_dict(self):
+  #   for key, val in self.__dict__.items():
+
+
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -221,10 +225,10 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     content = response.text
-    print(response.request.headers.items())
-    print()
-    print(response.headers.items())
-    print(response.text)
+    # print(response.request.headers.items())
+    # print()
+    # print(response.headers.items())
+    # print(response.text)
     self.update_cookies(response)
     #print(auth)
     soup = bs(content, 'html.parser')
@@ -251,13 +255,14 @@ class ScrAApe():
     if not data:
       data = input("Data: ")
     if self.auth.terms_w_codes_:
-      code = self.auth.terms_w_codes_[data]
-      print("Code:",code)
+      self.auth.pterm = self.auth.terms_w_codes_[data]
+      print("Code:",self.auth.pterm)
     else:
       print('Needs a valid term')
       return
     
-    response = self.post_request(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':code, 'p_by_date':'Y','p_from_date':'','p_to_date':''})
+    response = self.post_request(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':self.auth.pterm, 'p_by_date':'Y','p_from_date':'','p_to_date':''})
+    self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
     soup = bs(content, 'html.parser')
@@ -272,6 +277,62 @@ class ScrAApe():
 
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
+
+  def get_course(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
+    """
+    get_course:
+
+    Parameters
+    __________
+    """
+    print('>'*8+'get_course() DEBUG STARTS'+'<'*8)
+    if not data:
+      data = input("Data: ")
+    if self.auth.subjs_w_codes:
+      code = self.auth.subjs_w_codes[data]
+      ptrm = self.auth.pterm
+      print('Code:',code)
+    else:
+      print('Needs a valid term')
+      return
+    
+    '''
+    rsts=dummy&crn=dummy&term_in=202330&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&
+    sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&
+    sel_subj=COMP&sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&sel_ptrm=%25&begin_hh=0&
+    begin_mi=0&end_hh=0&end_mi=0&begin_ap=x&end_ap=y&path=1&SUB_BTN=Course+Search
+
+    rsts=dummy&crn=dummy&term_in=202330&sel_subj=SPCH&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&
+    sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=%25&sel_attr=dummy&
+    sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&begin_hh=0&begin_mi=0&end_hh=0&end_mi=0&
+    begin_ap=x&end_ap=y&path=1&SUB_BTN=Course+Search
+    '''
+
+    data = {'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', code],
+            'sel_day':'dummy', 'sel_schd':'dummy', 'sel_insm':'dummy', 'sel_camp':'dummy', 
+            'sel_levl':'dummy', 'sel_sess':'dummy', 'sel_instr':'dummy', 'sel_ptrm':['dummy', '%'], 
+            'sel_attr':'dummy', 'sel_crse':'', 'sel_title':'', 'sel_from_cred':'',
+            'sel_to_cred':'', 'begin_hh':'0', 'begin_mi':'0', 'end_hh':'0',
+            'end_mi':'0','begin_ap':'x', 'end_ap':'y', 'path':'1','SUB_BTN':'Course Search'
+            }
+
+    response = self.post_request(uri, data)
+    print(response.request.body)
+    self.auth.prev_site_ = uri
+    content = response.text
+    self.update_cookies(response)
+    soup = bs(content, 'html.parser')
+    select = soup.findAll('td', {'bypass_esc': 'Y'})
+    print("Select: ", select, soup)
+    crss = select[1::2]
+
+    self.auth.crss_ = []
+    for crs in crss: self.auth.crss_.append(crs.text)
+
+    print(self.auth.crss_)
+    print('>'*8+'get_course() DEBUG ENDS'+'<'*8+'\n')
+
+    return self.auth.crss_
   
   def get_user_profile(self):
     profile = User_Profile()
@@ -399,6 +460,9 @@ if __name__ == "__main__":
 
       if args.resource == 'subject':
         subjs = scrape.get_subject()
+
+      if args.resource == 'course':
+        crss = scrape.get_course()
 
       pickle_name = f'.{auth.usrnme}-sess.pickle'
       auth.save_data(pickle_name)

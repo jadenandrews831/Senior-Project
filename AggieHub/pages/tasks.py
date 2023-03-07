@@ -19,7 +19,8 @@ def task2():
 def task3(term):
     global success
     scrape = ScrAApe(success)
-    subjects = scrape.get_subjects(term)
+    subjects = scrape.get_subject(term)
+    print(list(subjects.keys()))
     return list(subjects.keys())
 
 #get courses - under construction

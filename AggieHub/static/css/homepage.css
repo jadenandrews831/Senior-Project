@@ -31,13 +31,12 @@ nav, header, aside, main, section, footer {
     flex-direction:row;
 }
 
-#scheduleview {
-    background-color:white;
-}
-
 .view {
     padding: 10px;
     grid-area: main;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .description {
@@ -96,6 +95,10 @@ tr {
     padding: 10px;
 }
 
+#scheduleview {
+    background-color:white;
+}
+
 #status {
     text-shadow: rgba(4,255,0,1) 0px 0px 15px; 
 }
@@ -130,6 +133,11 @@ tr {
     border: #FDB927 1px solid;
     font-weight: 800;
     margin: 5px 0 0 0;
+}
+
+.fc-day-today
+{
+  background-color: inherit !important;
 }
 
 #add:hover{background: #EFA402;}

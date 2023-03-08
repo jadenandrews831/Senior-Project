@@ -21,11 +21,10 @@
                 dayHeaderFormat: { weekday: 'long' },
                 slotMinTime: '08:00:00',
                 slotMaxTime: '20:00:00',
-                headerToolbar: {
-                    left: false,
-                    center: false,
-                    right: false
-                  },
+                headerToolbar: false,
+                height: 'auto',
+                weekends: false,
+                selectable: false,
             });
             
             calendar.render();
@@ -44,6 +43,7 @@
                         'term': term,
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
+                    dataType: 'json',
                     success: function (response) {
                         console.log(response);
                         var subjects = response;
@@ -51,10 +51,11 @@
                         subject_select.empty();
                         subject_select.append('<option disabled="disabled" selected="selected">Select Subject</option>');
                         //add each subject in subjects to the subject select drop dropdown
-                        for (var i = 0; i < subjects.length; i++) {
-                            print(subjects[i]);
-                            subject_select.append('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
-                        }
+                        html = '';
+                        $.each(subjects, function(index, value) {
+                            html = '<option value="' + value + '">' + value + '</option>';
+                            subject_select.append(html);
+                        });
                     }
                 });
             });

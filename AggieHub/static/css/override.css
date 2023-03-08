@@ -18,7 +18,6 @@ nav, aside, main, footer {
 
 .banner {
     grid-area: nav;
-    padding: 5px 0 0 0;
 }
 
 .sidebar {

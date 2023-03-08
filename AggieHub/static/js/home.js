@@ -1,87 +1,113 @@
-/* scheduleView - START
+var calendar = null;
 
-pull time from detailedview(3:30-5:30), split at "-"
-take from first index, split at ":". assign first index to startHour and second index to startMinute
-repeat for second index (endHour and endMinute)
+//creates the calendar and render it
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('scheduleview');
+  
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        timeZone: 'UTC',
+        initialView: 'timeGridWeek',
+        allDaySlot: false,
+        dayHeaderFormat: { weekday: 'long' },
+        slotMinTime: '08:00:00',
+        slotMaxTime: '20:00:00',
+        headerToolbar: false,
+        height: 'auto',
+        weekends: false,
+        selectable: false,
+        eventOverlap: false,
+    });
+    
+    calendar.render();
+  });
 
-calculate the difference between the start and end time
+//check if the row in the table already has a class. 
+    //if it does, check the time of the class and the time of the class being added. if the times overlap, do not add the class
+    //if the times do not overlap, add to the next available row
+function addClass() {
 
+}
 
-function getTime() {
-    var time = document.getElementById("time").value;
+//removes class from the table by setting the innerHTML of the row to empty? or by removing the row?
+//also removes the event from the calendar
+    //get the crn from the row and use it to remove the event from the calendar
+function removeClass() {
+    alert("TO DO");
+}
+
+//get the class data from the table needed for the event
+    //called at the end of the addClass function when a class is added to the schedule
+function getData() {
+    var row = document.getElementById("class_one");
+    var time = row.getElementsByTagName("td")[4].innerText;
+    var day = row.getElementsByTagName("td")[3].innerText;
     var timeArray = time.split("-");
     var start = timeArray[0];
     var end = timeArray[1];
-    var startArray = start.split(":");
-    var endArray = end.split(":");
-    var startHour = startArray[0];
-    var startMinute = startArray[1];
-    startMinute = startMinute.replace(" pm", "");
-    var endHour = endArray[0];
-    var endMinute = endArray[1];
-    startMinute = startMinute.replace(" pm", "");
-    var difference = endHour - startHour;
+    //convert to 24 hour time
+    if (start.includes("pm") && end.includes("pm")) {
+        var startArray = start.split(":");
+        startArray[0] = parseInt(startArray[0]) + 12;
+        start = startArray.join(":");
+        var endArray = end.split(":");
+        endArray[0] = parseInt(endArray[0]) + 12;
+        end = endArray.join(":");
+        start = start.replace(" pm", ":00");
+        end = end.replace(" pm", ":00");
+    } else if (start.includes("am") && end.includes("pm")) {
+        start = start.replace(" am", ":00");
+        var endArray = end.split(":");
+        endArray[0] = parseInt(endArray[0]) + 12;
+        end = endArray.join(":");
+        start = start.replace(" pm", ":00");
+        end = end.replace(" pm", ":00");
+    } else {
+        start = start.replace(" am", ":00");
+        end = end.replace(" am", ":00");
+    }
+    
+    var days = [];
 
-
-    switch (startMinute) {
-        case (0):
-            break;
-        case (30):
-            break;
-        case (15):
-            break;
-        case (45):
+    for (var i = 0; i < day.length; i++) {
+        switch(day.charAt(i)) {
+            case "M": days +=  1; break;
+            case "T": days +=  2; break;
+            case "W": days +=  3; break;
+            case "R": days +=  4; break;
+            case "F": days +=  5; break;
+        }
     }
 
-    switch (endMinute) {
-        case (0): 
-            break;
-        case (30):
-            break;
-        case (15):
-            break;
-        case (45):
-    }
-    //print(startHour, startMinute, endHour, endMinute, difference);
+    var crn = row.getElementsByTagName("td")[0].innerText;
+    var title = row.getElementsByTagName("td")[2].innerText;
+    var instructors = row.getElementsByTagName("td")[5].innerText;
+    var location = row.getElementsByTagName("td")[6].innerText;
+    var credits = row.getElementsByTagName("td")[7].innerText;
+    return [crn, title, instructors, location, credits, start, end, days];
 }
 
-
+//adds the event to the calendar
 function addEvent() {
-    document.getElementById("details").innerHTML += "<tr><td>  15256 </td><td> 05 </td><td> Freshman Colloquium </td><td> TR </td><td> 10:00-10:50 </td><td> Kelvin Bryant </td><td> MCNAI 123</td><td> 3 </td><td> x </td></tr>";
-    const row = document.querySelector('#details tr[id="03:30"]');
-    row.cells[1].innerHTML += "<div class='event'>i'm here now</div>";
+    var data = getData();
+    alert (data);
+
+    calendar.addEvent({
+        id: data[0],
+        groupId: data[0],
+        title: data[1],
+        startTime: data[5],
+        endTime: data[6],
+        daysOfWeek: data[7],
+        extendedProps: {
+            instructors: data[2],
+            location: data[3],
+            credits: data[4]
+          },
+        editable: false,
+    });
+
+    calendar.render();
 }
-
-
-
-find time in scheduleview and create a new event starting at startHour and startMinute and ending at endHour and endMinute
-if start/endMinute is not 0 or 30 (ex. 15 or 45) then place event half way between 0 and 30
-
-
-
-pull days from detailedview, split at each character
-check character and assign to a day (if character is "M" then assign to Monday, etc.)
-repeat for each character
-
-for each day, find the day in scheduleview and create a new event at the time found 
-
-apply color chosen in detailedview to event
-
-scheduleView - END */
-
-
-
-/* detailview - START
-
-check if the class attempted to be added is already in the schedule
-check if the class attempted to be added conflicts with any other class in the schedule
-if either of the above are true, then do not add the class
-
-add a color wheel for the user to choose a color for the class
-
-detailview - END */
-
-
 
 /* select_section - START
 

@@ -10,26 +10,6 @@
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('scheduleview');
-          
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                timeZone: 'UTC',
-                initialView: 'timeGridWeek',
-                allDaySlot: false,
-                dayHeaderFormat: { weekday: 'long' },
-                slotMinTime: '08:00:00',
-                slotMaxTime: '20:00:00',
-                headerToolbar: false,
-                height: 'auto',
-                weekends: false,
-                selectable: false,
-            });
-            
-            calendar.render();
-          });
-    </script>
 
     <script>
         //gets available subjects based on term selection
@@ -57,7 +37,7 @@
                             subject_select.append(html);
                         });
                     }
-                });
+                }); 
             });
         });
         
@@ -116,15 +96,14 @@
     </nav>
 
     <header class = "student_info">
-        <p id = "reg_status" >Current Status: <span id = "status">FULL-TIME</span></p>
-        <p id = "student_name">Malia Cherry</p>
-        <p id = "classification">Senior</p>
+        <p id = "reg_status" >Current Status: <span id = "status">STATUS</span></p>
+        <p id = "student_name">STUDENT NAME</p>
+        <p id = "classification">CLASSIFICATION</p>
     </header>
 
     <aside class = "options">
         <div id = "pageinfo">
             <h2>Course Registration</h2>
-            <p id = "reg_status">FULL-TIME STATUS</p>
         </div>
         {% csrf_token %}
         <section class = "dropdowns">
@@ -154,7 +133,7 @@
             </select>
         </section>
         <div id = "update">
-        <button id = "add">Add to Schedule</button>
+        <button id = "add" onclick="addEvent()">Add to Schedule</button>
         </div>
     </aside>
 
@@ -177,29 +156,18 @@
                     <th width = "4%" id = "dv_remove" class = "dv_header"></th>
                 </tr>
             </thead>
-                <tr>
+                <tr id = "class_one">
                     <td>11134</td>
                     <td>001</td>
                     <td>Accounting Colloquium I</td>
-                    <td>W</td>
-                    <td id="time">03:30 pm-05:30 pm</td>
+                    <td>MWF</td>
+                    <td>03:30 pm-05:30 pm</td>
                     <td>Lisa A Owens-Jackson, Cathy D Cornelius</td>
                     <td>MERRI 125</td>
                     <td>1</td>
-                    <td>x</td>
+                    <td><button id="close" onclick="removeClass()">x</button></td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
+                <tr id = "class_two">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -210,7 +178,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_three">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -221,7 +189,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_four">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -232,7 +200,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_five">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -243,7 +211,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_six">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -254,7 +222,18 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_seven">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr id = "class_eight">
                     <td></td>
                     <td></td>
                     <td></td>

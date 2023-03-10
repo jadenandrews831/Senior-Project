@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 {% load static %}
-
-<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-
-<a href = "{% url 'home'%}"><img src="\static\images\logo.png" alt= "Logo" style="height:70px; float: left; padding: 9px"></a>
-<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a href="{% url 'contact'%}">FAQ</a>
-  <a href="{% url 'guides'%}">Curriculum Guides</a>
-  <a href="{% url 'override'%}">Override Forms</a>
-</div>
-<span style="font-size:30px;cursor:pointer; float:right; margin-right: 15px; padding: 15px" onclick="openNav()">&#9776;</span>
-<script>
-function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";
-}
-
-function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
-}
-</script>
-
-<div class="navigation-bar">
-  <a href = "{% url 'home'%}"><img src="\static\images\Aggie Bridge Title.png" alt="Website Title" id="web_title"></a>
-</div>
-
-
-
-  
+<head>
+  {#Link's to the navigation style sheet.#}
+ <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  {#Link's to the favicon image.#}
+ <link rel="icon" type="image/x-icon" href="\static\images\Favicon.png">
+ </head>
+ {#Link's to the left corner Aggie Bridge Logo.#}
+ <a href = "{% url 'home'%}"><img src="\static\images\logo.png" alt= "Logo" style="height:70px; float: left; padding: 9px"></a>
+ 
+ {#Div container that holds all the info pertaining to the pop-out menu for the different pages.#}
+ <div id="mySidenav" class="sidenav">
+   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+   <a href="{% url 'contact'%}">FAQ</a>
+   <a href="{% url 'guides'%}">Curriculum Guides</a>
+   <a href="{% url 'override'%}">Override Forms</a>
+ </div>
+ <span style="font-size:30px;cursor:pointer; float:right; margin-right: 15px; padding: 15px" onclick="openNav()">&#9776;</span>
+ 
+ {#Scripts for opening and closing animation of the pop-out menu.#}
+ <script>
+ function openNav() {
+   document.getElementById("mySidenav").style.width = "250px";
+ }
+ 
+ function closeNav() {
+   document.getElementById("mySidenav").style.width = "0";
+ }
+ </script>
+ 
+ {#Div container that holds the info for the Aggie Bridge Title.#}
+ <div class="navigation-bar">
+   <a href = "{% url 'home'%}"><img src="\static\images\Aggie Bridge Title.png" alt="Website Title" id="web_title"></a>
+ </div>

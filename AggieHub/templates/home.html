@@ -29,7 +29,7 @@
                         var subjects = response;
                         var subject_select = $("#select_subject");
                         subject_select.empty();
-                        subject_select.append('<option disabled="disabled" selected="selected">Select Subject</option>');
+                        subject_select.append('<option disabled hidden selected>Select Subject</option>');
                         //add each subject in subjects to the subject select drop dropdown
                         html = '';
                         $.each(subjects, function(index, value) {
@@ -54,15 +54,20 @@
                         'subject': subject,
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
+                    dataType: 'json',
                     success: function (response) {
                         console.log(response);
                         var courses = JSON.parse(response);
                         var course_select = $("#select_course");
                         course_select.empty();
-                        course_select.append('<option disabled="disabled" selected="selected">Select Course</option>');
-                        for (var i = 0; i < courses.length; i++) {
-                            course_select.append('<option value="' + courses[i] + '">' + courses[i] + '</option>');
-                        }
+                        course_select.append('<option disabled hidden selected>Select Course</option>');
+                        html = '';
+                        $.each(courses, function(index, value) {
+                            for (var i = 0; i < value.length; i++) {
+                                html = '<option value="' + value[i] + '">' + value[i] + '</option>';
+                                course_select.append(html);
+                            }
+                        });
                     }
                 });
             });
@@ -110,16 +115,16 @@
         {% csrf_token %}
         <section class = "dropdowns">
             <select id = "select_term">
-                <option disabled="disabled" selected="selected">Select Term</option>
+                <option disabled hidden selected>Select Term</option>
                 {% for term in terms %}
                 <option value="{{term}}">{{term}}</option>
                 {% endfor %}
             </select>
             <select id = "select_subject">
-                <option disabled="disabled" selected="selected">Select Subject</option>
+                <option disabled hidden selected>Select Subject</option>
             </select>
             <select id = "select_course">
-                <option disabled="disabled" selected="selected">Select Course</option>
+                <option disabled hidden selected>Select Course</option>
             </select>
         </section>
 

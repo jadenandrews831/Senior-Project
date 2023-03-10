@@ -5,7 +5,7 @@ from .models import *
 from .forms import *
 from .tasks import *
 
-#login required?
+#login required, redirect if not logged in
 def home(request):
         terms = task2()
         context = {'terms': terms}
@@ -55,4 +55,5 @@ def guides(request):
     return render(request, 'guides.html')
 #WIP
 def contact(request):
+    
     return render(request, 'contact.html')

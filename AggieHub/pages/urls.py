@@ -13,7 +13,8 @@ urlpatterns = [
     path('get_subjects/', views.get_subjects, name='get_subjects'),
     path('get_courses/', views.get_courses, name='get_courses'),
     path('get_description/', views.get_description, name='get_description'),
-    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico')))
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
+    path('get_sections/', views.get_sections, name='get_sections')
      #WIP paths
     #path('logout/', views.logout, name='logout') for logout pag
 ]

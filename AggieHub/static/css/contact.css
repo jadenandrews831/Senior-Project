@@ -1,5 +1,5 @@
 body {
-    background-color: whitesmoke;
+    background-color: #C2C2C2C2;
     overflow: auto;
     display: grid;
     grid-template-areas:
@@ -83,7 +83,7 @@ h2 {
             "aside"
             "main"
             "footer";
-        grid-template-rows: 77px 725px 545px 40px;
+        grid-template-rows: 77px 560px 545px 40px;
         grid-template-columns: 1fr;
         gap: 10px;
     }
@@ -171,6 +171,7 @@ select {
 
 button {
     font:inherit;
+    font-weight: 500;
     background: #BC5C45;
     color: #FFF;
     width: 50%;
@@ -272,10 +273,6 @@ input:checked + .box {
 	height: auto;
 	margin: 16px 0;
     box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
-}
-
-input:checked + .box .box-title {
-	border-bottom: 1px solid rgba(0,0,0,.18);
 }
 
 input:checked + .box .box-content,

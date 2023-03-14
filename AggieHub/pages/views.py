@@ -47,6 +47,10 @@ def get_description(request):
         }
     return JsonResponse(response)
 
+#if there is more than one time for a section, separate them by a comma
+def get_sections(request):
+    return render(request, 'sections.html')
+
 #WIP
 def override(request):
     return render(request, 'override.html')

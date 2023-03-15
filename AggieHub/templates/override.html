@@ -11,14 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class = "banner">
+    <nav class = "banner"> 
         {% include 'navigation.html' %}
     </nav>
     
     <aside class = "sidebar">
+        <div id = "side">
         <section id = "select_dept">
-            <select id = "departments">
-                <option disabled selected hidden>Select Department</option>
+            <select id = "depts">
+                <option disabled selected hidden>Select (something idk?)</option>
                 <option value="AF">Accounting and Finance</option>
                 <option value="AAEA">Agribusiness, Applied Economics and Agriscience</option>
                 <option value="AS">Animal Sciences</option>
@@ -61,16 +62,21 @@
                 <option value="VIPA">Visual and Performing Arts</option>
             </select>
         </section>
+        <!--contact_info is hidden by default-->
+        <!--this section will disappear if the dept. selected does not have an override form. in override_pdf a message will be displayed explaining what to do for override-->
+        <!--if the dept. selected does have an override form, the section will appear with contact info in p element-->
         <section id = "contact_info">
             <section id = "inner">
                 <p> where the student will send their override form </p>
             </section>
         </section>
+    </div>
     </aside>
 
-    <main class = "o_form">
-        <section id = "o_pdf">
-            <p> override form </p>
+    <main class = "override_form">
+        <section id = "override_pdf">
+            <!--MEEN form used as a placeholder for now. what will default placeholder be? form from first dept alphabetically or no form? something else??-->
+            <iframe src="/static/docs/MEEN.pdf" width="100%" height="100%"></iframe>
         </section>
     </main>
 

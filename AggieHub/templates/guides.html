@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <title>Curriculum Guides</title>
     <link rel="stylesheet" href={% static 'css/guides.css' %}>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class = "banner">
@@ -20,16 +23,13 @@
     </header>
     
     <aside class = "sidebar">
-        <section id = "g_options">
+        <section id = "college_select">
             <select id = "college">
                 <option disabled="disabled" selected="selected">Select Department</option>
             </select>
-            <select id = "departments">
-                <option disabled="disabled" selected="selected">Select Department</option>
-            </select>
-            <select id = "major">
-                <option disabled="disabled" selected="selected">Select Department</option>
-            </select>
+        </section>
+        <section id = "guide_select">
+            <p> Select a guide </p>
         </section>
     </aside>
 

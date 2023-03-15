@@ -17,7 +17,7 @@ body {
 
 .banner {
     grid-area: nav;
-    background-color:pink;
+    background-color:#E8E8E8E8;
 }
 
 .student_info {

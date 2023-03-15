@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         weekends: false,
         selectable: false,
         eventOverlap: false,
+        selectOverlap: false,
     });
     
     calendar.render();
@@ -149,6 +150,8 @@ function addEvent() {
         return;
     }
 
+    const randomColor = Math.floor(Math.random()*16777215).toString(16);
+
     calendar.addEvent({
         id: data[0],
         groupId: data[0],
@@ -162,6 +165,7 @@ function addEvent() {
             credits: data[4]
           },
         editable: false,
+        color: "#" + randomColor,
     });
 
     calendar.render();

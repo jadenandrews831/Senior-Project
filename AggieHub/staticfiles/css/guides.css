@@ -11,10 +11,11 @@ body {
     grid-template-columns: 25% 1fr;
     gap: 10px;
     margin: 10px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 nav, header, aside, main, footer {
-  background-color: #E8E8E8;
+  background-color: #E8E8E8E8;
 }
 
 .banner {
@@ -32,11 +33,21 @@ nav, header, aside, main, footer {
     grid-area: aside;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
-#g_options {
+#guide_select {
+    border: thin solid black;
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 500px;
+    width: 100%;
+}
+
+#college_select {
     border: thin solid black;
     display: flex;
     flex-direction:column;
@@ -47,11 +58,16 @@ nav, header, aside, main, footer {
     width: 100%;
 }
 
+select {
+    font-family: inherit;
+}
+
 .g_form {
     grid-area: main;
     display:flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 .footer {

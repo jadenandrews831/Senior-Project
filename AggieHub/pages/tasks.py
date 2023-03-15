@@ -41,3 +41,10 @@ def task6(course):
     scrape = ScrAApe(success)
     sections = scrape.get_sections(course)
     return sections
+
+def task7():
+    global success
+    scrape = ScrAApe(success)
+    profile = scrape.get_profile()
+    print(profile)
+    return profile

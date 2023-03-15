@@ -7,6 +7,7 @@ from .tasks import *
 
 #login required, redirect if not logged in
 def home(request):
+        #student = task7()
         terms = task2()
         context = {'terms': terms}
         return render(request, 'home.html', context)

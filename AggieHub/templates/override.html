@@ -6,9 +6,37 @@
     <meta charset="UTF-8">
     <title>Override Form</title>
     <link rel="stylesheet" href={% static 'css/override.css' %}>
+    <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/override.js' %}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        //switches the pdf shown in the iframe depending on the dept. selected
+        $(document).ready(function(){
+            $('#contact_name').hide();
+            $('#contact_email').hide();
+            $('#contact_instructions').hide();
+            $("#select_dept").change(function(){
+                var form_name = $("#select_dept option:selected").attr('value');
+                var department = $("#select_dept option:selected").attr('id');
+
+                if (form_name == "noform"){
+                    $('#content').hide();
+                    //getInstructions(department);
+                    //$("#override_pdf").html("<p>There is no override form for this department. Please contact the department directly for more information.</p>");
+                }
+                else{
+                    $('#content').show();
+                    //getInstructions(department);
+                    $('#content').attr('src', '/static/docs/' + form_name);
+                    //$("#override_pdf").html("<iframe id='content' src='/static/docs/' + department + ' width='100%' height='100%'></iframe>");
+                }
+
+                
+            });
+        });
+    </script>
 </head>
 <body>
     <nav class = "banner"> 
@@ -19,47 +47,100 @@
         <div id = "side">
         <section id = "select_dept">
             <select id = "depts">
-                <option disabled selected hidden>Select (something idk?)</option>
-                <option value="AF">Accounting and Finance</option>
-                <option value="AAEA">Agribusiness, Applied Economics and Agriscience</option>
-                <option value="AS">Animal Sciences</option>
+                <option disabled selected hidden>Select Department</option>
+                <option value="ACCT">Accounting</option>
+                <option value="ADED">Adult Education</option>
+                <option value="AERO">Aerospace Studies</option>
+                <option value="ABM">Agribusiness Management</option>
+                <option value="AGRI">Agricultural</option>
+                <option value="AGEC">Agricultural Economics</option>
+                <option value="AGER">Agricultural Ed Research</option>
+                <option value="AGED">Agricultural Education</option>
+                <option value="ANSC">Animal Science</option>
                 <option value="AET">Applied Engineering Technology</option>
-                <option value="BIO">Biology</option>
-                <option value="BE">Built Environment</option>
-                <option value="BISA">Business Information Systems and Analytics</option>
-                <option value="CBIO">Chemical, Biological and Bioengineering</option>
+                <option value="AST">Applied Science and Tech</option>
+                <option value="AREN">Architectural Engineering</option>
+                <option value="ART">Art</option>
+                <option value="ASME">Atmospheric Sci &amp; Meteorology</option>
+                <option value="BIOE">Biological Engineering</option>
+                <option value="BIOL">Biology</option>
+                <option value="BMEN">Biomedical Engineering</option>
+                <option value="BUAN">Business Analytics</option>
+                <option value="BTEC">Business Info Tech</option>
+                <option value="SCS">Center for Academic Excellence</option>
+                <option value="CHEN">Chemical Engineering</option>
                 <option value="CHEM">Chemistry</option>
-                <option value="CAEE">Civil, Architectural, and Environmental Engineering</option>
-                <option value="CRJS">Criminal Justice</option>
-                <option value="CDSE">Computational Data Science and Engineering</option>
-                <option value="COMP">Computer Science</option>
+                <option value="CIEN">Civil Engineering</option>
+                <option value="CAEE">Civil, Arch &amp; Envir Engineer</option>
+                <option value="CSE">Computational Sci &amp; Engineer</option>
+                <option value="CGT">Computer Graphics Technology</option>
+                <option value="COMP.pdf">Computer Science</option>
                 <option value="CST">Computer Systems Technology</option>
+                <option value="CM">Construction Management</option>
+                <option value="COOP">Cooperative Education</option>
                 <option value="COUN">Counseling</option>
+                <option value="CRJS">Criminal Justice</option>
+                <option value="CUIN">Curriculum &amp; Instruction</option>
+                <option value="DANC">Dance</option>
+                <option value="DISU">Dissertation</option>
                 <option value="ECON">Economics</option>
                 <option value="EDPR">Educator Preparation</option>
-                <option value="ECEN">Electrical and Computer Engineering</option>
+                <option value="ECEN.pdf">Electrical &amp; Computer Engineer</option>
+                <option value="ELED">Elementary Education</option>
                 <option value="ENGL">English</option>
-                <option value="FACS">Family and Consumer Science</option>
-                <option value="GDT">Graphic Design Technology</option>
+                <option value="EHS">Environmental Health &amp; Safety</option>
+                <option value="ENVS">Environmental Studies</option>
+                <option value="FCS">Family and Consumer Sciences</option>
+                <option value="FIN">Finance</option>
+                <option value="FREN">French</option>
+                <option value="FRST">Freshman Studies</option>
+                <option value="GEEN">General Engineering</option>
+                <option value="GEOG">Geography</option>
+                <option value="GEOM">Geomatics</option>
+                <option value="GSCP">Global Studies</option>
+                <option value="GRAD">Graduate Thesis Cont</option>
+                <option value="GCS">Graphic Communications</option>
+                <option value="HPED">Health &amp; Physical Education</option>
                 <option value="HSM">Health Services Management</option>
                 <option value="HIST">History</option>
-                <option value="HIPS">History and Political Science</option>
-                <option value="JOMC">Journalism and Mass Communication</option>
-                <option value="KIN">Kinesiology</option>
-                <option value="LSAE">Leadership Studies and Adult Education</option>
+                <option value="HORT">Horticulture</option>
+                <option value="ISEN">Industrial Systems Engineering</option>
+                <option value="JOMC">Journalism &amp; Mass Communicatio</option>
+                <option value="KINS">Kinesiology</option>
+                <option value="LASC">Laboratory Animal Science</option>
+                <option value="LDAR">Landscape Architecture</option>
+                <option value="LEST">Leadership Studies</option>
+                <option value="LSS">Leisure Studies</option>
                 <option value="LIBS">Liberal Studies</option>
-                <option value="MSCM">Marketing and Supply Chain Management</option>
-                <option value="MATH">Mathematics</option>
                 <option value="MGMT">Management</option>
-                <option value="MECH">Mechanical Engineering</option>
-                <option value="NRED">Natural Resources and Environmental Design</option>
+                <option value="MKTG">Marketing</option>
+                <option value="MSA">Masters School Administration</option>
+                <option value="MATH">Mathematics</option>
+                <option value="MEEN.pdf">Mechanical Engineering</option>
+                <option value="MISC">Military Science</option>
+                <option value="MUSI">Music</option>
+                <option value="NANO">Nanoengineering</option>
+                <option value="NARS">Natural Resources</option>
                 <option value="NURS">Nursing</option>
+                <option value="PHIL">Philosophy</option>
                 <option value="PHYS">Physics</option>
+                <option value="POLI">Political Science</option>
                 <option value="PSYC">Psychology</option>
-                <option value="SOCI">Social Work and Sociology</option>
-                <option value="SSSP">Speech Studies and Speech Pathology</option>
-                <option value="ISEE">Industrial &amp; Systems Engineering</option>
-                <option value="VIPA">Visual and Performing Arts</option>
+                <option value="SOWK">Social Work</option>
+                <option value="SOCI">Sociology</option>
+                <option value="SOSW">Sociology and Social Work</option>
+                <option value="SLMG">Soil Management</option>
+                <option value="SLSC">Soil Science</option>
+                <option value="SPAN">Spanish</option>
+                <option value="SPED">Special Education</option>
+                <option value="SPCH">Speech</option>
+                <option value="SSFM">Sport Sci &amp; Fitness Management</option>
+                <option value="STAT">Statistics</option>
+                <option value="SCMG">Supply Chain Management</option>
+                <option value="SYEN">Systems Engineering</option>
+                <option value="TECH">Technology</option>
+                <option value="THEA">Theatre</option>
+                <option value="WMI">Waste Management</option>
             </select>
         </section>
         <!--contact_info is hidden by default-->
@@ -67,7 +148,12 @@
         <!--if the dept. selected does have an override form, the section will appear with contact info in p element-->
         <section id = "contact_info">
             <section id = "inner">
-                <p> where the student will send their override form </p>
+                <fieldset>
+                    <legend> Override Instructions </legend>
+                    <p id = "contact_instructions">Complete the form and send to the contact below.</p>
+                    <p id = "contact_name"> Name:  </p>
+                    <p id = "contact_email"> Email: </p>
+                </fieldset>
             </section>
         </section>
     </div>
@@ -76,7 +162,7 @@
     <main class = "override_form">
         <section id = "override_pdf">
             <!--MEEN form used as a placeholder for now. what will default placeholder be? form from first dept alphabetically or no form? something else??-->
-            <iframe src="/static/docs/MEEN.pdf" width="100%" height="100%"></iframe>
+            <iframe id="content" src="/static/docs/MEEN.pdf" width="100%" height="100%"></iframe>
         </section>
     </main>
 

@@ -36,7 +36,6 @@ body {
 }
 
 #inner {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -64,6 +63,11 @@ select {
     box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
 }
 
+fieldset {
+    height: 100%;
+    width: 100%;
+}
+
 .override_form {
     grid-area: main;
     display:flex;
@@ -75,7 +79,18 @@ select {
     width: 90%;
     height: 90%;
     border: none;
+    display: flex;
     box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+}
+
+#content {
+    background-color: #525659;
+}
+
+#override_pdf p {
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
 
 .footer {

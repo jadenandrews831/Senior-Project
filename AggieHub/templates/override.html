@@ -7,7 +7,6 @@
     <title>Override Form</title>
     <link rel="stylesheet" href={% static 'css/override.css' %}>
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/override.js' %}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,10 +26,52 @@
                 html = "";
                 if (department == "noform"){
                     $('#content').hide();
-                    instructions.html("There is no override form for this department. </br></br> [Explain the differing process for each department].")
+                    instructions.html("There is no override form for this department.")
                     instructions.show();
                     $('#contact_name').hide();
                     $('#contact_email').hide();
+                    switch(form_name) {
+                        case "HIST":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Ms. Pamela Carlson";
+                            name.html(html);
+                            html = "Email: <a href=mailto:pecarlson@ncat.edu>pecarlson@ncat.edu</a></br></br>Phone: 336-285-2324";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "POLI": 
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Ms. Pamela Carlson";
+                            name.html(html);
+                            html = "Email: <a href=mailto:pecarlson@ncat.edu>pecarlson@ncat.edu</a></br></br>Phone: 336-285-2324";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "ABM":
+                            html = "Students must physically go in to request an override.</br></br>";
+                            name.html(html);
+                            html = "Location: Carver Hall, Room 101</br></br>POC: Nate Adkins";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "BUAN":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Sherri Grady";
+                            name.html(html);
+                            html = "Email: <a href=mailto:smgrady@ncat.edu>smgrady@ncat.edu</a></br></br>Phone: 336—334-7657";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "BTEC":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Sherri Grady";
+                            name.html(html);
+                            html = "Email: <a href=mailto:smgrady@ncat.edu>smgrady@ncat.edu</a></br></br>Phone: 336—334-7657";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                    }
                 }
                 else{
                     $('#content').show();
@@ -41,7 +82,7 @@
 
                     switch (department) {
                         case "COMP":
-                            html = "Name: Rosemary Williams";
+                            html = "Name: Ms. Rosemary Williams";
                             name.html(html);
                             html = "Email: <a href=mailto:rosnlloy@ncat.edu>rosnlloy@ncat.edu</a>";
                             email.html(html);

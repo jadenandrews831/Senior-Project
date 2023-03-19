@@ -80,11 +80,13 @@ fieldset {
     height: 90%;
     border: none;
     display: flex;
+    background-color: #525659;
     box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
 }
 
 #content {
     background-color: #525659;
+    border: none;
 }
 
 #override_pdf p {

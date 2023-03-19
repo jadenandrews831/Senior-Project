@@ -36,12 +36,14 @@ def task5(course):
     description = scrape.get_description(course)
     return description
 
+#pulls all sections for selected course
 def task6(course):
     global success
     scrape = ScrAApe(success)
     sections = scrape.get_sections(course)
     return sections
 
+#pulls student information
 def task7():
     global success
     scrape = ScrAApe(success)

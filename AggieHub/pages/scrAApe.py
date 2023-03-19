@@ -3,6 +3,7 @@
 import argparse
 import os
 import pickle
+import shelve
 
 from getpass import getpass
 from requests import Session
@@ -10,6 +11,7 @@ from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile']
+
 
 def file_to_dict(filename):
   """
@@ -140,12 +142,23 @@ class Authenticate():
     """
   
   # pickle data for ScrAApe and database use
-  def save_data(self, pickle_name):
-    with open(pickle_name, 'wb') as file:
-      pickle.dump(self, file)
+  def save_data(self, shelve_name):
+    with shelve.open(shelve_name, 'n') as file:
       print('>'*8+'save_data() DEBUG STARTS'+'<'*8)
-      print(f"Session Created! Saved to >>> {pickle_name}")
+      for key, val in self.__dict__.items():
+        file[key] = val
+      for key, val in file.items():
+        print(key,':', val)
+      print(f"Session Created! Saved to >>> {shelve_name}")
       print('>'*8+'save_data() DEBUG ENDS'+'<'*8)
+
+  def load_data(self, auth):
+    print(auth)
+    for key, val in auth.items():
+      print(key, val)
+    for key, val in auth.items():
+      setattr(self, key, val)
+    return self
 
 class ScrAApe():
   """
@@ -289,26 +302,13 @@ class ScrAApe():
     if not data:
       data = input("Data: ")
     if self.auth.subjs_w_codes:
-      code = self.auth.subjs_w_codes[data]
+      self.auth.pcode = self.auth.subjs_w_codes[data]
       ptrm = self.auth.pterm
-      print('Code:',code)
     else:
       print('Needs a valid term')
       return
-    
-    '''
-    rsts=dummy&crn=dummy&term_in=202330&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&
-    sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&
-    sel_subj=COMP&sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&sel_ptrm=%25&begin_hh=0&
-    begin_mi=0&end_hh=0&end_mi=0&begin_ap=x&end_ap=y&path=1&SUB_BTN=Course+Search
 
-    rsts=dummy&crn=dummy&term_in=202330&sel_subj=SPCH&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&
-    sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=%25&sel_attr=dummy&
-    sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&begin_hh=0&begin_mi=0&end_hh=0&end_mi=0&
-    begin_ap=x&end_ap=y&path=1&SUB_BTN=Course+Search
-    '''
-
-    data = {'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', code],
+    data = {'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', self.auth.pcode],
             'sel_day':'dummy', 'sel_schd':'dummy', 'sel_insm':'dummy', 'sel_camp':'dummy', 
             'sel_levl':'dummy', 'sel_sess':'dummy', 'sel_instr':'dummy', 'sel_ptrm':['dummy', '%'], 
             'sel_attr':'dummy', 'sel_crse':'', 'sel_title':'', 'sel_from_cred':'',
@@ -323,16 +323,91 @@ class ScrAApe():
     self.update_cookies(response)
     soup = bs(content, 'html.parser')
     select = soup.findAll('td', {'bypass_esc': 'Y'})
+    self.inp_sets_ = soup.findAll('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'})
+    self.get_inputs(soup)
     print("Select: ", select, soup)
+    print('INPUT SETS', self.inp_sets_)
     crss = select[1::2]
+    cds = select[0::2]
 
-    self.auth.crss_ = []
-    for crs in crss: self.auth.crss_.append(crs.text)
+    self.auth.crss_ = {}
+
+    for crs, cd in zip(crss, cds): 
+      self.auth.crss_[cd.text] = crs.text
 
     print(self.auth.crss_)
     print('>'*8+'get_course() DEBUG ENDS'+'<'*8+'\n')
 
     return self.auth.crss_
+  
+  def get_inputs(self, soup):
+    print('>'*8+'get_inputs() DEBUG BEGS'+'<'*8+'\n')
+    self.auth.heads = list()
+    for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
+      d = {}
+      l = head.find_all('input')
+      for i in l:
+        if i.attrs['name'] in d : d[i.attrs['name']] = [d[i.attrs['name']], i.attrs["value"]]
+        else: d[i.attrs['name']] = i.attrs["value"]
+      self.auth.heads.append(d)
+    for i in self.auth.heads:
+      print(i)
+      print()
+    print('>'*8+'get_inputs() DEBUG ENDS'+'<'*8+'\n')
+    return self.auth.heads
+    
+
+
+  def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
+    """
+    get_section:
+
+    Parameters
+    __________
+    """
+    print('>'*8+'get_section() DEBUG STARTS'+'<'*8)
+    if not data:
+      data = input("Course: ")
+    if self.auth.crss_:
+      self.auth.crs = data
+      print('Crs:',self.auth.crs)
+    else:
+      print('Needs a valid term')
+      return
+    '''
+    term_in=202330&sel_subj=dummy&sel_subj=COMP&SEL_CRSE=320&SEL_TITLE=&BEGIN_HH=0&BEGIN_MI=0&BEGIN_AP=a&
+    SEL_DAY=dummy&SEL_PTRM=dummy&END_HH=0&END_MI=0&END_AP=a&SEL_CAMP=dummy&SEL_SCHD=dummy&SEL_SESS=dummy&
+    SEL_INSTR=dummy&SEL_INSTR=%25&SEL_ATTR=dummy&SEL_ATTR=%25&SEL_LEVL=dummy&SEL_LEVL=%25&SEL_INSM=dummy&
+    sel_dunt_code=&sel_dunt_unit=&call_value_in=&rsts=dummy&crn=dummy&path=1&SUB_BTN=View+Sections
+    '''
+    
+    for head in self.auth.heads:
+      if head['SEL_CRSE'] == self.auth.crs: 
+        data = head
+        break
+    
+    self.auth.scts_ = []
+    
+    response = self.post_request(uri, data)
+    print(response.request.body)
+    self.auth.prev_site_ = uri
+    content = response.text
+    self.update_cookies(response)
+    soup = bs(content, 'html.parser')
+    ts = soup.find_all('td', {'class': "dddefault"})
+    for t in ts:
+      self.auth.scts_.append(t.text)
+
+    print('Sections: ')
+    for sct in self.auth.scts_:
+      print(sct)
+      print()
+
+    print('>'*8+'get_section() DEBUG ENDS'+'<'*8+'\n')
+
+    return self.auth.scts_
+
+
   
   def get_user_profile(self):
     profile = User_Profile()
@@ -420,7 +495,7 @@ if __name__ == "__main__":
     a = Authenticate(sid, pin)
     a.login(NCAT_URI)
 
-    pickle_name = f'.{sid}-sess.pickle'
+    pickle_name = f'.{sid}-sess'
     a.save_data(pickle_name)
 
   if args.command == 'auth':
@@ -430,14 +505,14 @@ if __name__ == "__main__":
       pin = d[1]
       a = Authenticate(sid, pin)
 
-      pickle_name = f'.{sid}-sess.pickle'
-      a.save_data(pickle_name)
+      shelve_name = f'.{sid}-sess'
+      a.save_data(shelve_name)
     elif args.username and args.pin:
       sid = args.username
       pin = args.pin
       a = Authenticate(sid, pin)
 
-      pickle_name = f'.{sid}-sess.pickle'
+      pickle_name = f'.{sid}-sess'
       a.save_data(pickle_name)
     else:
       print('Hmm... something went wrong')
@@ -447,11 +522,12 @@ if __name__ == "__main__":
     if args.resource and args.session:
       rsrc = args.resource
       sess = args.session
-      file = open(sess, 'rb')
-      auth = pickle.load(file)
+      a = shelve.open(sess[:-3])
+      auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+
       print(auth)
       scrape = ScrAApe(auth)
-      file.close()                                      # close the file
+                                     # close the file
       
       if args.resource == 'term':
         # profile = scrape.get_profile()
@@ -464,8 +540,11 @@ if __name__ == "__main__":
       if args.resource == 'course':
         crss = scrape.get_course()
 
-      pickle_name = f'.{auth.usrnme}-sess.pickle'
-      auth.save_data(pickle_name)
+      if args.resource == 'section':
+        scts = scrape.get_section()
+
+      shelve_name = f'.{auth.usrnme}-sess'
+      auth.save_data(shelve_name)
     else:
       print('Hmm... something went wrong')
       print(args)
@@ -476,8 +555,7 @@ if __name__ == "__main__":
       sess = args.session
       data = file_to_dict(args.data)
 
-      file = open(sess, 'rb')
-      auth = pickle.load(file)
+      auth = shelve.open(sess[:-3])
       print(auth)
       scrape = ScrAApe(auth)
       print(scrape)
@@ -490,7 +568,7 @@ if __name__ == "__main__":
       
       response = scrape.post_request(uri, data)
 
-      file.close()# close the file
+
 
 
     else:

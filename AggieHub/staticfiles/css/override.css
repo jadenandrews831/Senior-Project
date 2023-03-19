@@ -7,21 +7,18 @@ body {
         "aside main"
         "footer footer";
     grid-template-rows: 77px 700px 260px 40px;
-    grid-template-columns: 30% 1fr;
+    grid-template-columns: 35% 1fr;
     gap: 10px;
     margin: 10px;
-}
-
-nav, aside, main, footer {
-  background-color: #E8E8E8;
+    background-color: #C2C2C2C2;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .banner {
     grid-area: nav;
-    padding: 5px 0 0 0;
 }
 
-.sidebar {
+.sidebar { 
     grid-area: aside;
     display: flex;
     flex-direction: column;
@@ -39,7 +36,6 @@ nav, aside, main, footer {
 }
 
 #inner {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -56,11 +52,47 @@ nav, aside, main, footer {
     width: 100%;
 }
 
-.o_form {
+select {
+    font-family: inherit;
+    width: 90%;
+}
+
+#side {
+    width: 80%;
+    background-color: white;
+    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+}
+
+fieldset {
+    height: 100%;
+    width: 100%;
+}
+
+.override_form {
     grid-area: main;
     display:flex;
     justify-content: center;
     align-items: center;
+}
+
+#override_pdf {
+    width: 90%;
+    height: 90%;
+    border: none;
+    display: flex;
+    background-color: #525659;
+    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+}
+
+#content {
+    background-color: #525659;
+    border: none;
+}
+
+#override_pdf p {
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
 
 .footer {

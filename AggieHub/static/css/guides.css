@@ -3,33 +3,51 @@ body {
     display: grid;
     grid-template-areas:
         "nav nav"
+        "header header"
         "aside main"
         "aside main"
         "footer footer";
-    grid-template-rows: 77px 700px 260px 40px;
+    grid-template-rows: 77px 50px 700px 260px 40px;
     grid-template-columns: 25% 1fr;
     gap: 10px;
     margin: 10px;
+    font-family: 'Montserrat', sans-serif;
 }
 
-nav, aside, main, footer {
-  background-color: #E8E8E8;
+nav, header, aside, main, footer {
+  background-color: #E8E8E8E8;
 }
 
 .banner {
     grid-area: nav;
-    padding: 5px 0 0 0;
+}
+
+.student_info {
+    grid-area: header;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
 
 .sidebar {
     grid-area: aside;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
-#g_options {
+#guide_select {
+    border: thin solid black;
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 500px;
+    width: 100%;
+}
+
+#college_select {
     border: thin solid black;
     display: flex;
     flex-direction:column;
@@ -40,11 +58,16 @@ nav, aside, main, footer {
     width: 100%;
 }
 
+select {
+    font-family: inherit;
+}
+
 .g_form {
     grid-area: main;
     display:flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 .footer {
@@ -58,10 +81,11 @@ nav, aside, main, footer {
     body {
         grid-template-areas:
             "nav"
+            "header"
             "aside"
             "main"
             "footer";
-        grid-template-rows: 77px 725px 700px 260px 40px;
+        grid-template-rows: 77px 50px 725px 700px 260px 40px;
         grid-template-columns: 1fr;
         gap: 10px;
         margin: 0;

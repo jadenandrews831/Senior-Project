@@ -1,4 +1,5 @@
 body {
+    background-color: #C2C2C2C2;
     overflow: auto;
     display: grid;
     grid-template-areas:
@@ -6,19 +7,15 @@ body {
         "aside main"
         "aside main"
         "footer footer";
-    grid-template-rows: 77px 400px 260px 40px;
+    grid-template-rows: 77px 300px 260px 40px;
     grid-template-columns: 50% 1fr;
     gap: 10px;
     margin: 10px;
-}
-
-nav, aside, main, footer {
-  background-color: #E8E8E8;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .banner {
     grid-area: nav;
-    padding: 5px 0 0 0;
 }
 
 .faq {
@@ -29,48 +26,47 @@ nav, aside, main, footer {
     flex-direction: column;
 }
 
-#title {
-    border: thin solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;
-    width: 100%;
+h2 {
+    font-weight: 700;
+    font-size: 2.3rem;
 }
 
 #info {
-    border: thin solid black;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 250px;
+    height: 190px;
+    color: #FFF;
     width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url("/static/images/eric-7.jpg");
 }
 
 #questions {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 550px;
+    height: 100%;
 }
 
 #contact_form {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 350px;
+    height: 400px;
     width: 100%;
 }
 
 .contact {
     grid-area: main;
-    padding: 5px 0 0 0;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    background-color: #FFF;
+    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
 }
 
 .footer {
@@ -87,9 +83,220 @@ nav, aside, main, footer {
             "aside"
             "main"
             "footer";
-        grid-template-rows: 77px 725px 400px 260px 40px;
+        grid-template-rows: 77px 560px 545px 40px;
         grid-template-columns: 1fr;
         gap: 10px;
-        margin: 0;
     }
+}
+
+
+/*contact form css*/
+form {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 100px 1fr;
+    grid-gap: 20px;
+    grid-template-areas:
+        "name email"
+        "topic topic"
+        "message message"
+        "button button";
+    padding: 50px;
+}
+
+.full_name {
+    grid-area: name;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.email {
+    grid-area: email;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.topic {
+    grid-area: topic;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message {
+    grid-area: message;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    grid-area: button;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input, select, textarea {
+	background: none;
+    border: none;
+    border-bottom: 1px solid #CCC;
+    color: #474544;
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    font:inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+	outline: none;
+    border-bottom: 1px solid black;
+    transition: border-bottom 0.3s ease;
+}
+
+textarea {
+	resize: none;
+    width: 100%;
+    height: 80px;
+    overflow: auto;
+}
+
+select {
+    height: 35px;
+    cursor: pointer;
+}
+
+button {
+    font:inherit;
+    font-weight: 500;
+    background: #BC5C45;
+    color: #FFF;
+    width: 50%;
+    cursor: pointer;
+    border: none;
+    margin: 0 0 5px;
+    padding: 10px;
+}
+
+button:hover {
+    background: #C9634B;
+}
+
+button:active {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+
+/*faq css*/
+
+.accordion {
+	margin: auto;
+	width: 100%;
+}
+.accordion input {
+	display: none;
+}
+
+.box {
+	position: relative;
+    background-color: #FFF;
+    height: 70px;
+    transition: all .15s ease-in-out;
+}
+
+.box::before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    box-shadow: 0 -1px 0 #e5e5e5,0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
+}
+
+header.box {
+	background: #BC5C45;
+	z-index: 99;
+	cursor: initial;
+	box-shadow: 0 -1px 0 #e5e5e5,0 0 2px -2px rgba(0,0,0,.12),0 2px 4px -4px rgba(0,0,0,.24);
+}
+
+header .box-title {
+	margin: 0;
+	font-weight: 700;
+	font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	color: #FFF;
+    padding: 0;
+	cursor: initial;
+}
+
+.box-title {
+	width: calc(100% - 40px);
+	height: 64px;
+	line-height: 70px;
+    font-weight: 500;
+	padding: 0 25px;
+    color: black;
+	display: inline-block;
+    margin: 0 10px;
+	cursor: pointer;
+	-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
+}
+
+.box-content {
+	width: calc(100% - 40px);
+	padding: 30px 20px;
+	font-size: 11pt;
+	color: #474544;
+	display: none;
+}
+
+.box-close {
+	position: absolute;
+	height: 64px;
+	width: 100%;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+	display: none;
+}
+
+input:checked + .box {
+	height: auto;
+	margin: 16px 0;
+    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+}
+
+input:checked + .box .box-content,
+input:checked + .box .box-close {
+	display: inline-block;
+}
+
+.arrows section .box-title {
+	padding-left: 40px;
+	width: calc(100% - 64px);
+}
+
+.arrows section .box-title:before {
+	position: absolute;
+	display: block;
+    font-family: 'FontAwesome';
+	content: '\f061';
+	font-size: 15pt;
+	left: 20px;
+	top: -2px;
+	transition: transform .15s ease-in-out;
+	color: black;
+}
+
+input:checked + section.box .box-title:before {
+	transform: rotate(90deg);
 }

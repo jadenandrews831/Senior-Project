@@ -8,7 +8,13 @@
     <title>Aggie Bridge</title>
     <link rel="stylesheet" href={% static 'css/homepage.css' %}>
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
         //gets available subjects based on term selection
         $(document).ready(function(){
             $("#select_term").change(function(){
@@ -20,21 +26,29 @@
                         'term': term,
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
+                    dataType: 'json',
                     success: function (response) {
                         console.log(response);
+                        var course_select = $("#select_course");
+                        course_select.empty();
+                        course_select.append('<option disabled hidden selected>Select Course</option>');
                         var subjects = response;
                         var subject_select = $("#select_subject");
                         subject_select.empty();
-                        subject_select.append('<option disabled="disabled" selected="selected">Select Subject</option>');
+                        subject_select.append('<option disabled hidden selected>Select Subject</option>');
                         //add each subject in subjects to the subject select drop dropdown
-                        for (var i = 0; i < subjects.length; i++) {
-                            print(subjects[i]);
-                            subject_select.append('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
-                        }
+                        html = '';
+                        $.each(subjects, function(index, value) {
+                            for (var i = 0; i < value.length; i++) {
+                                html = '<option value="' + value[i] + '">' + value[i] + '</option>';
+                                subject_select.append(html);
+                            }
+                        });
                     }
-                });
+                }); 
             });
         });
+        
         //gets available courses based on subject selection
         $(document).ready(function(){
             $("#select_subject").change(function(){
@@ -46,19 +60,25 @@
                         'subject': subject,
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
+                    dataType: 'json',
                     success: function (response) {
                         console.log(response);
-                        var courses = JSON.parse(response);
+                        var courses = response;
                         var course_select = $("#select_course");
                         course_select.empty();
-                        course_select.append('<option disabled="disabled" selected="selected">Select Course</option>');
-                        for (var i = 0; i < courses.length; i++) {
-                            course_select.append('<option value="' + courses[i] + '">' + courses[i] + '</option>');
-                        }
+                        course_select.append('<option disabled hidden selected>Select Course</option>');
+                        html = '';
+                        $.each(courses, function(index, value) {
+                            for (var i = 0; i < value.length; i++) {
+                                html = '<option value="' + value[i] + '">' + value[i] + '</option>';
+                                course_select.append(html);
+                            }
+                        });
                     }
                 });
             });
         });
+        
         //gets course description based on course selection
         $(document).ready(function(){
             $("#select_course").change(function(){
@@ -80,6 +100,33 @@
                 });
             });
         });
+
+        //displays selected section on calendar
+        //called whenever the selected section in available changes
+        {% comment %} $(document).ready(function() {
+            $("#available").change(function() {
+                var section = $(this).children("option:selected").val();
+                var section_data = section.split(" | ");
+
+                calendar.addEvent({
+                    id: section_data[0],
+                    groupId: section_data[0],
+                    title: "Section",
+                    startTime: section_data[5],
+                    endTime: section_data[6],
+                    daysOfWeek:section_data[7],
+                    extendedProps: {
+                        instructors: section_data[2],
+                        location: section_data[3],
+                        credits: section_data[4]
+                      },
+                    editable: false,
+                });
+                
+                calendar.render();
+            });
+        }); {% endcomment %}
+
     </script>
 </head>
 
@@ -88,24 +135,29 @@
         {% include 'navigation.html' %}
     </nav>
 
+    <header class = "student_info">
+        <p id = "reg_status" >Current Status: <span id = "status">STATUS</span></p>
+        <p id = "student_name">STUDENT NAME</p>
+        <p id = "classification">CLASSIFICATION</p>
+    </header>
+
     <aside class = "options">
         <div id = "pageinfo">
             <h2>Course Registration</h2>
-            <p id = "reg_status">FULL-TIME STATUS</p>
         </div>
         {% csrf_token %}
         <section class = "dropdowns">
             <select id = "select_term">
-                <option disabled="disabled" selected="selected">Select Term</option>
+                <option disabled hidden selected>Select Term</option>
                 {% for term in terms %}
                 <option value="{{term}}">{{term}}</option>
                 {% endfor %}
             </select>
             <select id = "select_subject">
-                <option disabled="disabled" selected="selected">Select Subject</option>
+                <option disabled hidden selected>Select Subject</option>
             </select>
             <select id = "select_course">
-                <option disabled="disabled" selected="selected">Select Course</option>
+                <option disabled hidden selected>Select Course</option>
             </select>
         </section>
 
@@ -115,293 +167,76 @@
 
         <section class = "select_section">
             <select id="available" size="5">
-                {% for choice in sections %}
+                <!--{% for choice in sections %}
                 <option value="{{choice}}">{{choice}}</option>
-                {% endfor %}
+                {% endfor %}-->
+                <option value="10037">001 | TR | 09:30 am-10:50 am | Robin L. Terry-Armstrong | PROCT 262 | 3</option>
+                <option value="10039">002 | TBA | TBA | Regina L Bush | TBA | 3</option>
+                <option value="10040">003 | MWF | 09:00 am-09:50 am | Dwight N Davis | PROCT 114 | 3</option>
+                <option value="10041">004 | MWF | 10:00 am-10:50 am | Dwight N Davis | PROCT 312 | 3</option>
+                <option value="10043">007 | TR | 09:30 am-10:45 am | Daniel B Richardson | PROCT 212 | 3</option>
+                <option value="10355">011 | TR | 11:00 pm-12:20 pm | Laura T Puryear | PROCT 114 | 3</option>
             </select>
         </section>
         <div id = "update">
-        <button id = "add">Add to Schedule</button>
+        <button id = "add" onclick="addEvent()">Add to Schedule</button>
         </div>
     </aside>
 
     <main class = "view">
-        <div class = "scheduleview">
-            <table border>
-                <thead>
-                    <tr>
-                        <th width = "10%"></th>
-                        <th width = "18%">Monday</th>
-                        <th width = "18%">Tuesday</th>
-                        <th width = "18%">Wednesday</th>
-                        <th width = "18%">Thursday</th>
-                        <th width = "18%">Friday</th>
-                    </tr>
-                </thead>
-                <tr>
-                    <th>8:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>8:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>9:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>9:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>10:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>10:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>11:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>11:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>12:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>12:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>1:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>1:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>2:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>2:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>3:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>3:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>4:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>4:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>5:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>5:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>6:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>6:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>7:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>7:30</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th>8:00</th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
+        <div id = "scheduleview"></div>
     </main>
 
+    <!--rework table row ids-->
     <section class = "detailview">
-        <table border>
+        <table border id="details">
             <thead>
                 <tr>
-                    <th width = "8%">CRN</th>
-                    <th width = "12%">Section</th>
-                    <th width = "25">Title</th>
-                    <th width = "8%">Days</th>
-                    <th width = "8%">Time</th>
-                    <th width = "18%">Instructor</th>
-                    <th width = "9%">Location</th>
-                    <th width = "4%">Credits</th>
-                    <th width = "4%"></th>
-                </tr>
+                    <th width = "5%" id = "dv_crn" class = "dv_header">CRN</th>
+                    <th width = "8%" id = "dv_section" class = "dv_header">Section</th>
+                    <th width = "28%" id = "dv_title" class = "dv_header">Title</th>
+                    <th width = "8%" id = "dv_days" class = "dv_header">Days</th>
+                    <th width = "12%" id = "dv_time" class = "dv_header">Time</th>
+                    <th width = "18%" id = "dv_instructor" class = "dv_header">Instructor</th>
+                    <th width = "9%" id = "dv_location" class = "dv_header">Location</th>
+                    <th width = "4%" id = "dv_credits" class = "dv_header">Credits</th>
+                    <th width = "4%" id = "dv_remove" class = "dv_header"></th>
+                </tr> 
             </thead>
-                <tr>
-                    <td>12345</td>
-                    <td>01</td>
-                    <td>Intro to Computer Science</td>
-                    <td>MWF</td>
-                    <td>9:00-9:50</td>
-                    <td>John Doe</td>
-                    <td>1234</td>
+                <tr id = "10572">
+                    <td>10572</td>
+                    <td>001</td>
+                    <td>Livestock Production</td>
+                    <td>TR</td>
+                    <td>09:00 am-09:50 am</td>
+                    <td>Uchenna Y Anele, Kingsley Agiliga Ekwemalor</td>
+                    <td>WEBB 100</td>
                     <td>3</td>
-                    <td class="close">x</td>
+                    <td><button id="close" onclick="removeClass()">x</button></td>
                 </tr>
-                <tr>
-                    <td>12445</td>
-                    <td>02</td>
-                    <td>Intro to Computer Science</td>
-                    <td>MWF</td>
-                    <td>10:00-10:50</td>
-                    <td>John Doe</td>
-                    <td>1234</td>
+                <tr id = "12781">
+                    <td>12781</td>
+                    <td>01B</td>
+                    <td>Principles of Economics-Micro</td>
+                    <td>TBA</td>
+                    <td>TBA</td>
+                    <td>Kwaku Addae-Ankrah</td>
+                    <td>TBA</td>
                     <td>3</td>
-                    <td class="close">x</td>
+                    <td><button id="close" onclick="removeClass()">x</button></td>
                 </tr>
-                <tr>
-                    <td>12545</td>
-                    <td>03</td>
-                    <td>Intro to Computer Science</td>
-                    <td>MWF</td>
-                    <td>11:00-11:50</td>
-                    <td>John Doe</td>
-                    <td>1234</td>
+                <tr id = "11368">
+                    <td>11368</td>
+                    <td>001</td>
+                    <td>Intro Computer Programming</td>
+                    <td>MWF, T</td>
+                    <td>01:00 pm-01:50 pm, 08:00 am-09:50 am</td>
+                    <td>Derrick A Leflore</td>
+                    <td>PROCT 160</td>
                     <td>3</td>
-                    <td class = "close">x</td>
+                    <td><button id="close" onclick="removeClass()">x</button></td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
+                <tr id = "class_four">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -412,7 +247,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_five">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -423,7 +258,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_six">
                     <td></td>
                     <td></td>
                     <td></td>
@@ -434,7 +269,18 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
+                <tr id = "class_seven">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr id = "class_eight">
                     <td></td>
                     <td></td>
                     <td></td>

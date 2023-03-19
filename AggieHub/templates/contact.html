@@ -4,41 +4,104 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Contact Us</title>
+        <title>FAQ</title>
         <link rel="stylesheet" href={% static 'css/contact.css' %}>
+        <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class = "banner">
             {% include 'navigation.html' %}
         </nav>
-
+        
         <aside class = "faq">
-            <section id = "title">
-                <h3> Frequently Asked Questions </h3>
-            </section>
             <section id = "questions">
-                <p>questions accordion goes here</p>
                 <!--q1: who is my academic advisor? how do i get in contact with them?-->
                 <!--q2: what is considered part-time or full-time status?-->
-                <!--q3: how do i download my override form?-->     
+                <!--q3: how do i download my override form?-->  
+                <nav class="accordion arrows">
+                    <header class="box">
+                        <label for="acc-close" class="box-title">Frequently Asked Questions</label>
+                    </header>
+                    <input type="radio" name="accordion" id="cb1" />
+                    <section class="box">
+                        <label class="box-title" for="cb1">Who is my academic advisor? How do I get in contact with them?</label>
+                        <label class="box-close" for="acc-close"></label>
+                        <div class="box-content">Your academic advisor is [insert advisor name]. You can contact them by emailing [insert advisor email].</div>
+                    </section>
+                    <input type="radio" name="accordion" id="cb2" />
+                    <section class="box">
+                        <label class="box-title" for="cb2">What is considered part-time or full-time status?</label>
+                        <label class="box-close" for="acc-close"></label>
+                        <div class="box-content">Full-time status is 12 or more credit hours. Part-time status is 11 or less credit hours.</div>
+                    </section>
+                    <input type="radio" name="accordion" id="cb3" />
+                    <section class="box">
+                        <label class="box-title" for="cb3"> How do I register? </label>
+                        <label class="box-close" for="acc-close"></label>
+                        <div class="box-content">ANSWER</div>
+                    </section>
+                    <input type="radio" name="accordion" id="cb4" />
+                    <section class="box">
+                        <label class="box-title" for="cb4">How do I know what classes to register for?</label>
+                        <label class="box-close" for="acc-close"></label>
+                        <div class="box-content">ANSWER</div>
+                    </section>
+                    <input type="radio" name="accordion" id="cb5" />
+                    <section class="box">
+                        <label class="box-title" for="cb5">The class I need is unavailable. What do I do?</label>
+                        <label class="box-close" for="acc-close"></label>
+                        <div class="box-content">Sections that are at capacity are automatically disabled to prevent too many students from registering. If a section you need is disabled, check the [link to] override page to get an override. </div>
+                    </section>
+                    <input type="radio" name="accordion" id="acc-close" />
             </section>    
         </aside>
-        
+         
         <main class = "contact">
             <section id = "info">
-                <h3> Contact Us </h3>
+                <h2> Contact Us </h2>
+                <p>We would love to hear from you!</p>
             </section>
             <section id = "contact_form">
-                <p> contact form goes here </p>
-                <!--banner-->
-                <!--student email (set up verification)-->
-                <!--topic (drop down)-->
-                <!--message-->
+                {%csrf_token%}
+                <form>
+                    <div class="full_name">
+                        <!--populate name from database-->
+                        <input type="text" name="full_name" id="full_name" disabled value="Student Name">
+                    </div>
+                    
+                    <div class="email">
+                        <!--set up verification for email (only allow student email - @aggies.ncat.edu)-->
+                        <input type="email" name="email" id="email" placeholder="example@aggies.ncat.edu" pattern="[a-zA-Z0-9]+@aggies.ncat.edu" title="example@aggies.ncat.edu" required>
+                    </div>
+
+                    <div class="topic">
+                        <select id = "topic" name="topic" required>
+                            <option disabled hidden selected>Select Topic</option>
+                            <option value="questions">Questions</option>
+                            <option value="suggestions">Suggestions</option>
+                            <option value="bugs">Report an Issue</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="message">
+                        <textarea name="message" id="message" rows="4" placeholder="Message"required></textarea>
+                    </div>
+
+                    <div class="button">
+                        <button onclick="validateForm(email)">Submit</button>
+                    </div>
+                </form>
             </section>
+        
         </main>
 
         <footer class = "footer">
-            <p> footer </p> 
+            <p>Footer</p> 
         </footer>
     </body>
 </html>

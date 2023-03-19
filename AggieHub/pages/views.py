@@ -5,8 +5,9 @@ from .models import *
 from .forms import *
 from .tasks import *
 
-#login required?
+#login required, redirect if not logged in
 def home(request):
+        #student = task7()
         terms = task2()
         context = {'terms': terms}
         return render(request, 'home.html', context)
@@ -47,6 +48,10 @@ def get_description(request):
         }
     return JsonResponse(response)
 
+#if there is more than one time for a section, separate them by a comma
+def get_sections(request):
+    return render(request, 'sections.html')
+
 #WIP
 def override(request):
     return render(request, 'override.html')
@@ -55,4 +60,5 @@ def guides(request):
     return render(request, 'guides.html')
 #WIP
 def contact(request):
+    
     return render(request, 'contact.html')

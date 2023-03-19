@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
 from django import forms
 from .models import *
 
@@ -13,3 +13,4 @@ class loginForm(ModelForm):
             'banner_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Banner ID'}),
             'pin': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'PIN'})
         }
+    

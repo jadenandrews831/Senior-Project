@@ -6,28 +6,232 @@
     <meta charset="UTF-8">
     <title>Override Form</title>
     <link rel="stylesheet" href={% static 'css/override.css' %}>
+    <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        //switches the pdf shown in the iframe depending on the dept. selected
+        $(document).ready(function(){
+            $('#contact_name').hide();
+            $('#contact_email').hide();
+            $('#contact_instructions').hide();
+            $("#select_dept").change(function(){
+                var form_name = $("#select_dept option:selected").attr('value');
+                var department = $("#select_dept option:selected").attr('id');
+                var instructions = $('#contact_instructions');
+                var name = $('#contact_name');
+                var email = $('#contact_email');
+
+                html = "";
+                if (department == "noform"){
+                    $('#content').hide();
+                    instructions.html("There is no override form for this department.")
+                    instructions.show();
+                    $('#contact_name').hide();
+                    $('#contact_email').hide();
+                    switch(form_name) {
+                        case "HIST":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Ms. Pamela Carlson";
+                            name.html(html);
+                            html = "Email: <a href=mailto:pecarlson@ncat.edu>pecarlson@ncat.edu</a></br></br>Phone: 336-285-2324";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "POLI": 
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Ms. Pamela Carlson";
+                            name.html(html);
+                            html = "Email: <a href=mailto:pecarlson@ncat.edu>pecarlson@ncat.edu</a></br></br>Phone: 336-285-2324";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "ABM":
+                            html = "Students must physically go in to request an override.</br></br>";
+                            name.html(html);
+                            html = "Location: Carver Hall, Room 101</br></br>POC: Nate Adkins";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "BUAN":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Sherri Grady";
+                            name.html(html);
+                            html = "Email: <a href=mailto:smgrady@ncat.edu>smgrady@ncat.edu</a></br></br>Phone: 336—334-7657";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                        case "BTEC":
+                            html = "Reach out to the contact below to request an override.</br></br>Name: Sherri Grady";
+                            name.html(html);
+                            html = "Email: <a href=mailto:smgrady@ncat.edu>smgrady@ncat.edu</a></br></br>Phone: 336—334-7657";
+                            email.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').show();
+                            break;
+                    }
+                }
+                else{
+                    $('#content').show();
+                    $('#content').attr('src', '/static/docs/' + form_name);
+
+                    instructions.html("Complete the form and email it to the contact below.");
+                    $('#contact_instructions').show();
+
+                    switch (department) {
+                        case "COMP":
+                            html = "Name: Ms. Rosemary Williams";
+                            name.html(html);
+                            html = "Email: <a href=mailto:rosnlloy@ncat.edu>rosnlloy@ncat.edu</a>";
+                            email.html(html);
+                            break;
+                        case "ECEN":
+                            html = "Name: Amanda R. Hughes";
+                            name.html(html);
+                            html = "Email: <a href=mailto:arhughes1@ncat.edu>arhughes1@ncat.edu</a>";
+                            email.html(html);
+                            break;
+                        case "MEEN":
+                            html = "Name: Jennifer M. Kennedy";
+                            name.html(html);
+                            html = "Email: <a href=mailto:jk017215@ncat.edu>jk017215@ncat.edu</a>";
+                            email.html(html);
+                            break;
+                    }
+                    $('#contact_name').show();
+                    $('#contact_email').show();
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-    <nav class = "banner">
+    <nav class = "banner"> 
         {% include 'navigation.html' %}
     </nav>
     
     <aside class = "sidebar">
+        <div id = "side">
         <section id = "select_dept">
-            <select id = "departments">
-                <option disabled="disabled" selected="selected">Select Department</option>
+            <select id = "depts">
+                <option disabled selected hidden>Select Department</option>
+                <option value="ACCT" id="noform">Accounting</option>
+                <option value="ADED" id="noform">Adult Education</option>
+                <option value="AERO" id="noform">Aerospace Studies</option>
+                <option value="ABM" id="noform">Agribusiness Management</option>
+                <option value="AGRI" id="noform">Agricultural</option>
+                <option value="AGEC" id="noform">Agricultural Economics</option>
+                <option value="AGER" id="noform">Agricultural Ed Research</option>
+                <option value="AGED" id="noform">Agricultural Education</option>
+                <option value="ANSC" id="noform">Animal Science</option>
+                <option value="AET" id="noform">Applied Engineering Technology</option>
+                <option value="AST" id="noform">Applied Science and Tech</option>
+                <option value="AREN" id="noform">Architectural Engineering</option>
+                <option value="ART" id="noform">Art</option>
+                <option value="ASME" id="noform">Atmospheric Sci &amp; Meteorology</option>
+                <option value="BIOE" id="noform">Biological Engineering</option>
+                <option value="BIOL" id="noform">Biology</option>
+                <option value="BMEN" id="noform">Biomedical Engineering</option>
+                <option value="BUAN" id="noform">Business Analytics</option>
+                <option value="BTEC" id="noform">Business Info Tech</option>
+                <option value="SCS" id="noform">Center for Academic Excellence</option>
+                <option value="CHEN" id="noform">Chemical Engineering</option>
+                <option value="CHEM" id="noform">Chemistry</option>
+                <option value="CIEN" id="noform">Civil Engineering</option>
+                <option value="CAEE" id="noform">Civil, Arch &amp; Envir Engineer</option>
+                <option value="CSE" id="noform">Computational Sci &amp; Engineer</option>
+                <option value="CGT" id="noform">Computer Graphics Technology</option>
+                <option value="COMP.pdf" id="COMP">Computer Science</option>
+                <option value="CST" id="noform">Computer Systems Technology</option>
+                <option value="CM" id="noform">Construction Management</option>
+                <option value="COOP" id="noform">Cooperative Education</option>
+                <option value="COUN" id="noform">Counseling</option>
+                <option value="CRJS" id="noform">Criminal Justice</option>
+                <option value="CUIN" id="noform">Curriculum &amp; Instruction</option>
+                <option value="DANC" id="noform">Dance</option>
+                <option value="DISU" id="noform">Dissertation</option>
+                <option value="ECON" id="noform">Economics</option>
+                <option value="EDPR" id="noform">Educator Preparation</option>
+                <option value="ECEN.pdf" id="ECEN">Electrical &amp; Computer Engineer</option>
+                <option value="ELED" id="noform">Elementary Education</option>
+                <option value="ENGL" id="noform">English</option>
+                <option value="EHS" id="noform">Environmental Health &amp; Safety</option>
+                <option value="ENVS" id="noform">Environmental Studies</option>
+                <option value="FCS" id="noform">Family and Consumer Sciences</option>
+                <option value="FIN" id="noform">Finance</option>
+                <option value="FREN" id="noform">French</option>
+                <option value="FRST" id="noform">Freshman Studies</option>
+                <option value="GEEN" id="noform">General Engineering</option>
+                <option value="GEOG" id="noform">Geography</option>
+                <option value="GEOM" id="noform">Geomatics</option>
+                <option value="GSCP" id="noform">Global Studies</option>
+                <option value="GRAD" id="noform">Graduate Thesis Cont</option>
+                <option value="GCS" id="noform">Graphic Communications</option>
+                <option value="HPED" id="noform">Health &amp; Physical Education</option>
+                <option value="HSM" id="noform">Health Services Management</option>
+                <option value="HIST" id="noform">History</option>
+                <option value="HORT" id="noform">Horticulture</option>
+                <option value="ISEN" id="noform">Industrial Systems Engineering</option>
+                <option value="JOMC" id="noform">Journalism &amp; Mass Communicatio</option>
+                <option value="KINS" id="noform">Kinesiology</option>
+                <option value="LASC" id="noform">Laboratory Animal Science</option>
+                <option value="LDAR" id="noform">Landscape Architecture</option>
+                <option value="LEST" id="noform">Leadership Studies</option>
+                <option value="LSS" id="noform">Leisure Studies</option>
+                <option value="LIBS" id="noform">Liberal Studies</option>
+                <option value="MGMT" id="noform">Management</option>
+                <option value="MKTG" id="noform">Marketing</option>
+                <option value="MSA" id="noform">Masters School Administration</option>
+                <option value="MATH" id="noform">Mathematics</option>
+                <option value="MEEN.pdf" id="MEEN">Mechanical Engineering</option>
+                <option value="MISC" id="noform">Military Science</option>
+                <option value="MUSI" id="noform">Music</option>
+                <option value="NANO" id="noform">Nanoengineering</option>
+                <option value="NARS" id="noform">Natural Resources</option>
+                <option value="NURS" id="noform">Nursing</option>
+                <option value="PHIL" id="noform">Philosophy</option>
+                <option value="PHYS" id="noform">Physics</option>
+                <option value="POLI" id="noform">Political Science</option>
+                <option value="PSYC" id="noform">Psychology</option>
+                <option value="SOWK" id="noform">Social Work</option>
+                <option value="SOCI" id="noform">Sociology</option>
+                <option value="SOSW" id="noform">Sociology and Social Work</option>
+                <option value="SLMG" id="noform">Soil Management</option>
+                <option value="SLSC" id="noform">Soil Science</option>
+                <option value="SPAN" id="noform">Spanish</option>
+                <option value="SPED" id="noform">Special Education</option>
+                <option value="SPCH" id="noform">Speech</option>
+                <option value="SSFM" id="noform">Sport Sci &amp; Fitness Management</option>
+                <option value="STAT" id="noform">Statistics</option>
+                <option value="SCMG" id="noform">Supply Chain Management</option>
+                <option value="SYEN" id="noform">Systems Engineering</option>
+                <option value="TECH" id="noform">Technology</option>
+                <option value="THEA" id="noform">Theatre</option>
+                <option value="WMI" id="noform">Waste Management</option>
             </select>
         </section>
+        <!--contact_info is hidden by default-->
+        <!--this section will disappear if the dept. selected does not have an override form. in override_pdf a message will be displayed explaining what to do for override-->
+        <!--if the dept. selected does have an override form, the section will appear with contact info in p element-->
         <section id = "contact_info">
             <section id = "inner">
-                <p> where the student will send their override form </p>
+                <fieldset>
+                    <legend> Override Instructions </legend>
+                    <p id = "contact_instructions">Select a department to learn the override request process.</p>
+                    <p id = "contact_name"></p>
+                    <p id = "contact_email"></p>
+                </fieldset>
             </section>
         </section>
+    </div>
     </aside>
 
-    <main class = "o_form">
-        <section id = "o_pdf">
-            <p> override form </p>
+    <main class = "override_form">
+        <section id = "override_pdf">
+            <!--MEEN form used as a placeholder for now. what will default placeholder be? form from first dept alphabetically or no form? something else??-->
+            <iframe id="content" src="/static/docs/MEEN.pdf" width="100%" height="100%"></iframe>
         </section>
     </main>
 

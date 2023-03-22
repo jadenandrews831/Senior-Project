@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     calendar.render();
   });
-  
+
 //check if the row in the table already has a class. 
     //if it does, check the time of the class and the time of the class being added. if the times overlap, do not add the class
     //if the times do not overlap, add to the next available row's innerHTML
@@ -34,15 +34,13 @@ function addClass() {
     var time = classInfo[2];
     var day = classInfo[1];
     var days = [];
-
+    //alert(time + ", " + day);
     //iterate through the table and check if any time and days overlap with the selected time and day
     //if there is an overlap, alert the user and do not add the class
 
-    if (time == "TBA") {
-        alert("Virtual Class");
-    } else {
-        alert(text);
-    } //functional up to here
+    // if (time == "TBA") {
+    //     alert("Virtual Class");
+    // } //functional up to here
     
 
     // var table = document.getElementById("detailview");
@@ -58,10 +56,13 @@ function addClass() {
         
 
     //     if (time.includes(rowTime) && day.includes(rowDay)) {
-    //         alert("TO DO: time conflict"); 
+    //         alert("TO DO: time conflict");
     //         return;
     //     } 
     // }
+
+    //change last td of row to <i class="fa-solid fa-xmark" onclick="removeClass()"></i>
+    //calculate the new total number of credits and update status and register button (if needed)
 }
 
 //removes class from the table by setting the innerHTML of the row to empty? or by removing the row?
@@ -71,7 +72,7 @@ function removeClass() {
     // get row from table
     // get crn from row
     // remove event from calendar
-    var row = document.getElementById("10572");
+    var row = document.getElementById("class_one");
     var crn = row.getElementsByTagName("td")[0].innerText;
     calendar.getEventById(crn).remove();
     calendar.render(); 
@@ -84,7 +85,7 @@ function removeClass() {
 //get the class data from the table needed for the event
     //called at the end of the addClass function when a class is added to the schedule
 function getData() {
-    var row = document.getElementById("10572");
+    var row = document.getElementById("class_one");
     var time = row.getElementsByTagName("td")[4].innerText;
     var day = row.getElementsByTagName("td")[3].innerText;
 
@@ -195,6 +196,5 @@ function displaySection() {
         alert("Virtual Class");
         return;
     }
-
 
 }

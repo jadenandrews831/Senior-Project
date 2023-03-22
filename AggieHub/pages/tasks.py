@@ -27,7 +27,7 @@ def task4(subject):
     global success
     scrape = ScrAApe(success)
     courses = scrape.get_course(subject)
-    return list(courses)
+    return courses
 
 #get description of selected course
 def task5(course):
@@ -40,7 +40,8 @@ def task5(course):
 def task6(course):
     global success
     scrape = ScrAApe(success)
-    sections = scrape.get_sections(course)
+    sections = scrape.get_section(course)
+    print (sections)
     return sections
 
 #pulls student information

@@ -152,13 +152,14 @@ class Authenticate():
     with shelve.open(shelve_name, 'n') as file:
       for key, val in self.__dict__.items():
         file[key] = val
+      print("Saved Data:")
       for key, val in file.items():
         print(key,':', val)
       print(f"Session Created! Saved to >>> {shelve_name}")
 
   @debug_decorator
   def load_data(self, auth):
-    print(auth)
+    print(auth.items)
     for key, val in auth.items():
       print(key, val)
     for key, val in auth.items():
@@ -320,10 +321,8 @@ class ScrAApe():
             }
 
     select, soup = self.get_all_data(uri, data, 'td', {'bypass_esc': 'Y'})
-    self.inp_sets_ = soup.findAll('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'})
     self.get_inputs(soup)
-    print("Select: ", select, soup)
-    print('INPUT SETS', self.inp_sets_)
+
     crss = select[1::2]
     cds = select[0::2]
 
@@ -336,20 +335,21 @@ class ScrAApe():
 
     return self.auth.crss_
   
-  @debug_decorator
   def get_inputs(self, soup):
-    self.auth.heads = list()
+    self.auth.heads_ = list()
     for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
       d = {}
       l = head.find_all('input')
       for i in l:
         if i.attrs['name'] in d : d[i.attrs['name']] = [d[i.attrs['name']], i.attrs["value"]]
         else: d[i.attrs['name']] = i.attrs["value"]
-      self.auth.heads.append(d)
-    for i in self.auth.heads:
+      self.auth.heads_.append(d)
+    for i in self.auth.heads_:
       print(i)
       print()
-    return self.auth.heads
+    print("Heads: ", self.auth.heads_)
+    print("Saved Heads")
+    return self.auth.heads_
 
   @debug_decorator
   def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
@@ -368,7 +368,9 @@ class ScrAApe():
       print('Needs a valid term')
       return
     
-    for head in self.auth.heads:
+    print(self.auth)
+
+    for head in self.auth.heads_:
       if head['SEL_CRSE'] == self.auth.crs: 
         data = head
         break

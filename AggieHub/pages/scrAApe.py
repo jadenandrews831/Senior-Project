@@ -35,37 +35,50 @@ class User_Profile():
   
   """
   def __init__(self):
+    self.first = '*'
+    self.last = '*'
+    self.classification = '*'
+    self.dept = '*'
+    self.banner = '*'
+    self.major = '*'
     print('New Profile Created')
 
   def set_name(self, first, last):
-    self.first_ = first
-    self.last_ = last
+    self.first = first
+    self.last = last
 
   def set_class(self, classification):
-    self.class_ = classification
+    self.classification = classification
 
   def set_dept(self, dept):
-    self.dept_ = dept
+    self.dept = dept
 
   def set_banner(self, banner):
-    self.banner_ = banner
+    self.banner = banner
 
   def set_major(self, major):
-    self.major_ = major
+    self.major = major
 
   def __str__(self):
     return f"""
 >>>User_Profile Object<<<
- Name: {self.first_} {self.last_}
- Class: {self.class_}
- Dept: {self.dept_}   
- Major: {self.major_}
- Banner: {self.banner_}
+ Name: {self.first} {self.last}
+ Class: {self.classification}
+ Dept: {self.dept}   
+ Major: {self.major}
+ Banner: {self.banner}
 >>>User_Profile Object<<<
 
     """
 
+def debug_decorator(func):
+  def inner(*args, **kwargs):
+    print(">"*8+func.__name__+'() DEBUG BEGS'+"<"*8)
+    data = func(*args, **kwargs)
+    print(">"*8+func.__name__+'() DEBUG ENDS'+"<"*8)
+    return data
 
+  return inner
 class Authenticate():
   """
   Authenticate: Creates a session with Aggie Access and logs in to the Main Menu.
@@ -82,43 +95,37 @@ class Authenticate():
 
   """
 
+  @debug_decorator
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
     self.psswd = psswd
     self.session = Session()
     self.auth = self.login(NCAT_URI)       # is the session authenticatd
-    print(self)
-    
-    #if logged in return true otherwise return false
 
+  @debug_decorator
   def login(self, uri):
+    self.profile_ = User_Profile()
     self.site_ = self.session.get(uri)
-    print('>'*8+'login() DEBUG SECTION STARTS'+'<'*8)
     print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = ScrAApe(self).post_request(uri, login_data, 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
     self.cookies_ = self.session.cookies.get_dict()
     url, status = self.verify(response)
-    print('>'*8+'login() DEBUG SECTION ENDS'+'<'*8+'\n')
+    self.profile_.set_banner(self.usrnme)
 
-    # page = self.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfshd.P_CrseSchd')
-    # print(page.content); print('\n'*3)
     return url
 
+  @debug_decorator
   def format_cookies(self, dic):
     s = ''.join([f'{key}={val};' for key, val in dic.items()])
     return s 
   
+  @debug_decorator
   def verify(self, response):
     '''
-    <meta http-equiv="refresh" content="0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login">
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-
     '''
-    print('>'*8+'verify() DEBUG SECTION STARTS'+'<'*8)
-    for header, val in response.headers.items():
-      print(f'{header}: {val}')
+    self.print_headers(response)
     print(self.cookies_)
     print(response.status_code)
     print(response.text)
@@ -126,13 +133,14 @@ class Authenticate():
     soup = bs(response.content, 'html.parser')
     url = soup.meta['content']          # url for second page after authentication FIXME: make this a regex
     print(url)
-    print('>'*8+'verify() DEBUG SECTION ENDS'+'<'*8+'\n')
-    return True if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else False, response.status_code
+    return (True, response.status_code) if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else (False, response.status_code)
 
-  # def get_dict(self):
-  #   for key, val in self.__dict__.items():
+  def print_headers(self, response):
+    for header, val in response.headers.items():
+      print(f'{header}: {val}')
 
 
+  @debug_decorator
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -142,16 +150,16 @@ class Authenticate():
     """
   
   # pickle data for ScrAApe and database use
+  @debug_decorator
   def save_data(self, shelve_name):
     with shelve.open(shelve_name, 'n') as file:
-      print('>'*8+'save_data() DEBUG STARTS'+'<'*8)
       for key, val in self.__dict__.items():
         file[key] = val
       for key, val in file.items():
         print(key,':', val)
       print(f"Session Created! Saved to >>> {shelve_name}")
-      print('>'*8+'save_data() DEBUG ENDS'+'<'*8)
 
+  @debug_decorator
   def load_data(self, auth):
     print(auth)
     for key, val in auth.items():
@@ -159,7 +167,7 @@ class Authenticate():
     for key, val in auth.items():
       setattr(self, key, val)
     return self
-
+  
 class ScrAApe():
   """
   ScrAApe: scrape data from aggie access with the authenticated session.
@@ -178,8 +186,6 @@ class ScrAApe():
   get_terms: dict - gets a list of school terms from aggie access
   get_subject:  dict - posts data from user, then gets the choices of subject
 
-  
-
   """
 
   def __init__(self, auth):
@@ -195,30 +201,38 @@ class ScrAApe():
       exit()
     print('cookies >>> ',self.auth.cookies_)
 
-  def get_profile(self, profile):
-    print('>'*8+'get_profile() DEBUG SECTION STARTS'+'<'*8)
-    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
-    response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
-                                                    'Cookies': self.auth.format_cookies(self.auth.cookies_),
-                                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
-                                                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                                                    'Accept-Language': 'en-US,en;q=0.5',
-                                                    'Accept-Encoding': 'gzip, deflate',
-                                                    'Upgrade-Insecure-Requests': '1',
-                                                    'Sec-Fetch-Dest': 'document',
-                                                    'Sec-Fetch-Mode': 'navigate', 
-                                                    'Sec-Fetch-Site': 'same-origin',
-                                                    'Te': 'trailers',
-                                                    'Connection': 'close'})
-    content = response.text
-    print(response.request.headers.items())
-    print()
-    print(response.headers.items())
-    self.update_cookies(response)
+  @debug_decorator
+  def get_data(self, uri, data, sel, attr):
+    response = self.post_request(uri, data)
     print(response.text)
+    self.auth.prev_site_ = uri
+    content = response.text
+    self.update_cookies(response)
+    soup = bs(content, 'html.parser')
+    select = soup.find(sel, attr)
+
+    return select, soup
+
+  @debug_decorator
+  def get_all_data(self, uri, data, sel, attr):
+    response = self.post_request(uri, data)
+    print(response.text)
+    self.auth.prev_site_ = uri
+    content = response.text
+    self.update_cookies(response)
+    soup = bs(content, 'html.parser')
+    select = soup.find_all(sel, attr)
+
+    return select, soup
+  # Finish-Me
+  def get_description(self):
+    pass
+
+  # Finish-Me
+  def get_profile(self, profile):
+    return self.auth.profile
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
-    print('>'*8+'get_terms() DEBUG STARTS'+'<'*8)
     if 'terms_w_codes_' in self.__dict__:
       print('get_terms(): found it!')
       print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
@@ -238,24 +252,24 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     content = response.text
-    # print(response.request.headers.items())
-    # print()
-    # print(response.headers.items())
-    # print(response.text)
+    print('Response:\n',response.text)
     self.update_cookies(response)
     #print(auth)
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'p_term'})
+    select = soup.find('div', {'class':'staticheaders'})
+    banner, first, last = select.text.split()[0], select.text.split()[1], select.text.split()[3]
+    self.auth.profile_.banner, self.auth.profile_.first, self.auth.profile_.last = banner, first, last
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
     print('terms_w_codes', terms_w_codes)
-    print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
 
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
   
   # data should be selected term from get_terms()
+  @debug_decorator
   def get_subject(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckgens.p_proc_term_date'):
     """
     get_subject: 
@@ -264,7 +278,6 @@ class ScrAApe():
     __________
     data: dict - data to be posted
     """
-    print('>'*8+'get_subject() DEBUG STARTS'+'<'*8)
     if not data:
       data = input("Data: ")
     if self.auth.terms_w_codes_:
@@ -274,23 +287,17 @@ class ScrAApe():
       print('Needs a valid term')
       return
     
-    response = self.post_request(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':self.auth.pterm, 'p_by_date':'Y','p_from_date':'','p_to_date':''})
-    self.auth.prev_site_ = uri
-    content = response.text
-    self.update_cookies(response)
-    soup = bs(content, 'html.parser')
-    select = soup.find('select', {'name': 'sel_subj'})
+    select, soup = self.get_data(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':self.auth.pterm, 'p_by_date':'Y','p_from_date':'','p_to_date':''}, 'select', {'name': 'sel_subj'})
     print("Select: ", select, soup)
     subjs = select.findChildren()
     subjs_w_codes = {}
     for subj in subjs: subjs_w_codes[subj.text] = subj.get('value')
     print('subjs_w_codes', subjs_w_codes)
 
-    print('>'*8+'get_subject() DEBUG ENDS'+'<'*8+'\n')
-
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
 
+  @debug_decorator
   def get_course(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     """
     get_course:
@@ -298,7 +305,6 @@ class ScrAApe():
     Parameters
     __________
     """
-    print('>'*8+'get_course() DEBUG STARTS'+'<'*8)
     if not data:
       data = input("Data: ")
     if self.auth.subjs_w_codes:
@@ -316,13 +322,7 @@ class ScrAApe():
             'end_mi':'0','begin_ap':'x', 'end_ap':'y', 'path':'1','SUB_BTN':'Course Search'
             }
 
-    response = self.post_request(uri, data)
-    print(response.request.body)
-    self.auth.prev_site_ = uri
-    content = response.text
-    self.update_cookies(response)
-    soup = bs(content, 'html.parser')
-    select = soup.findAll('td', {'bypass_esc': 'Y'})
+    select, soup = self.get_all_data(uri, data, 'td', {'bypass_esc': 'Y'})
     self.inp_sets_ = soup.findAll('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'})
     self.get_inputs(soup)
     print("Select: ", select, soup)
@@ -336,12 +336,11 @@ class ScrAApe():
       self.auth.crss_[cd.text] = crs.text
 
     print(self.auth.crss_)
-    print('>'*8+'get_course() DEBUG ENDS'+'<'*8+'\n')
 
     return self.auth.crss_
   
+  @debug_decorator
   def get_inputs(self, soup):
-    print('>'*8+'get_inputs() DEBUG BEGS'+'<'*8+'\n')
     self.auth.heads = list()
     for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
       d = {}
@@ -353,11 +352,9 @@ class ScrAApe():
     for i in self.auth.heads:
       print(i)
       print()
-    print('>'*8+'get_inputs() DEBUG ENDS'+'<'*8+'\n')
     return self.auth.heads
-    
 
-
+  @debug_decorator
   def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     """
     get_section:
@@ -365,7 +362,6 @@ class ScrAApe():
     Parameters
     __________
     """
-    print('>'*8+'get_section() DEBUG STARTS'+'<'*8)
     if not data:
       data = input("Course: ")
     if self.auth.crss_:
@@ -374,12 +370,6 @@ class ScrAApe():
     else:
       print('Needs a valid term')
       return
-    '''
-    term_in=202330&sel_subj=dummy&sel_subj=COMP&SEL_CRSE=320&SEL_TITLE=&BEGIN_HH=0&BEGIN_MI=0&BEGIN_AP=a&
-    SEL_DAY=dummy&SEL_PTRM=dummy&END_HH=0&END_MI=0&END_AP=a&SEL_CAMP=dummy&SEL_SCHD=dummy&SEL_SESS=dummy&
-    SEL_INSTR=dummy&SEL_INSTR=%25&SEL_ATTR=dummy&SEL_ATTR=%25&SEL_LEVL=dummy&SEL_LEVL=%25&SEL_INSM=dummy&
-    sel_dunt_code=&sel_dunt_unit=&call_value_in=&rsts=dummy&crn=dummy&path=1&SUB_BTN=View+Sections
-    '''
     
     for head in self.auth.heads:
       if head['SEL_CRSE'] == self.auth.crs: 
@@ -388,15 +378,9 @@ class ScrAApe():
     
     self.auth.scts_ = []
     
-    response = self.post_request(uri, data)
-    print(response.request.body)
-    self.auth.prev_site_ = uri
-    content = response.text
-    self.update_cookies(response)
-    soup = bs(content, 'html.parser')
-    headers = soup.find_all('th', {'class': "ddheader"})
+    headers, soup = self.get_all_data(uri, data, 'th', {'class': "ddheader"})
     print("Headers: ", headers)
-    vals = soup.find_all('td', {'class': "dddefault"})
+    vals = soup.find_all('td', {'class': "dddefault"}, 'th', {'class': "ddheader"})
     self.auth.scts_ = list()
     for i in range(len(vals) // 23):
       sect_data = vals[i*23:i*23+23]
@@ -406,17 +390,12 @@ class ScrAApe():
         s[h.text] = d.text
       self.auth.scts_.append(s)
 
-    print('>'*8+'get_section() DEBUG ENDS'+'<'*8+'\n')
-
     return self.auth.scts_
-
-
   
   def get_user_profile(self):
-    profile = User_Profile()
-
-    profile.set_name()
-
+    print("get_user_profile >>> Getting User Profile")
+    profile = self.auth.profile
+    print(profile)
     return profile
 
   def post_request(self, uri, data, referer=None):
@@ -455,8 +434,6 @@ class ScrAApe():
   self.__dict__{self.__dict__}
     """
   
-  
-
 if __name__ == "__main__":
   """
   Usage
@@ -467,7 +444,7 @@ if __name__ == "__main__":
     scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
     scrAApe.py post {term, subject} <datafile> .<username>-sess.pickle                                   # post data to the given uri from a pickled session
   """  
-  
+
   parser = argparse.ArgumentParser(prog="scrAApe", description='The Aggie Access Authenticator and Web Scraper')
 
   subparser = parser.add_subparsers(dest="command")
@@ -529,13 +506,11 @@ if __name__ == "__main__":
       auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
 
       print(auth)
-      scrape = ScrAApe(auth)
-                                     # close the file
+      scrape = ScrAApe(auth) # close the file
       
       if args.resource == 'term':
         # profile = scrape.get_profile()
         terms = scrape.get_terms()
-        
 
       if args.resource == 'subject':
         subjs = scrape.get_subject()
@@ -567,18 +542,9 @@ if __name__ == "__main__":
         uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'
       else:
         uri = ''
-
       
       response = scrape.post_request(uri, data)
-
-
-
 
     else:
       print('Hmm... something went wrong')
       print(args)
-
-  # scrape = ScrAApe(a)
-  # terms = scrape.get_terms()
-  # scrape.get_subject('Summer I 2023')
-

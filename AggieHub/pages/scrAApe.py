@@ -12,13 +12,21 @@ from bs4 import BeautifulSoup as bs
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
 rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile']
 
+def debug_decorator(func):
+  def inner(*args, **kwargs):
+    print(">"*8+func.__name__+'() DEBUG BEGS'+"<"*8)
+    data = func(*args, **kwargs)
+    print(">"*8+func.__name__+'() DEBUG ENDS'+"<"*8)
+    return data
 
+  return inner
+
+@debug_decorator
 def file_to_dict(filename):
   """
   file_to_dict: returns encoded file as dictionary
   file format - key1:value1, key2:value2,...
   """
-  print('>'*8+'file_to_dict() DEBUG STARTS'+'<'*8)
   with open(filename, 'rb') as file:
     data = file.readlines()
     d = {}
@@ -26,7 +34,6 @@ def file_to_dict(filename):
       d.update(dict(sub.split(':') for sub in line.decode().split(',')))
 
     print('d >>>',d)
-    print('>'*8+'file_to_dict() DEBUG ENDS'+'<'*8+'\n')
     return d
   
 
@@ -70,15 +77,7 @@ class User_Profile():
 >>>User_Profile Object<<<
 
     """
-
-def debug_decorator(func):
-  def inner(*args, **kwargs):
-    print(">"*8+func.__name__+'() DEBUG BEGS'+"<"*8)
-    data = func(*args, **kwargs)
-    print(">"*8+func.__name__+'() DEBUG ENDS'+"<"*8)
-    return data
-
-  return inner
+  
 class Authenticate():
   """
   Authenticate: Creates a session with Aggie Access and logs in to the Main Menu.
@@ -229,7 +228,7 @@ class ScrAApe():
     pass
 
   # Finish-Me
-  def get_profile(self, profile):
+  def get_profile(self):
     return self.auth.profile
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):

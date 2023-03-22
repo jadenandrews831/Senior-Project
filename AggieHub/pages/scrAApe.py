@@ -138,8 +138,6 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
-
-  @debug_decorator
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -256,8 +254,8 @@ class ScrAApe():
     #print(auth)
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'p_term'})
-    select = soup.find('div', {'class':'staticheaders'})
-    banner, first, last = select.text.split()[0], select.text.split()[1], select.text.split()[3]
+    s = soup.find('div', {'class':'staticheaders'})
+    banner, first, last = s.text.split()[0], s.text.split()[1], s.text.split()[3]
     self.auth.profile_.banner, self.auth.profile_.first, self.auth.profile_.last = banner, first, last
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
@@ -385,7 +383,7 @@ class ScrAApe():
       sect_data = vals[i*23:i*23+23]
       for s in sect_data: print(s.text)
       s = dict()
-      for d, h in zip(sect_data, headers):
+      for d, h in zip(sect_data, headers): 
         s[h.text] = d.text
       self.auth.scts_.append(s)
 

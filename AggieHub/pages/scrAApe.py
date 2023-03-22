@@ -394,14 +394,17 @@ class ScrAApe():
     content = response.text
     self.update_cookies(response)
     soup = bs(content, 'html.parser')
-    ts = soup.find_all('td', {'class': "dddefault"})
-    for t in ts:
-      self.auth.scts_.append(t.text)
-
-    print('Sections: ')
-    for sct in self.auth.scts_:
-      print(sct)
-      print()
+    headers = soup.find_all('th', {'class': "ddheader"})
+    print("Headers: ", headers)
+    vals = soup.find_all('td', {'class': "dddefault"})
+    self.auth.scts_ = list()
+    for i in range(len(vals) // 23):
+      sect_data = vals[i*23:i*23+23]
+      for s in sect_data: print(s.text)
+      s = dict()
+      for d, h in zip(sect_data, headers):
+        s[h.text] = d.text
+      self.auth.scts_.append(s)
 
     print('>'*8+'get_section() DEBUG ENDS'+'<'*8+'\n')
 

@@ -2,4 +2,5 @@
 .shadow
 
 # ignore any session files
+.*-sess.db
 .*-sess.pickle

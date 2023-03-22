@@ -35,8 +35,10 @@ def get_subjects(request):
 def get_courses(request):
     if (request.method == 'POST'):
         subject = request.POST['subject']
+        sections = task4(subject)
         response = {
-            'courses': task4(subject)
+            'course_id': list(sections.keys()),
+            'course_name': list(sections.values())
         }
     return JsonResponse(response)
 
@@ -48,9 +50,13 @@ def get_description(request):
         }
     return JsonResponse(response)
 
-#if there is more than one time for a section, separate them by a comma
 def get_sections(request):
-    return render(request, 'sections.html')
+    if (request.method == 'POST'):
+        course = request.POST['course']
+        response = {
+            'sections': task6(course)
+        }
+    return JsonResponse(response)
 
 #WIP
 def override(request):

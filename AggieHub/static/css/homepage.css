@@ -51,7 +51,7 @@ body {
     margin-top: 22px;
     margin-bottom: 15px;
     background-color: white;
-    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+    box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
 
 .dropdowns {
@@ -77,6 +77,11 @@ body {
     grid-area: section;
 }
 
+#updateView {
+    cursor: pointer;
+    padding: 0 0 0 10px;
+}
+
 .footer {
     grid-area: footer;
     display: flex;
@@ -88,9 +93,8 @@ table {
     background-color: white;
     width: 100%;
     border-collapse: collapse;
-    border: thin solid black;
     font-size: 14px;
-    box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+    box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
 
 tr {
@@ -153,9 +157,7 @@ tr {
 
 #add:hover{background: #C9634B;}
 
-#add:active {
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-}
+#add:active {box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
 
 @media all and (max-width: 575px) {
     body {

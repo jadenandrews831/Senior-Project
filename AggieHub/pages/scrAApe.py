@@ -10,7 +10,7 @@ from requests import Session
 from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
-rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile']
+rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile', 'session']
 
 def debug_decorator(func):
   def inner(*args, **kwargs):
@@ -21,7 +21,7 @@ def debug_decorator(func):
 
   return inner
 
-@debug_decorator
+# # @debug_decorator
 def file_to_dict(filename):
   """
   file_to_dict: returns encoded file as dictionary
@@ -50,6 +50,9 @@ class User_Profile():
     self.major = '*'
     print('New Profile Created')
 
+  def add_headers(self, headers):
+    self.headers_ = headers
+
   def set_name(self, first, last):
     self.first = first
     self.last = last
@@ -74,6 +77,8 @@ class User_Profile():
  Dept: {self.dept}   
  Major: {self.major}
  Banner: {self.banner}
+ {self.headers_ if hasattr(self, 'headers_') else ""}
+ {self.scts_ if hasattr(self, "scts_") else ""}
 >>>User_Profile Object<<<
 
     """
@@ -94,14 +99,14 @@ class Authenticate():
 
   """
 
-  @debug_decorator
+  # @debug_decorator
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
     self.psswd = psswd
     self.session = Session()
     self.auth = self.login(NCAT_URI)       # is the session authenticatd
 
-  @debug_decorator
+  # @debug_decorator
   def login(self, uri):
     self.profile_ = User_Profile()
     self.site_ = self.session.get(uri)
@@ -115,12 +120,12 @@ class Authenticate():
 
     return url
 
-  @debug_decorator
+  # @debug_decorator
   def format_cookies(self, dic):
     s = ''.join([f'{key}={val};' for key, val in dic.items()])
     return s 
   
-  @debug_decorator
+  # @debug_decorator
   def verify(self, response):
     '''
     '''
@@ -147,18 +152,21 @@ class Authenticate():
     """
   
   # pickle data for ScrAApe and database use
-  @debug_decorator
   def save_data(self, shelve_name):
     with shelve.open(shelve_name, 'n') as file:
       for key, val in self.__dict__.items():
         file[key] = val
       print("Saved Data:")
+    with shelve.open(shelve_name, 'r') as file:
+      print("Printing saved data:")
       for key, val in file.items():
         print(key,':', val)
-      print(f"Session Created! Saved to >>> {shelve_name}")
+    print(f"Session Created! Saved to >>> {shelve_name}.db")
+      
+    return file
 
-  @debug_decorator
   def load_data(self, auth):
+    print("Loading Data: ")
     print(auth.items)
     for key, val in auth.items():
       print(key, val)
@@ -199,7 +207,7 @@ class ScrAApe():
       exit()
     print('cookies >>> ',self.auth.cookies_)
 
-  @debug_decorator
+  # @debug_decorator
   def get_data(self, uri, data, sel, attr):
     response = self.post_request(uri, data)
     print(response.text)
@@ -211,7 +219,7 @@ class ScrAApe():
 
     return select, soup
 
-  @debug_decorator
+  # @debug_decorator
   def get_all_data(self, uri, data, sel, attr):
     response = self.post_request(uri, data)
     print(response.text)
@@ -267,7 +275,7 @@ class ScrAApe():
     return terms_w_codes
   
   # data should be selected term from get_terms()
-  @debug_decorator
+  # @debug_decorator
   def get_subject(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckgens.p_proc_term_date'):
     """
     get_subject: 
@@ -295,7 +303,7 @@ class ScrAApe():
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
 
-  @debug_decorator
+  # @debug_decorator
   def get_course(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     """
     get_course:
@@ -321,7 +329,8 @@ class ScrAApe():
             }
 
     select, soup = self.get_all_data(uri, data, 'td', {'bypass_esc': 'Y'})
-    self.get_inputs(soup)
+    heads = self.get_inputs(soup)
+    self.auth.profile_.add_headers(heads)
 
     crss = select[1::2]
     cds = select[0::2]
@@ -336,22 +345,25 @@ class ScrAApe():
     return self.auth.crss_
   
   def get_inputs(self, soup):
-    self.auth.heads_ = list()
+    heads = {}
     for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
-      d = {}
       l = head.find_all('input')
       for i in l:
-        if i.attrs['name'] in d : d[i.attrs['name']] = [d[i.attrs['name']], i.attrs["value"]]
-        else: d[i.attrs['name']] = i.attrs["value"]
-      self.auth.heads_.append(d)
-    for i in self.auth.heads_:
+        if i.attrs['name'] in heads.keys() : 
+            if type(heads[i.attrs['name']]) == list:
+              if i.attrs['value'] not in heads[i.attrs['name']]:
+                heads[i.attrs['name']] = heads[i.attrs['name']].extend(i.attrs['value'])
+            elif not i.attrs['value'] == heads[i.attrs['name']]:
+              heads[i.attrs['name']] = [heads[i.attrs['name']], i.attrs["value"]]
+        else: heads[i.attrs['name']] = i.attrs["value"]
+    for i in heads:
       print(i)
       print()
-    print("Heads: ", self.auth.heads_)
+    print("Heads: ", heads)
     print("Saved Heads")
-    return self.auth.heads_
+    return heads
 
-  @debug_decorator
+  # @debug_decorator
   def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     """
     get_section:
@@ -370,26 +382,26 @@ class ScrAApe():
     
     print(self.auth)
 
-    for head in self.auth.heads_:
-      if head['SEL_CRSE'] == self.auth.crs: 
-        data = head
-        break
     
-    self.auth.scts_ = []
+    self.auth.profile_.headers_['SEL_CRSE'] = data
+    print(self.auth.profile_.headers_)
+    self.auth.profile_.scts_ = []
     
-    headers, soup = self.get_all_data(uri, data, 'th', {'class': "ddheader"})
+    headers, soup = self.get_all_data(uri, self.auth.profile_.headers_, 'th', {'class': "ddheader"})
     print("Headers: ", headers)
-    vals = soup.find_all('td', {'class': "dddefault"}, 'th', {'class': "ddheader"})
-    self.auth.scts_ = list()
+    vals = soup.find_all('td', {'class': "dddefault"})
+    print('Vals:', vals)
+    self.auth.profile_.scts_ = list()
     for i in range(len(vals) // 23):
       sect_data = vals[i*23:i*23+23]
       for s in sect_data: print(s.text)
       s = dict()
       for d, h in zip(sect_data, headers): 
         s[h.text] = d.text
-      self.auth.scts_.append(s)
+      self.auth.profile_.scts_.append(s)
 
-    return self.auth.scts_
+
+    return self.auth.profile_.scts_
   
   def get_user_profile(self):
     print("get_user_profile >>> Getting User Profile")
@@ -520,8 +532,22 @@ if __name__ == "__main__":
       if args.resource == 'section':
         scts = scrape.get_section()
 
+      if args.resource == 'session':
+        print("Printing")
+        print(scrape.auth)
+
       shelve_name = f'.{auth.usrnme}-sess'
       auth.save_data(shelve_name)
+      with shelve.open(shelve_name, 'r') as file:
+        print("Printing saved data:")
+        for key, val in file.items():
+          print(key,':', val)
+        file.close()
+
+      with shelve.open(shelve_name, 'r') as file:
+        print("Printing saved data:")
+        for key, val in file.items():
+          print(key,':', val)
     else:
       print('Hmm... something went wrong')
       print(args)
@@ -547,3 +573,6 @@ if __name__ == "__main__":
     else:
       print('Hmm... something went wrong')
       print(args)
+
+
+ 

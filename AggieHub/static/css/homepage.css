@@ -15,9 +15,7 @@ body {
     font-family: 'Montserrat', sans-serif;
 } 
 
-.banner {
-    grid-area: nav;
-}
+.banner {grid-area: nav;}
 
 .student_info {
     grid-area: header;
@@ -61,13 +59,13 @@ body {
     justify-content: center;
     align-items: center;
     justify-content: space-evenly;
-    padding: 10px;
+    padding: 5px;
     
 }
 
 .dropdowns select {
     margin: 5px 0 5px 0; 
-    width: 70%;
+    width: 80%;
     font-family: inherit;
 }
 
@@ -97,13 +95,9 @@ table {
     box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
 
-tr {
-    height: 26px;
-}
+tr {height: 26px;}
 
-.select_section {
-    padding: 10px;
-}
+.select_section {padding: 10px;}
 
 .select_section select {
     font-family: inherit;
@@ -120,7 +114,8 @@ tr {
 
 #update {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     padding: 10px 0 0 0;
 }
 
@@ -146,18 +141,32 @@ tr {
     color: #FFF;
     width: 200px;
     border: none;
-    margin: 0 0 5px;
+    margin: 10px 0 25px;
     padding: 10px;
 }
 
-.fc-day-today
-{
-  background-color: inherit !important;
+#register {
+    cursor: pointer;
+    font:inherit;
+    font-weight: 500;
+    background: #BC5C45;
+    color: #FFF;
+    width: 200px;
+    border: none;
+    margin: 0 0 5px;
+    padding: 10px;
+    display: none;
 }
+
+.fc-day-today {background-color: inherit !important;}
 
 #add:hover{background: #C9634B;}
 
 #add:active {box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
+
+#register:hover{background: #C9634B;}
+
+#register:active {box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);}
 
 @media all and (max-width: 575px) {
     body {

@@ -25,7 +25,7 @@
 
                 html = "";
                 if (department == "noform"){
-                    $('#content').hide();
+                    $('#content').attr('src', '/static/docs/noform.pdf#toolbar=0');
                     instructions.html("There is no override form for this department.")
                     instructions.show();
                     $('#contact_name').hide();

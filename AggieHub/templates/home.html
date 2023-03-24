@@ -17,6 +17,7 @@
 
     <script>
         //gets available subjects based on term selection
+        var course_sections;
         $(document).ready(function(){
             $("#course_description").hide();
             $("#select_term").change(function(){
@@ -30,7 +31,8 @@
                     },
                     dataType: 'json',
                     success: function (response) {
-                        console.log(response);
+                        var all_sections = $("#available");
+                        all_sections.empty();
                         var course_select = $("#select_course");
                         course_select.empty();
                         course_select.append('<option disabled hidden selected>Select Course</option>');
@@ -65,6 +67,8 @@
                     dataType: 'json',
                     success: function (response) {
                         var courses = response;
+                        var all_sections = $("#available");
+                        all_sections.empty();
                         var course_select = $("#select_course");
                         course_select.empty();
                         course_select.append('<option disabled hidden selected>Select Course</option>');
@@ -96,20 +100,23 @@
                     dataType: 'json',
                     success: function (response) {
                         console.log(response);
-                        var sections = response;
+                        console.log(response.sections); 
+                        var sections = response.sections;
+                        course_sections = sections;
                         var all_sections = $("#available");
                         all_sections.empty();
-                        var section_info = 23;
                         html = '';
-                        //FIX --- display every 23 items in sections on the same row (all information for a course)
-                        $.each(sections, function(index, value) {
-                            for(var i=0;i<(value.length/23);i+=23) {
-                                html = '<option value="' + value[i+1] + '">';
-                                var section = value.splice(i, i+23);
-                                html += (section + '</option>');
-                                all_sections.append(html);
+                        
+                        for(var i=0;i,sections.length;i++) {
+                            if (sections[i].Rem == 0) {
+                                html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                            } else if (sections[i].Cmp == 'DL') {
+                                html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
+                            } else{
+                                html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             }
-                        });
+                            all_sections.append(html);
+                        }
                     }
                 });
             });
@@ -146,7 +153,6 @@
                 if ($("#available").children("option:selected").val() == undefined) {
                     //remove hover effect and box-shadow
                 } else {
-                    addClass();
                     $("#add").prop("disabled", false);
                     $("#add").css("background-color", "#BC5C45");
                     $("#add").css("cursor", "pointer");
@@ -156,29 +162,12 @@
 
         //displays selected section on calendar
         //called whenever the selected section in available changes
-        {% comment %} $(document).ready(function() {
+       $(document).ready(function() {
             $("#available").change(function() {
                 var section = $(this).children("option:selected").val();
-                var section_data = section.split(" | ");
-
-                calendar.addEvent({
-                    id: section_data[0],
-                    groupId: section_data[0],
-                    title: "Section",
-                    startTime: section_data[5],
-                    endTime: section_data[6],
-                    daysOfWeek:section_data[7],
-                    extendedProps: {
-                        instructors: section_data[2],
-                        location: section_data[3],
-                        credits: section_data[4]
-                      },
-                    editable: false,
-                });
-                
-                calendar.render();
+                addClass(course_sections[section]); 
             });
-        }); {% endcomment %}
+        });
 
     </script>
 </head>
@@ -224,7 +213,8 @@
 
         <!--disable button until a section is selected-->
         <div id = "update">
-        <button id = "add" onclick="addEvent()">Add to Schedule</button>
+        <button id = "add" onclick="update(index)">Add to Schedule</button>
+        <button id = "register" onclick="populate()">Register</button>
         </div>
     </aside>
 
@@ -238,104 +228,17 @@
             <thead>
                 <tr>
                     <th width = "4%" id = "dv_crn" class = "dv_header">CRN</th>
-                    <th width = "7%" id = "dv_section" class = "dv_header">Section</th>
+                    <th width = "11%" id = "dv_section" class = "dv_header">Section</th>
                     <th width = "28%" id = "dv_title" class = "dv_header">Title</th>
-                    <th width = "8%" id = "dv_days" class = "dv_header">Days</th>
+                    <th width = "6%" id = "dv_days" class = "dv_header">Days</th>
                     <th width = "13%" id = "dv_time" class = "dv_header">Time</th>
                     <th width = "18%" id = "dv_instructor" class = "dv_header">Instructor</th>
                     <th width = "9%" id = "dv_location" class = "dv_header">Location</th>
                     <th width = "4%" id = "dv_credits" class = "dv_header">Credits</th>
-                    <th width = "5%" id = "dv_buttons" class = "dv_header"></th>
+                    <th width = "3%" id = "dv_buttons" class = "dv_header"></th>
                 </tr> 
             </thead>
-                <tr id = "class_one">
-                    <td>10572</td>
-                    <td>001</td>
-                    <td>Livestock Production</td>
-                    <td>TR</td>
-                    <td>09:00 am-09:50 am</td>
-                    <td>Uchenna Y Anele, Kingsley Agiliga Ekwemalor</td>
-                    <td>WEBB 100</td>
-                    <td>3</td>
-                    <td><i class="fa-solid fa-xmark" id="updateView" onclick="removeClass()"></i></td>
-                </tr>
-                <tr id = "class_two">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_three">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_four">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_five">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_six">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_seven">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr id = "class_eight">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+            <!--detailed view should be blank? add and remove rows instead of clearing them out-->
         </table>
     </section>
     <footer class  = "footer">

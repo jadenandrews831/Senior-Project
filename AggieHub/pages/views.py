@@ -44,7 +44,7 @@ def get_courses(request):
 
 def get_description(request):
     if (request.method == "POST"):
-        course = request.POST.get('course')
+        course = request.POST['course']
         response = {
             'description': task5(course)
         }
@@ -56,6 +56,7 @@ def get_sections(request):
         response = {
             'sections': task6(course)
         }
+        print(response)
     return JsonResponse(response)
 
 #WIP
@@ -66,5 +67,4 @@ def guides(request):
     return render(request, 'guides.html')
 #WIP
 def contact(request):
-    
     return render(request, 'contact.html')

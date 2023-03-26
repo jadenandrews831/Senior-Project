@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
 from .models import *
@@ -7,7 +7,10 @@ from .tasks import *
 
 #login required, redirect if not logged in
 def home(request):
-        #student = task7()
+        # #student = task7()
+        #if (request.session.has_key('banner_id') == False):
+        #     return redirect('login')
+        # banner_id = request.session['banner_id']
         terms = task2()
         context = {'terms': terms}
         return render(request, 'home.html', context)
@@ -21,6 +24,7 @@ def login(request):
             form.pin = form.cleaned_data['pin']
             response = task1(form.banner_id, form.pin)
             if (response == True):
+                #request.session['banner_id'] = form.banner_id
                 return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
     

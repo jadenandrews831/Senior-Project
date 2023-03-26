@@ -16,7 +16,7 @@
     <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
 
     <script>
-        //gets available subjects based on term selection
+        //LOAD SUBJECTS
         var course_sections;
         $(document).ready(function(){
             $("#course_description").hide();
@@ -34,13 +34,12 @@
                         var all_sections = $("#available");
                         all_sections.empty();
                         var course_select = $("#select_course");
+                        var subject_select = $("#select_subject");
                         course_select.empty();
                         course_select.append('<option disabled hidden selected>Select Course</option>');
-                        var subjects = response;
-                        var subject_select = $("#select_subject");
                         subject_select.empty();
                         subject_select.append('<option disabled hidden selected>Select Subject</option>');
-                        //add each subject in subjects to the subject select drop dropdown
+                        var subjects = response;
                         html = '';
                         $.each(subjects, function(index, value) {
                             for (var i = 0; i < value.length; i++) {
@@ -53,7 +52,7 @@
             });
         });
         
-        //gets available courses based on subject selection
+        //LOAD COURSES
         $(document).ready(function(){
             $("#select_subject").change(function(){
                 var subject = $(this).children("option:selected").val();
@@ -86,7 +85,7 @@
             });
         });
         
-        //gets available sections based on course selection
+        //LOAD SECTIONS
         $(document).ready(function(){
             $("#select_course").change(function(){
                 var course = $(this).children("option:selected").val();
@@ -100,20 +99,32 @@
                     dataType: 'json',
                     success: function (response) {
                         console.log(response);
-                        console.log(response.sections); 
+                        console.log(response.sections);
                         var sections = response.sections;
                         course_sections = sections;
                         var all_sections = $("#available");
                         all_sections.empty();
                         html = '';
+                        //display course description 
+                        var course_description = $("#description");
+                        course_description.show();
                         
                         for(var i=0;i,sections.length;i++) {
                             if (sections[i].Rem == 0) {
                                 html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
-                            } else if (sections[i].Cmp == 'DL') {
-                                html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
-                            } else{
-                                html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                            }
+                            if (sections[i].Cmp == 'DL') {
+                                if (sections[i].Rem == 0) {
+                                    html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ONLINE </option>';
+                                } else {
+                                    html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
+                                }
+                            } else {
+                                if (sections[i].Rem == 0) {
+                                    html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                                } else {
+                                    html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                                }
                             }
                             all_sections.append(html);
                         }
@@ -145,27 +156,32 @@
         }); {% endcomment %}
 
         //grey and disable #add until a section is selected
-        $(document).ready(function() {
+        {% comment %} $(document).ready(function() {
             $("#add").prop("disabled", true);
             $("#add").css("cursor", "not-allowed");
-            $("#add").css("background-color", "#E0E0E0");
+            $("#add").css("background-color", "#EACEC7");
             $("#available").change(function(){
                 if ($("#available").children("option:selected").val() == undefined) {
                     //remove hover effect and box-shadow
                 } else {
-                    $("#add").prop("disabled", false);
-                    $("#add").css("background-color", "#BC5C45");
-                    $("#add").css("cursor", "pointer");
+                   
                 }
             });
-        });
+        }); {% endcomment %}
 
         //displays selected section on calendar
         //called whenever the selected section in available changes
        $(document).ready(function() {
+            $("#add").prop("disabled", true);
+            $("#add").css("cursor", "not-allowed");
+            $("#add").css("background-color", "#EACEC7");
             $("#available").change(function() {
+                $("#add").prop("disabled", false);
+                $("#add").css("background-color", "#BC5C45");
+                $("#add").css("cursor", "pointer");
                 var section = $(this).children("option:selected").val();
-                addClass(course_sections[section]); 
+                //var course = $("#select_course").children("option:selected").val();
+                displaySection(course_sections[section]);
             });
         });
 
@@ -211,9 +227,8 @@
             <select id="available" size="5"></select>
         </section>
 
-        <!--disable button until a section is selected-->
         <div id = "update">
-        <button id = "add" onclick="update(index)">Add to Schedule</button>
+        <button id = "add" onclick="deselect()">Add to Schedule</button>
         <button id = "register" onclick="populate()">Register</button>
         </div>
     </aside>
@@ -222,7 +237,6 @@
         <div id = "scheduleview"></div>
     </main>
 
-    <!--rework table row ids-->
     <section class = "detailview">
         <table border id="details">
             <thead>
@@ -238,7 +252,6 @@
                     <th width = "3%" id = "dv_buttons" class = "dv_header"></th>
                 </tr> 
             </thead>
-            <!--detailed view should be blank? add and remove rows instead of clearing them out-->
         </table>
     </section>
     <footer class  = "footer">

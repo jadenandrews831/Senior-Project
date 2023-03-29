@@ -21,7 +21,7 @@ def debug_decorator(func):
 
   return inner
 
-# # @debug_decorator
+@debug_decorator
 def file_to_dict(filename):
   """
   file_to_dict: returns encoded file as dictionary
@@ -48,6 +48,8 @@ class User_Profile():
     self.dept = '*'
     self.banner = '*'
     self.major = '*'
+    self.advisor = '*'
+    self.college = '*'
     print('New Profile Created')
 
   def add_headers(self, headers):
@@ -143,6 +145,7 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
+
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -236,7 +239,12 @@ class ScrAApe():
 
   # Finish-Me
   def get_profile(self):
-    return self.auth.profile
+    profile =  self.auth.profile_
+    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
+    response = self.post_request(uri, {'term_in': '202410'}, referer=uri)
+    content = response.text
+    soup = bs(content, 'html.parser')
+    select = soup.find_all('th', '')
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
     if 'terms_w_codes_' in self.__dict__:
@@ -402,12 +410,6 @@ class ScrAApe():
 
 
     return self.auth.profile_.scts_
-  
-  def get_user_profile(self):
-    print("get_user_profile >>> Getting User Profile")
-    profile = self.auth.profile
-    print(profile)
-    return profile
 
   def post_request(self, uri, data, referer=None):
     """
@@ -535,6 +537,9 @@ if __name__ == "__main__":
       if args.resource == 'session':
         print("Printing")
         print(scrape.auth)
+
+      if args.resource == 'profile':
+        prf = scrape.get_profile()
 
       shelve_name = f'.{auth.usrnme}-sess'
       auth.save_data(shelve_name)

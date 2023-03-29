@@ -41,7 +41,7 @@ def task6(course):
     global success
     scrape = ScrAApe(success)
     sections = scrape.get_section(course)
-    print (sections)
+    print(sections)
     return sections
 
 #pulls student information

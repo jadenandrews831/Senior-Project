@@ -25,7 +25,7 @@
 
                 html = "";
                 if (department == "noform"){
-                    $('#content').hide();
+                    $('#content').attr('src', '/static/docs/noform.pdf#toolbar=0');
                     instructions.html("There is no override form for this department.")
                     instructions.show();
                     $('#contact_name').hide();
@@ -231,7 +231,7 @@
     <main class = "override_form">
         <section id = "override_pdf">
             <!--MEEN form used as a placeholder for now. what will default placeholder be? form from first dept alphabetically or no form? something else??-->
-            <iframe id="content" src="/static/docs/MEEN.pdf" width="100%" height="100%"></iframe>
+            <iframe id="content" src="/static/docs/ncat-colleges.pdf#toolbar=0" width="100%" height="100%"></iframe>
         </section>
     </main>
 

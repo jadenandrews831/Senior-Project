@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
 from .models import *
@@ -7,7 +7,10 @@ from .tasks import *
 
 #login required, redirect if not logged in
 def home(request):
-        #student = task7()
+        # #student = task7()
+        #if (request.session.has_key('banner_id') == False):
+        #     return redirect('login')
+        # banner_id = request.session['banner_id']
         terms = task2()
         context = {'terms': terms}
         return render(request, 'home.html', context)
@@ -21,6 +24,7 @@ def login(request):
             form.pin = form.cleaned_data['pin']
             response = task1(form.banner_id, form.pin)
             if (response == True):
+                #request.session['banner_id'] = form.banner_id
                 return redirect('home')
     return render(request, 'login.html', {'form': loginForm})
     
@@ -44,7 +48,7 @@ def get_courses(request):
 
 def get_description(request):
     if (request.method == "POST"):
-        course = request.POST.get('course')
+        course = request.POST['course']
         response = {
             'description': task5(course)
         }
@@ -56,6 +60,7 @@ def get_sections(request):
         response = {
             'sections': task6(course)
         }
+        print(response)
     return JsonResponse(response)
 
 #WIP
@@ -66,5 +71,4 @@ def guides(request):
     return render(request, 'guides.html')
 #WIP
 def contact(request):
-    
     return render(request, 'contact.html')

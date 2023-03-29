@@ -79,6 +79,9 @@ class User_Profile():
  Dept: {self.dept}   
  Major: {self.major}
  Banner: {self.banner}
+ Major: {self.major}
+ Advisor: {self.advisor}
+ College: {self.college}
  {self.headers_ if hasattr(self, 'headers_') else ""}
  {self.scts_ if hasattr(self, "scts_") else ""}
 >>>User_Profile Object<<<
@@ -245,6 +248,8 @@ class ScrAApe():
     content = response.text
     soup = bs(content, 'html.parser')
     select = soup.find_all('th', '')
+    
+    return self.auth.profile_
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
     if 'terms_w_codes_' in self.__dict__:

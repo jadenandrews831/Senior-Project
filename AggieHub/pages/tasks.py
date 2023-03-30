@@ -49,5 +49,5 @@ def task7():
     global success
     scrape = ScrAApe(success)
     profile = scrape.get_profile()
-    print(profile)
+    #print(profile)
     return profile

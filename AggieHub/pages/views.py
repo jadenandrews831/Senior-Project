@@ -7,7 +7,6 @@ from .tasks import *
 
 #login required, redirect if not logged in
 def home(request):
-        # #student = task7()
         #if (request.session.has_key('banner_id') == False):
         #     return redirect('login')
         # banner_id = request.session['banner_id']
@@ -62,6 +61,10 @@ def get_sections(request):
         }
         print(response)
     return JsonResponse(response)
+
+def get_profile(request):
+    if (request.method == 'POST'):
+        return JsonResponse(task7().__dict__)
 
 #WIP
 def override(request):

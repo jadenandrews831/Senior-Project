@@ -1,4 +1,5 @@
 var calendar = null;
+var course_sections;
 
 //creates the calendar and render it
 document.addEventListener('DOMContentLoaded', function() {
@@ -19,167 +20,59 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     calendar.render();
-  });
+});
 
-//check if the row in the table already has a class. 
-    //if it does, check the time of the class and the time of the class being added. if the times overlap, do not add the class
-    //if the times do not overlap, add to the next available row's innerHTML
-    //check that a section from the same class is not already in the table
-function addClass(index) {
-    //get selected time and day from #available
-    var section_data = index;
-    var time = section_data.Time;
-    var days = section_data.Days;
-    var instructor = section_data.Instructor;
-    var location = section_data.Location;
-    var credits = section_data.Cred;
-    var title = section_data.Title;
-    var crn = section_data.CRN;
-    var section = section_data.Sec;
-    var crse = section_data.Crse;
-    var cmp = section_data.Cmp;
-    var cap = section_data.Cap;
-    var act = section_data.Act;
-    var rem = section_data.Rem;
-    var subj = section_data.Subj;
-    
+function conflictTime(new_time, day) {
     var table = document.getElementById("details");
     var all_rows = table.rows.length;
-    
-    //get selected row from #available
-    
-    if (all_rows > 1) {
-        for (var i = 1; i < all_rows; i++) {
-            var row = table.rows[i];
-            var row_time = row.cells[4].innerText;
-            var row_days = row.cells[3].innerText;
-            var row_crn = row.cells[0].innerText;
-            var row_section = row.cells[1].innerText;
-            var row_title = row.cells[2].innerText;
+    var section_time =  getTime(new_time);
+    var start = section_time[0];
+    var end = section_time[1];
+    //convert start and end to Date objects to compare times
+    var start_date = new Date("01/01/2021 " + start);
+    var end_date = new Date("01/01/2021 " + end);
 
-            if (row_crn == crn) {
-                alert("You have already added this section.");
-                return;
-            } else if (row_title == title) {
-                alert("You have already added a section for this course.");
-                return;
-            } else if (rem == 0) {
-                alert("This section is full.");
-                return;
-            } else if (row_time.includes(time) && row_days.includes(days)) {
-                alert("This class conflicts with another class you have added.");
-                return;
-            } else {
-                //add the class to the table and call addEvent()
-                var new_row = table.insertRow(all_rows);
-                //set the id of the row to the crn
-                new_row.id = crn;
-                var crn_cell = new_row.insertCell(0);
-                var section_cell = new_row.insertCell(1);
-                var title_cell = new_row.insertCell(2);
-                var days_cell = new_row.insertCell(3);
-                var time_cell = new_row.insertCell(4);
-                var instructor_cell = new_row.insertCell(5);
-                var location_cell = new_row.insertCell(6);
-                var credits_cell = new_row.insertCell(7);
-                var remove_cell = new_row.insertCell(8);
-                crn_cell.innerText = crn;
-                section_cell.innerText = subj + " " + crse + "-" + section;
-                title_cell.innerText = title;
-                days_cell.innerText = days;
-                time_cell.innerText = time;
-                instructor_cell.innerText = instructor;
-                location_cell.innerText = location;
-                credits_cell.innerText = credits;
-                remove_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
-                addEvent(crn);
-                return;
-            }
+    
+    for (var i = 1; i < all_rows; i++) {
+    //check if the new_time conflicts with any of the times in the table
+        var row = table.rows[i];
+        var row_time = row.cells[4].innerText;
+        var row_time_array = getTime(row_time);
+        var row_start = row_time_array[0];
+        var row_end = row_time_array[1];
+
+        var row_start_date = new Date("01/01/2021 " + row_start);
+        var row_end_date = new Date("01/01/2021 " + row_end);
+
+        if (start_date >= row_start_date && start_date < row_end_date) {
+            return true;
+        } 
+    }
+
+}
+
+function getDays(day) {
+    var days = [];
+    for (var i = 0; i < day.length; i++) {
+        //handle multiple days
+        switch(day.charAt(i)) {
+            case "M": days +=  1; break;
+            case "T": days +=  2; break;
+            case "W": days +=  3; break;
+            case "R": days +=  4; break;
+            case "F": days +=  5; break;
         }
-    } else {
-        //add the class to the table and call addEvent()
-        var new_row = table.insertRow(all_rows);
-        //set the id of the row to the crn
-        new_row.id = crn;
-        var crn_cell = new_row.insertCell(0);
-        var section_cell = new_row.insertCell(1);
-        var title_cell = new_row.insertCell(2);
-        var days_cell = new_row.insertCell(3);
-        var time_cell = new_row.insertCell(4);
-        var instructor_cell = new_row.insertCell(5);
-        var location_cell = new_row.insertCell(6);
-        var credits_cell = new_row.insertCell(7);
-        var remove_cell = new_row.insertCell(8);
-        crn_cell.innerText = crn;
-        section_cell.innerText = subj + " " + crse + "-" + section;
-        title_cell.innerText = title;
-        days_cell.innerText = days;
-        time_cell.innerText = time;
-        instructor_cell.innerText = instructor;
-        location_cell.innerText = location;
-        credits_cell.innerText = credits;
-        remove_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
-        addEvent(crn);
-
     }
-    //iterate through the table and check if any time and days overlap with the selected time and day
-    //if there is an overlap, alert the user and do not add the class
-    
 
-    // for (var i = 0; i < rows.length; i++) {
-    //     var row = rows[i];
-    //     var rowTime = row.getElementsByTagName("td")[4].innerText;
-    //     var rowDay = row.getElementsByTagName("td")[3].innerText;
-        
-        
-
-    //     if (time.includes(rowTime) && day.includes(rowDay)) {
-    //         alert("TO DO: time conflict");
-    //         return;
-    //     } 
-    // }
-
-    //change last td of row to <i class="fa-solid fa-xmark" onclick="removeClass()"></i>
-    //calculate the new total number of credits and update status and register button (if needed)
+    return days;
 }
 
-//removes class from the table by setting the innerHTML of the row to empty? or by removing the row?
-//also removes the event from the calendar
-    //get the crn from the row and use it to remove the event from the calendar
-function removeClass(crn) {
-    var table = document.getElementById("details");
-    //find the index of the row with the id of the crn
-    var row = document.getElementById(crn).rowIndex;
-    table.deleteRow(row);
+function getTime(time) {
 
-    calendar.getEventById(crn).remove();
-    calendar.render(); 
-    //update();
-    //deselect the option in #available
-}
-
-//get the class data from the table needed for the event
-    //called at the end of the addClass function when a class is added to the schedule
-function getData(crn) {
-    //find first empty row in table
-    var row = document.getElementById(crn);
-    var time = row.getElementsByTagName("td")[4].innerText;
-    var day = row.getElementsByTagName("td")[3].innerText;
-
-    if (time.includes("TBA")) {
-        return "virtual";
-    }
-
-    //check if there is more than one time range for the class (ex. 8:00-9:00, 10:00-11:00)
-    if (time.includes(",")) {
-        alert("TO DO: multiple times"); //FUNCTIONAL
-        return; 
-    }
-    
     var timeArray = time.split("-");
     var start = timeArray[0];
     var end = timeArray[1];
-    //convert to 24 hour time
+
     if (start.includes("pm") && end.includes("pm")) {
         var startArray = start.split(":");
         if (startArray[0] != 12) {
@@ -206,31 +99,161 @@ function getData(crn) {
         start = start.replace(" am", ":00");
         end = end.replace(" am", ":00");
     }
-    
-    var days = [];
 
-    for (var i = 0; i < day.length; i++) {
-        //handle multiple days
-        switch(day.charAt(i)) {
-            case "M": days +=  1; break;
-            case "T": days +=  2; break;
-            case "W": days +=  3; break;
-            case "R": days +=  4; break;
-            case "F": days +=  5; break;
+    return [start, end];
+}
+
+
+function addClass(section) {
+    //add i icon to last column of row for current selected section
+    var table = document.getElementById("details");
+    var all_rows = table.rows.length;
+    var last_row = table.rows[all_rows - 1];
+    var last_cell = last_row.cells[8];
+
+}
+
+
+//check if the row in the table already has a class. 
+    //if it does, check the time of the class and the time of the class being added. if the times overlap, do not add the class
+    //if the times do not overlap, add to the next available row's innerHTML
+    //check that a section from the same class is not already in the table
+function displaySection(index) {
+    //get selected time and day from #available
+    var section_data = index;
+    var time = section_data.Time;
+    var days = section_data.Days;
+    var instructor = section_data.Instructor;
+    var location = section_data.Location;
+    var credits = section_data.Cred;
+    var title = section_data.Title;
+    var crn = section_data.CRN;
+    var section = section_data.Sec;
+    var crse = section_data.Crse;
+    var subj = section_data.Subj;
+    
+    var table = document.getElementById("details");
+    var all_rows = table.rows.length;
+    
+    if (all_rows > 1) {
+        for (var i = 1; i < all_rows; i++) {
+            var row = table.rows[i];
+            var row_crn = row.cells[0].innerText;
+            var row_title = row.cells[2].innerText;
+            var row_days = row.cells[3].innerText;
+            var row_time = row.cells[4].innerText;
+            var evaluation;
+            //var remove_option = row.cells[8].innerHTML;
+            if (row_crn == crn) {
+                alert("You have already added this section.");
+                evaluation = 1;
+            } else if (row_title == title) {
+                alert("You have already added a section for this course.");
+                evaluation = 1;
+            } else if (row_time.includes(time) && row_days.includes(days)) {
+                //NOT FUNCTIONING CORRECTLY
+                alert("This class conflicts with another class you have added.");
+                evaluation = 1;
+            } else {
+                evaluation = 0;
+            }
         }
+
+        if (evaluation == 0) {
+            var new_row = table.insertRow(all_rows);
+            new_row.id = crn;
+            var crn_cell = new_row.insertCell(0);
+            var section_cell = new_row.insertCell(1);
+            var title_cell = new_row.insertCell(2);
+            var days_cell = new_row.insertCell(3);
+            var time_cell = new_row.insertCell(4);
+            var instructor_cell = new_row.insertCell(5);
+            var location_cell = new_row.insertCell(6);
+            var credits_cell = new_row.insertCell(7);
+            var remove_cell = new_row.insertCell(8);
+            crn_cell.innerText = crn;
+            section_cell.innerText = subj + " " + crse + "-" + section;
+            title_cell.innerText = title;
+            days_cell.innerText = days;
+            time_cell.innerText = time;
+            instructor_cell.innerText = instructor;
+            location_cell.innerText = location;
+            credits_cell.innerText = credits;
+            remove_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
+            addEvent(crn);
+            update();
+        } else {
+            return;
+        }
+    } else {
+        var new_row = table.insertRow(all_rows);
+        new_row.id = crn;
+        var crn_cell = new_row.insertCell(0);
+        var section_cell = new_row.insertCell(1);
+        var title_cell = new_row.insertCell(2);
+        var days_cell = new_row.insertCell(3);
+        var time_cell = new_row.insertCell(4);
+        var instructor_cell = new_row.insertCell(5);
+        var location_cell = new_row.insertCell(6);
+        var credits_cell = new_row.insertCell(7);
+        var remove_cell = new_row.insertCell(8);
+        crn_cell.innerText = crn;
+        section_cell.innerText = subj + " " + crse + "-" + section;
+        title_cell.innerText = title;
+        days_cell.innerText = days;
+        time_cell.innerText = time;
+        instructor_cell.innerText = instructor;
+        location_cell.innerText = location;
+        credits_cell.innerText = credits;
+        remove_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
+        addEvent(crn);
+        update();
     }
+    //iterate through the table and check if any time and days overlap with the selected time and day
+    //if there is an overlap, alert the user and do not add the class
+
+    //change last td of row to <i class="fa-solid fa-xmark" onclick="removeClass()"></i>
+    //calculate the new total number of credits and update status and register button (if needed)
+}
+
+function removeClass(crn) {
+    var table = document.getElementById("details");
+    var row = document.getElementById(crn).rowIndex;
+    table.deleteRow(row);
+
+    calendar.getEventById(crn).remove();
+    calendar.render(); 
+    update();
+    //deselect the option in #available
+}
+
+//get the class data from the table needed for the event
+    //called at the end of the addClass function when a class is added to the schedule
+function getData(crn) {
+    //find first empty row in table
+    var row = document.getElementById(crn);
+    var time = row.getElementsByTagName("td")[4].innerText;
+    var day = row.getElementsByTagName("td")[3].innerText;
+
+    if (time.includes("TBA")) {
+        return "virtual";
+    }
+    //convert to 24 hour time
+    var timeRange = getTime(time);
+
+    var days = getDays(day);
 
     var crn = row.getElementsByTagName("td")[0].innerText;
     var title = row.getElementsByTagName("td")[2].innerText;
     var instructors = row.getElementsByTagName("td")[5].innerText;
     var location = row.getElementsByTagName("td")[6].innerText;
     var credits = row.getElementsByTagName("td")[7].innerText;
-    return [crn, title, instructors, location, credits, start, end, days];
+    return [crn, title, instructors, location, credits, days].concat(timeRange);
 }
 
 //adds the event to the calendar
 function addEvent(crn) {
-    var data = getData(crn); 
+    var data = getData(crn);
 
     if (data == "virtual") {
         return;
@@ -246,9 +269,9 @@ function addEvent(crn) {
         id: crn,
         groupId: crn,
         title: data[1],
-        startTime: data[5],
-        endTime: data[6],
-        daysOfWeek: data[7],
+        startTime: data[6],
+        endTime: data[7],
+        daysOfWeek: data[5],
         extendedProps: {
             instructors: data[2],
             location: data[3],
@@ -279,7 +302,46 @@ function addEvent(crn) {
 
 function update() {
     var table = document.getElementById("details");
-    //get the row of the table with the credits
+    var total_rows = table.rows.length;
+    var total_credits = 0;
+
+
+    if (total_rows == 1) {
+        document.getElementById("reg_status").style.visibility = "hidden";
+        document.getElementById("register").style.visibility = "hidden";
+    } else {
+        for (var i = 1; i < total_rows; i++) {
+            total_credits += parseInt(table.rows[i].cells[7].innerText);
+        }
+
+        if (total_credits > 0 && total_credits < 12) {
+            document.getElementById("status").innerHTML = "PART-TIME";
+            document.getElementById("status").style.color = "#BC5C45";
+            document.getElementById("register").style.backgroundColor = "#BC5C45";
+            document.getElementById("register").style.cursor = "pointer";
+            document.getElementById("register").disabled = false;
+            document.getElementById("register").style.visibility = "visible";
+            document.getElementById("reg_status").style.visibility = "visible";
+        } else if (total_credits >= 12 && total_credits <= 18) {
+            document.getElementById("status").innerHTML = "FULL-TIME";
+            document.getElementById("status").style.color = "#BC5C45";
+            document.getElementById("register").style.backgroundColor = "#BC5C45";
+            document.getElementById("register").style.cursor = "pointer";
+            document.getElementById("register").disabled = false;
+            document.getElementById("register").style.visibility = "visible";
+            document.getElementById("reg_status").style.visibility = "visible";
+        } else {
+            alert("To register for more than 18 credits, you need to get approval from both the department head and dean.");
+            document.getElementById("register").style.backgroundColor = "#EACEC7";
+            document.getElementById("register").style.cursor = "not-allowed";
+            document.getElementById("register").disabled = true;
+        }
+    }
+    
+    //var remove_cell = table.rows[row].cells[8];
+
+    
+    //check if row has i tag in last td
        //add up the credits of all the classes in the table and update the total credits
        //if the total credits is greater than 18, disable the register button and turn status red
        //if total credits is less than 12, change status to "part-time" and turn green
@@ -290,9 +352,22 @@ function update() {
 
 
 // tester function to populate the section dropdown with some fake data
-function clearRow(crn) {
-    //create a few section options with each thing in the list having it's own property
-        //ex: sections[0] would return a section object with the properties crn, title, instructors, location, credits, time, days
-        //this properties can be accessed by using sections[0].crn, sections[0].title, etc. and will return those values
-    
+function deselect() {
+    document.getElementById("available").selectedIndex = -1;
 }
+
+function clearSchedule() {
+    var table = document.getElementById("details");
+    var total_rows = table.rows.length;
+
+    for (var i = 1; i < total_rows; i++) {
+        var crn = table.rows[1].id;
+        removeClass(crn);
+    }
+
+    update();
+}
+
+// function register() {
+
+// }

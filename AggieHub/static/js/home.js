@@ -22,8 +22,57 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 
+function conflictTime(new_time, day) {
+    var table = document.getElementById("details");
+    var all_rows = table.rows.length;
+    var section_time =  getTime(new_time);
+    var start = section_time[0];
+    var end = section_time[1];
+    //convert start and end to Date objects to compare times
+    var start_date = new Date("01/01/2021 " + start);
+    var end_date = new Date("01/01/2021 " + end);
 
-function getTime(start, end) {
+    
+    for (var i = 1; i < all_rows; i++) {
+    //check if the new_time conflicts with any of the times in the table
+        var row = table.rows[i];
+        var row_time = row.cells[4].innerText;
+        var row_time_array = getTime(row_time);
+        var row_start = row_time_array[0];
+        var row_end = row_time_array[1];
+
+        var row_start_date = new Date("01/01/2021 " + row_start);
+        var row_end_date = new Date("01/01/2021 " + row_end);
+
+        if (start_date >= row_start_date && start_date < row_end_date) {
+            return true;
+        } 
+    }
+
+}
+
+function getDays(day) {
+    var days = [];
+    for (var i = 0; i < day.length; i++) {
+        //handle multiple days
+        switch(day.charAt(i)) {
+            case "M": days +=  1; break;
+            case "T": days +=  2; break;
+            case "W": days +=  3; break;
+            case "R": days +=  4; break;
+            case "F": days +=  5; break;
+        }
+    }
+
+    return days;
+}
+
+function getTime(time) {
+
+    var timeArray = time.split("-");
+    var start = timeArray[0];
+    var end = timeArray[1];
+
     if (start.includes("pm") && end.includes("pm")) {
         var startArray = start.split(":");
         if (startArray[0] != 12) {
@@ -56,6 +105,11 @@ function getTime(start, end) {
 
 
 function addClass(section) {
+    //add i icon to last column of row for current selected section
+    var table = document.getElementById("details");
+    var all_rows = table.rows.length;
+    var last_row = table.rows[all_rows - 1];
+    var last_cell = last_row.cells[8];
 
 }
 
@@ -97,6 +151,7 @@ function displaySection(index) {
                 alert("You have already added a section for this course.");
                 evaluation = 1;
             } else if (row_time.includes(time) && row_days.includes(days)) {
+                //NOT FUNCTIONING CORRECTLY
                 alert("This class conflicts with another class you have added.");
                 evaluation = 1;
             } else {
@@ -163,7 +218,6 @@ function displaySection(index) {
 
 function removeClass(crn) {
     var table = document.getElementById("details");
-    //find the index of the row with the id of the crn
     var row = document.getElementById(crn).rowIndex;
     table.deleteRow(row);
 
@@ -184,31 +238,10 @@ function getData(crn) {
     if (time.includes("TBA")) {
         return "virtual";
     }
-
-    //check if there is more than one time range for the class
-    // if (time.includes(",")) {
-    //     alert("TO DO: multiple times"); //FUNCTIONAL
-    //     return; 
-    // }
-    
-    var timeArray = time.split("-");
-    var start = timeArray[0];
-    var end = timeArray[1];
     //convert to 24 hour time
-    var timeRange = getTime(start, end);
+    var timeRange = getTime(time);
 
-    var days = [];
-
-    for (var i = 0; i < day.length; i++) {
-        //handle multiple days
-        switch(day.charAt(i)) {
-            case "M": days +=  1; break;
-            case "T": days +=  2; break;
-            case "W": days +=  3; break;
-            case "R": days +=  4; break;
-            case "F": days +=  5; break;
-        }
-    }
+    var days = getDays(day);
 
     var crn = row.getElementsByTagName("td")[0].innerText;
     var title = row.getElementsByTagName("td")[2].innerText;
@@ -272,6 +305,7 @@ function update() {
     var total_rows = table.rows.length;
     var total_credits = 0;
 
+
     if (total_rows == 1) {
         document.getElementById("reg_status").style.visibility = "hidden";
         document.getElementById("register").style.visibility = "hidden";
@@ -320,5 +354,20 @@ function update() {
 // tester function to populate the section dropdown with some fake data
 function deselect() {
     document.getElementById("available").selectedIndex = -1;
-
 }
+
+function clearSchedule() {
+    var table = document.getElementById("details");
+    var total_rows = table.rows.length;
+
+    for (var i = 1; i < total_rows; i++) {
+        var crn = table.rows[1].id;
+        removeClass(crn);
+    }
+
+    update();
+}
+
+// function register() {
+
+// }

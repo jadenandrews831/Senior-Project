@@ -154,6 +154,16 @@ tr {height: 26px;}
     visibility: hidden;
 }
 
+#student_name {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#classification {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
 #reg_status {visibility:hidden;}
 
 #status {font-weight: 700;}

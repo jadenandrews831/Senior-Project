@@ -6,9 +6,28 @@
     <meta charset="UTF-8">
     <title>Curriculum Guides</title>
     <link rel="stylesheet" href={% static 'css/guides.css' %}>
+    <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        $(document).ready(function() {
+            $.ajax ({
+                type: "POST",
+                url: "{% url 'get_profile' %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var college = $("#college");
+                    var major = $("#major");
+                    college.html(response.college);
+                    major.html(response.major);
+                }
+            });
+        })
+    </script>
 </head>
 <body>
     <nav class = "banner">
@@ -18,8 +37,8 @@
     <header class = "student_info">
         <!--if major/dept are undeclared, display a different message to user (?)-->
         <!--if major/dept are declared, display the major/dept-->
-        <p id = "dept">Department</p>
-        <p id = "major">Major</p>
+        <p id = "college"></p>
+        <p id = "major"></p>
     </header>
     
     <aside class = "sidebar">

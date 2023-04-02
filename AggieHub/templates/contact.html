@@ -11,6 +11,22 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
         <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function() {
+                $.ajax ({
+                    type: "POST",
+                    url: "{% url 'get_profile' %}",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var advisor = $("#advisor");
+                        advisor.html(response.advisor);
+                    }
+                });
+            })
+        </script>
     </head>
     <body>
         <nav class = "banner">
@@ -30,7 +46,7 @@
                     <section class="box">
                         <label class="box-title" for="cb1">Who is my academic advisor? How do I get in contact with them?</label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">Your academic advisor is <b>[insert advisor name]</b>. You can find their contact information <a href="https://www.ncat.edu/employee-directory.php" target="_blank"><b>here</b></a>.</div>
+                        <div class="box-content">Your academic advisor is <span id='advisor'></span>. You can find their contact information <a href="https://www.ncat.edu/employee-directory.php" target="_blank"><b>here</b></a>.</div>
                     </section>
                     <input type="radio" name="accordion" id="cb2" />
                     <section class="box">

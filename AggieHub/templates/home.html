@@ -18,10 +18,45 @@
     <script>
         //LOAD SUBJECTS
         var course_sections;
+        
+        $(document).ready(function() {
+            $.ajax ({
+                type: "POST",
+                url: "{% url 'get_profile' %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var student_name = $("#student_name");
+                    var classification = $("#classification");
+                    student_name.html(response.first + ' ' + response.last);
+                    classification.html(response.classification);
+                }
+            });
+        })
+
+        {% comment %} $(document).ready(function(){
+            //when user focuses on term dropdown, check if there is a schedule in progress
+            $("#select_term").focus(function(){
+                //unfocus from term dropdown
+                $("#select_term").blur();
+                if ($('#details').length > 1) {
+                    var answer = confirm("Changing the term will clear your current selections. Are you sure you want to change the term?");
+                    if (answer == true) {
+                        clearSchedule();
+                        $("#select_term").blur();
+                    } else {
+                        $("#select_term").blur();
+                    }
+                }
+            })
+        }) {% endcomment %}
+
         $(document).ready(function(){
             $("#course_description").hide();
             $("#select_term").change(function(){
-                var term = $(this).children("option:selected").val();
+                var term = $(this).children("option:selected").val();                
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_subjects' %}",
@@ -114,13 +149,13 @@
                                 html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             }
                             if (sections[i].Cmp == 'DL') {
-                                if (sections[i].Rem == 0) {
+                                if (sections[i].Rem == 0 && sections[i].Rem != '\xa0') {
                                     html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ONLINE </option>';
                                 } else {
                                     html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
                                 }
                             } else {
-                                if (sections[i].Rem == 0) {
+                                if (sections[i].Rem == 0 && sections[i].Rem != '\xa0') {
                                     html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                                 } else {
                                     html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
@@ -194,9 +229,9 @@
     </nav>
 
     <header class = "student_info">
-        <p id = "reg_status" >Current Status: <span id = "status">STATUS</span></p>
-        <p id = "student_name">STUDENT NAME</p>
-        <p id = "classification">CLASSIFICATION</p>
+        <p id = "reg_status" >Current Status: <span id = "status"></span></p>
+        <p id = "student_name"></p>
+        <p id = "classification"></p>
     </header>
 
     <aside class = "options">
@@ -229,7 +264,7 @@
 
         <div id = "update">
         <button id = "add" onclick="deselect()">Add to Schedule</button>
-        <button id = "register" onclick="populate()">Register</button>
+        <button id = "register" onclick="register()">Register</button>
         </div>
     </aside>
 

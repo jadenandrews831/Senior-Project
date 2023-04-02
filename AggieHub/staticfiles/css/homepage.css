@@ -39,6 +39,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    display: none;
 }
 
 .options {
@@ -48,6 +49,7 @@ body {
     padding: 30px 0 0 0;
     margin-top: 22px;
     margin-bottom: 15px;
+    margin-left: 10px;
     background-color: white;
     box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
@@ -87,7 +89,7 @@ body {
     justify-content: center;
 }
 
-table {
+#details {
     background-color: white;
     width: 100%;
     border-collapse: collapse;
@@ -95,21 +97,15 @@ table {
     box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
 
-tr {height: 26px;}
+tr {height: 26px;}  
 
 .select_section {padding: 10px;}
 
-.select_section select {
-    font-family: inherit;
-}
+.select_section select {font-family: inherit;}
 
 #scheduleview {
     background-color:white;
     box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
-}
-
-#status {
-    text-shadow: green 0px 0px 15px; 
 }
 
 #update {
@@ -155,8 +151,22 @@ tr {height: 26px;}
     border: none;
     margin: 0 0 5px;
     padding: 10px;
-    display: none;
+    visibility: hidden;
 }
+
+#student_name {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#classification {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#reg_status {visibility:hidden;}
+
+#status {font-weight: 700;}
 
 .fc-day-today {background-color: inherit !important;}
 

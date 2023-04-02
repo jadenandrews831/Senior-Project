@@ -242,12 +242,34 @@ class ScrAApe():
 
   # Finish-Me
   def get_profile(self):
-    profile =  self.auth.profile_
     uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
     response = self.post_request(uri, {'term_in': '202410'}, referer=uri)
     content = response.text
+
     soup = bs(content, 'html.parser')
-    select = soup.find_all('th', '')
+    name = soup.find('div', {'class': 'staticheaders'})
+    keys = soup.find_all('th', {'class': 'ddlabel'}) # get profile name, banner, and term
+    vals = soup.find_all('td', {'class': 'dddefault'})
+
+    self.auth.profile_.first = ''.join(name.text.split()[1])
+    self.auth.profile_.last = ''.join(name.text.split()[3])
+    
+    for key, val in zip(keys, vals):
+      if key.text == 'Class:':
+        self.auth.profile_.classification = val.text
+
+      elif key.text == 'Major and Department:':
+        self.auth.profile_.major = ''.join(val.text.split(',')[0])
+        self.auth.profile_.dept = ''.join(val.text.split(',')[1])
+
+      elif key.text == 'Primary Advisor:':
+        self.auth.profile_.advisor = ''.join(val.text)
+
+      elif key.text == 'College:':
+        self.auth.profile_.college = ''.join(val.text)
+
+      else:
+        setattr(self.auth.profile_, key.text, val.text)
     
     return self.auth.profile_
 
@@ -413,6 +435,40 @@ class ScrAApe():
         s[h.text] = d.text
       self.auth.profile_.scts_.append(s)
 
+    print('Sections:')
+    print(self.auth.profile_.scts_)
+
+    self.response_ = self.auth.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckschd.p_disp_listcrse', 
+                                            params={'term_in':self.auth.pterm,'crse_in':self.auth.crs,
+                                                 'crn_in':self.auth.profile_.scts_[0]['CRN'], 'subj_in':self.auth.pcode}, 
+                                            headers={
+                                              'Host': 'ssbprod-ncat.uncecs.edu', 
+                                              'Cookies': self.auth.format_cookies(self.auth.cookies_),
+                                              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+                                              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                                              'Accept-Language': 'en-US,en;q=0.5',
+                                              'Accept-Encoding': 'gzip, deflate',
+                                              'Content-Type': 'application/x-www-form-urlencoded',
+                                              'Orgin': 'https://ssbprod-ncat.uncecs.edu',
+                                              'Referer': uri,
+                                              'Upgrade-Insecure-Requests': '1',
+                                              'Sec-Fetch-Dest': 'document',
+                                              'Sec-Fetch-Mode': 'navigate', 
+                                              'Sec-Fetch-Site': 'same-origin',
+                                              'Sec-Fetch-User': '?1',
+                                              'Te': 'trailers',
+                                              'Connection': 'close'})
+    
+    
+    print('Description:')
+    print(self.response_.text)
+
+    soup = bs(self.response_.text, 'html.parser')
+    print('Soup:', soup)
+    select = soup.find('td', {'class':'dddefault'})
+    print('Select:')
+    print(select)
+    self.auth.profile_.scts_[0]['description'] = select.text
 
     return self.auth.profile_.scts_
 

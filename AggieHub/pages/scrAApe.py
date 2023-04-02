@@ -468,8 +468,10 @@ class ScrAApe():
     select = soup.find('td', {'class':'dddefault'})
     print('Select:')
     print(select)
-    self.auth.profile_.scts_[0]['description'] = select.text.split('<br>')[0]
+    self.auth.profile_.scts_[0]['description'] = select.text.split('\n\n')[0]
 
+    print('Description:')
+    print(self.auth.profile_.scts_[0]['description'])
     return self.auth.profile_.scts_
 
   def post_request(self, uri, data, referer=None):

@@ -38,18 +38,10 @@ def get_subjects(request):
 def get_courses(request):
     if (request.method == 'POST'):
         subject = request.POST['subject']
-        sections = task4(subject)
+        courses = task4(subject)
         response = {
-            'course_id': list(sections.keys()),
-            'course_name': list(sections.values())
-        }
-    return JsonResponse(response)
-
-def get_description(request):
-    if (request.method == "POST"):
-        course = request.POST['course']
-        response = {
-            'description': task5(course)
+            'course_id': list(courses.keys()),
+            'course_name': list(courses.values())
         }
     return JsonResponse(response)
 
@@ -57,14 +49,13 @@ def get_sections(request):
     if (request.method == 'POST'):
         course = request.POST['course']
         response = {
-            'sections': task6(course)
+            'sections': task5(course)
         }
-        print(response)
     return JsonResponse(response)
 
 def get_profile(request):
     if (request.method == 'POST'):
-        return JsonResponse(task7().__dict__)
+        return JsonResponse(task6().__dict__)
 
 #WIP
 def override(request):

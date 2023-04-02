@@ -54,7 +54,7 @@
         }) {% endcomment %}
 
         $(document).ready(function(){
-            $("#course_description").hide();
+            $("#description").hide();
             $("#select_term").change(function(){
                 var term = $(this).children("option:selected").val();                
                 $.ajax({
@@ -90,6 +90,8 @@
         //LOAD COURSES
         $(document).ready(function(){
             $("#select_subject").change(function(){
+                $("#description").hide();
+                clearSchedule();
                 var subject = $(this).children("option:selected").val();
                 $.ajax({
                     type: "POST",
@@ -124,6 +126,8 @@
         $(document).ready(function(){
             $("#select_course").change(function(){
                 var course = $(this).children("option:selected").val();
+                $("#description").hide();
+                clearSchedule();
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_sections' %}",
@@ -140,22 +144,24 @@
                         var all_sections = $("#available");
                         all_sections.empty();
                         html = '';
-                        //display course description 
+                        
                         var course_description = $("#description");
+                        course_description.empty();
+                        course_description.append("<p>" + sections[0].description + "</p>");
                         course_description.show();
                         
                         for(var i=0;i,sections.length;i++) {
-                            if (sections[i].Rem == 0) {
+                            if (sections[i].Rem == '0') {
                                 html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             }
                             if (sections[i].Cmp == 'DL') {
-                                if (sections[i].Rem == 0 && sections[i].Rem != '\xa0') {
+                                if (sections[i].Rem == '0' && sections[i].Rem != '\xa0') {
                                     html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ONLINE </option>';
                                 } else {
                                     html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
                                 }
                             } else {
-                                if (sections[i].Rem == 0 && sections[i].Rem != '\xa0') {
+                                if (sections[i].Rem == '0' && sections[i].Rem != '\xa0') {
                                     html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                                 } else {
                                     html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
@@ -168,7 +174,7 @@
             });
         });
 
-        {% comment %} //gets course description based on course selection
+        {% comment %} //COURSE DESCRIPTION
         $(document).ready(function(){
             $("#select_course").change(function(){
                 var course = $(this).children("option:selected").val();
@@ -240,7 +246,7 @@
         </div>
         {% csrf_token %}
         <section class = "dropdowns">
-            <select id = "select_term">
+            <select id = "select_term"> 
                 <option disabled hidden selected>Select Term</option>
                 {% for term in terms %}
                 <option value="{{term}}">{{term}}</option>
@@ -254,8 +260,8 @@
             </select>
         </section>
 
-        <section class = "description">
-            <p>Course Description</p>
+        <section id = "description">
+            
         </section>
 
         <section class = "select_section">
@@ -263,7 +269,7 @@
         </section>
 
         <div id = "update">
-        <button id = "add" onclick="deselect()">Add to Schedule</button>
+        <button id = "add" onclick="addClass()">Add to Schedule</button>
         <button id = "register" onclick="register()">Register</button>
         </div>
     </aside>

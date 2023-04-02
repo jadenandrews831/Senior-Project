@@ -11,7 +11,7 @@ body {
     grid-template-columns: 27% 1fr;
     gap: 10px;
     margin: 10px;
-    background-color: #C2C2C2C2;
+    background-color: #ECECEC;
     font-family: 'Montserrat', sans-serif;
 } 
 
@@ -33,13 +33,14 @@ body {
     align-items: center;
 }
 
-.description {
-    height: 125px;
-    padding: 10px;
+#description {
+    min-height: 50px;
+    padding: 0 20px 5px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     display: none;
+    font-size: 14px;
 }
 
 .options {
@@ -75,7 +76,7 @@ body {
     padding: 10px;
     overflow: auto;
     grid-area: section;
-}
+} 
 
 #updateView {
     cursor: pointer;

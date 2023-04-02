@@ -468,7 +468,7 @@ class ScrAApe():
     select = soup.find('td', {'class':'dddefault'})
     print('Select:')
     print(select)
-    self.auth.profile_.scts_[0]['description'] = select.text
+    self.auth.profile_.scts_[0]['description'] = select.text.split('<br>')[0]
 
     return self.auth.profile_.scts_
 

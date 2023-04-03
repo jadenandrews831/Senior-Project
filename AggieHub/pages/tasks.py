@@ -13,7 +13,7 @@ def task2():
     global success
     scrape = ScrAApe(success)
     terms = scrape.get_terms()
-    return list(terms.keys())
+    return terms
 
 #get subjects
 def task3(term):

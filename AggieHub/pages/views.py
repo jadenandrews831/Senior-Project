@@ -10,9 +10,9 @@ def home(request):
         #if (request.session.has_key('banner_id') == False):
         #     return redirect('login')
         # banner_id = request.session['banner_id']
-        terms = task2()
-        context = {'terms': terms}
-        return render(request, 'home.html', context)
+        #terms = task2()
+        #context = {'terms': terms}
+        return render(request, 'home.html')
 
 #form data should be used to autheticate session for user through scrAApe and redirect to home page
 def login(request):
@@ -56,6 +56,14 @@ def get_sections(request):
 def get_profile(request):
     if (request.method == 'POST'):
         return JsonResponse(task6().__dict__)
+
+def get_terms(request):
+    if (request.method == 'POST'):
+        terms = task2()
+        response = {
+            'terms': list(terms.keys())
+        }
+        return JsonResponse(response)
 
 #WIP
 def override(request):

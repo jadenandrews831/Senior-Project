@@ -176,29 +176,29 @@ class Authenticate():
   # pickle data for ScrAApe and database use
   @debug_decorator
   def save_data(self, db_name):
-    # with shelve.open(shelve_name, 'n') as file:
-    #   for key, val in self.__dict__.items():
-    #     file[key] = val
-    #   print("Saved Data:")
-    # with shelve.open(shelve_name, 'r') as file:
-    #   print("Printing saved data:")
-    #   for key, val in file.items():
-    #     print(key,':', val)
-    # print(f"Session Created! Saved to >>> {shelve_name}.db")
+    with shelve.open(shelve_name, 'n') as file:
+      for key, val in self.__dict__.items():
+        file[key] = val
+      print("Saved Data:")
+    with shelve.open(shelve_name, 'r') as file:
+      print("Printing saved data:")
+      for key, val in file.items():
+        print(key,':', val)
+    print(f"Session Created! Saved to >>> {shelve_name}.db")
 
-    conn = None
-    try:
-      conn = sqlite3.connect(db_name)
-      print(sqlite3.version)
-    except sqlite3.Error as e:
-      print(e)
-    finally:
-      if conn:
-        conn.close()
+    # conn = None
+    # try:
+    #   conn = sqlite3.connect(db_name)
+    #   print(sqlite3.version)
+    # except sqlite3.Error as e:
+    #   print(e)
+    # finally:
+    #   if conn:
+    #     conn.close()
 
     
       
-    return 
+    return file
 
   def load_data(self, auth):
     print("Loading Data: ")

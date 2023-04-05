@@ -4,6 +4,7 @@ import argparse
 import os
 import pickle
 import shelve
+import dbm.dumb
 
 from getpass import getpass
 from requests import Session
@@ -148,6 +149,18 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
+  def register(self, pkg):
+    pin, term, subj, crse, crn = pkg.values()
+    
+    print(f"""
+    Pin: {pin}
+    Term: {term}
+    Subj: {subj}
+    CRSE: {crse}
+    CRN: {crn}
+    """)
+    
+
 
   def __str__(self):
     return f"""Authenticate Object:
@@ -207,6 +220,7 @@ class ScrAApe():
     print(response.headers.items())
     try:
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
+      print(self.auth.cookies_)
     except:
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
       print('Session was not Authenticated. Please Authenticate before trying again')
@@ -579,6 +593,8 @@ if __name__ == "__main__":
       rsrc = args.resource
       sess = args.session
       a = shelve.open(sess[:-3])
+      for key, val in a.items():
+        print(key, ":", val)
       auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
 
       print(auth)
@@ -592,9 +608,11 @@ if __name__ == "__main__":
         subjs = scrape.get_subject()
 
       if args.resource == 'course':
+        print(scrape.auth)
         crss = scrape.get_course()
 
       if args.resource == 'section':
+
         scts = scrape.get_section()
 
       if args.resource == 'session':
@@ -606,16 +624,11 @@ if __name__ == "__main__":
 
       shelve_name = f'.{auth.usrnme}-sess'
       auth.save_data(shelve_name)
-      with shelve.open(shelve_name, 'r') as file:
-        print("Printing saved data:")
-        for key, val in file.items():
-          print(key,':', val)
-        file.close()
+      db = dbm.open(shelve_name, 'w')
+      db.reorganize()
+      db.close()
+        
 
-      with shelve.open(shelve_name, 'r') as file:
-        print("Printing saved data:")
-        for key, val in file.items():
-          print(key,':', val)
     else:
       print('Hmm... something went wrong')
       print(args)

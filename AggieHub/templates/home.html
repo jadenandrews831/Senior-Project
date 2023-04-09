@@ -1,11 +1,11 @@
 
-{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Aggie Bridge</title>
+    {% load static %}
     <link rel="stylesheet" href={% static 'css/homepage.css' %}>
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
@@ -16,7 +16,7 @@
     <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
 
     <script>
-        //LOAD SUBJECTS
+        //LOAD TERMS AND PROFILE DATA
         var course_sections;
         
         $(document).ready(function() {
@@ -29,19 +29,19 @@
                 },
                 dataType: 'json',
                 success: function (response) {
-                    console.log(response);
                     var terms = response.terms;
+                    var p_term = response.p_term;
                     html = '';
 
                     $.each(terms, function(index, value) {
                         if (!(value.includes("(View only)"))) {
-                        html = '<option value="' + value + '">' + value + '</option>';
+                        html = '<option value="' + p_term[index] + '">' + value + '</option>';
                         new_terms.append(html);
                         }
                     });
                 }
             });
-            
+
             $.ajax ({
                 type: "POST",
                 url: "{% url 'get_profile' %}",
@@ -58,10 +58,10 @@
             });
         })
 
+        //CLEAR SCHEDULE AND SELECTIONS ON TERM CHANGE - FIXME
         {% comment %} $(document).ready(function(){
             //when user focuses on term dropdown, check if there is a schedule in progress
             $("#select_term").focus(function(){
-                //unfocus from term dropdown
                 $("#select_term").blur();
                 if ($('#details').length > 1) {
                     var answer = confirm("Changing the term will clear your current selections. Are you sure you want to change the term?");
@@ -72,14 +72,42 @@
                         $("#select_term").blur();
                     }
                 }
-            })
-        }) {% endcomment %}
+            });
+        }); {% endcomment %}
 
+        //REGISTER SCHEDULE
         $(document).ready(function(){
+           $("#register").click(function() {
+            var result = register();
+            console.log(result);
+            $.ajax ({
+
+                type: "POST",
+                url: "{% url 'register_student' %}",
+                data: {
+                    'schedule': JSON.stringify(result),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert("Schedule successfully registered!");
+                    } else {
+                        alert("Schedule could not be registered.");
+                    }
+                }
+            })
+           });
+        });
+
+        //LOAD SUBJECTS
+        $(document).ready(function(){
+            clearSelection();
+            $("#available").empty();
             $("#description").hide();
             $("#add").hide();
             $("#select_term").change(function(){
-                var term = $(this).children("option:selected").val();                
+                var term = $(this).children("option:selected").text();                
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_subjects' %}",
@@ -113,9 +141,11 @@
         //LOAD COURSES
         $(document).ready(function(){
             $("#select_subject").change(function(){
+                clearSelection();
+                $("#available").empty();
                 $("#description").hide();
                 $("#add").hide();
-                clearSchedule();
+
                 var subject = $(this).children("option:selected").val();
                 $.ajax({
                     type: "POST",
@@ -149,10 +179,11 @@
         //LOAD SECTIONS
         $(document).ready(function(){
             $("#select_course").change(function(){
+                clearSelection();
+                $("#available").empty();
                 var course = $(this).children("option:selected").val();
                 $("#description").hide();
                 $("#add").hide();
-                clearSchedule();
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_sections' %}",
@@ -182,7 +213,9 @@
                             } else if (sections[i].Rem == '0') {
                                 html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             } else if (sections[i].Sec == '\xa0' && sections[i].Title == '\xa0') {
-                                html = '<option value="' + (i-1) + '" disabled>' + sections[i-1].Sec + ' - LAB' + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                                html = '<option value="' + i + '" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LAB' + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                            } else if (sections[i].Days == '\xa0' && sections[i].Sec != '\xa0') {
+                                html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Time + '</option>';
                             } else {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             }
@@ -195,22 +228,27 @@
         });
 
     
-        //displays selected section on calendar
-        //called whenever the selected section in available changes
+        //DISPLAY SELECTED SECTION
        $(document).ready(function() {
-            //$("#add").prop("disabled", true);
-            //$("#add").css("cursor", "not-allowed");
-            //$("#add").css("background-color", "#EACEC7");
             $("#available").change(function() {
-                //$("#add").prop("disabled", false);
-                //$("#add").css("background-color", "#BC5C45");
-                //$("#add").css("cursor", "pointer");
-                var section = $(this).children("option:selected").val();
-                //var course = $("#select_course").children("option:selected").val();
-                displaySection(course_sections[section]);
+                //if there are at least two sections in the course, check if the next section is a lab
+                //if it is, send both sections to displaySection
+                //if it isn't, send the selected section to displaySection
+                //if there is only one section in the course, send the selected section to displaySection
+                //make sure selected section is not the last section in #available
+                var selected = $("#available").children("option:selected").val();
+                var next = $("#available").children("option:selected").next().val();
+                if (course_sections.length > 1 && next != undefined) {
+                    if (course_sections[next].Sec == '\xa0' && course_sections[next].Title == '\xa0') {
+                        displaySection([course_sections[selected], course_sections[next]]);
+                    } else {
+                        displaySection(course_sections[selected]);
+                    }
+                } else {
+                    displaySection(course_sections[selected]);
+                }
             });
         });
-
     </script>
 </head>
 
@@ -257,7 +295,7 @@
 
         <div id = "update">
         <button id = "add" onclick="addClass()">Add to Schedule</button>
-        <button id = "register" onclick="register()">Register</button>
+        <button id = "register">Register</button>
         </div>
     </div>
     </aside>

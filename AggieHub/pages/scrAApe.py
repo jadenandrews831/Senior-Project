@@ -150,18 +150,7 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
-  def register(self, pkg):
-    for cls in pkg:
-
-      pin, term, subj, crs, crn = cls.values()
-
-      print(f"""
-      Pin: {pin}
-      Term: {term}
-      Subject: {subj}
-      Course: {crs}
-      CRN: {crn}
-      """)
+ 
     
 
 
@@ -269,6 +258,19 @@ class ScrAApe():
   # Finish-Me
   def get_description(self):
     pass
+
+  def register(self, pkg):
+    for cls in pkg:
+
+      pin, term, subj, crs, crn = cls.values()
+
+      print(f"""
+      Pin: {pin}
+      Term: {term}
+      Subject: {subj}
+      Course: {crs}
+      CRN: {crn}
+      """)
 
   # Finish-Me
   def get_profile(self):

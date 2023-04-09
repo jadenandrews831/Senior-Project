@@ -11,7 +11,7 @@ body {
     grid-template-columns: 27% 1fr;
     gap: 10px;
     margin: 10px;
-    background-color: #C2C2C2C2;
+    background-color: #ECECEC;
     font-family: 'Montserrat', sans-serif;
 } 
 
@@ -33,13 +33,15 @@ body {
     align-items: center;
 }
 
-.description {
-    height: 125px;
-    padding: 10px;
+#description {
+    min-height: 50px;
+    padding: 0 20px 5px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     display: none;
+    font-size: 14px;
+    background-color: white;
 }
 
 .options {
@@ -47,9 +49,11 @@ body {
     display: flex;
     flex-direction: column;
     padding: 30px 0 0 0;
-    margin-top: 22px;
     margin-bottom: 15px;
     margin-left: 10px;
+}
+
+#inner {
     background-color: white;
     box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
@@ -62,7 +66,7 @@ body {
     align-items: center;
     justify-content: space-evenly;
     padding: 5px;
-    
+    background-color: white;
 }
 
 .dropdowns select {
@@ -75,7 +79,7 @@ body {
     padding: 10px;
     overflow: auto;
     grid-area: section;
-}
+} 
 
 #updateView {
     cursor: pointer;
@@ -99,7 +103,7 @@ body {
 
 tr {height: 26px;}  
 
-.select_section {padding: 10px;}
+.select_section {padding: 10px; background-color: white;}
 
 .select_section select {font-family: inherit;}
 
@@ -127,6 +131,7 @@ tr {height: 26px;}
     flex-direction: column;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
+    background-color: white;
 }
 
 #add {
@@ -139,6 +144,7 @@ tr {height: 26px;}
     border: none;
     margin: 10px 0 25px;
     padding: 10px;
+    display: none;
 }
 
 #register {
@@ -149,9 +155,9 @@ tr {height: 26px;}
     color: #FFF;
     width: 200px;
     border: none;
-    margin: 0 0 5px;
+    margin: 0 0 25px;
     padding: 10px;
-    visibility: hidden;
+    display: none;
 }
 
 #student_name {
@@ -164,7 +170,7 @@ tr {height: 26px;}
     font-weight: 700;
 }
 
-#reg_status {visibility:hidden;}
+#reg_status {visibility:hidden; font-weight: 700;}
 
 #status {font-weight: 700;}
 
@@ -187,7 +193,7 @@ tr {height: 26px;}
             "main"
             "section"
             "footer";
-        grid-template-rows: 77px 120px 725px 700px 260px 40px;
+        grid-template-rows: 77px 120px 900px 700px 260px 40px;
         grid-template-columns: 1fr;
         gap: 10px;
         margin: 0;

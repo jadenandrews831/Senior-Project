@@ -27,7 +27,6 @@ body {
 }
 
 #contact_info {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,19 +38,18 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 300px;
+    height: 100%;
     width: 90%;
+    margin: 0 0 60px 0;
 }
 
 #select_dept {
-    border: thin solid black;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 150px;
     width: 100%;
 }
-
 select {
     font-family: inherit;
     width: 90%;

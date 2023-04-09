@@ -44,3 +44,9 @@ def task6():
     profile = scrape.get_profile()
     #print(profile)
     return profile
+
+def task7(schedule):
+    global success
+    scrape = ScrAApe(success)
+    result = scrape.register(schedule)
+    return result

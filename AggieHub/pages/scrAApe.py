@@ -258,12 +258,12 @@ class ScrAApe():
     pass
 
   def register(self, pkg):
-    str = ""
+    for cls in pkg:
+      str = ""
+      for key, val in cls.items():
+        str+=f"{key}: {val}"
 
-    for key, val in pkg.items():
-      str+=f"{key}: {val}"
-
-    print(str)
+      print(str)
 
   # Finish-Me
   def get_profile(self):

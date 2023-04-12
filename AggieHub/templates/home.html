@@ -7,17 +7,21 @@
     <title>Aggie Bridge</title>
     {% load static %}
     <link rel="stylesheet" href={% static 'css/homepage.css' %}>
+    {% comment %} <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> {% endcomment %}
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script> {% endcomment %}
     <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
-
+    {% comment %} <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script> {% endcomment %}
     <script>
         //LOAD TERMS AND PROFILE DATA
         var course_sections;
+        //var color;
         
         $(document).ready(function() {
             var new_terms = $("#select_term");
@@ -56,6 +60,44 @@
                     classification.html(response.classification);
                 }
             });
+
+            /*
+            dialog = $("#schedule-dialog").dialog({
+                autoOpen: false,
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Save Changes": function() {
+                        color = $("#color").val();
+                        $(this).dialog("close");
+                    },
+                    Cancel: function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            Coloris({
+                el: '.coloris',
+                theme: 'polaroid',
+                themeMode: 'auto', // light, dark, auto
+                swatches: [
+                '#264653',
+                '#2a9d8f',
+                '#e9c46a',
+                '#f4a261',
+                '#e76f51',
+                '#d62828',
+                '#023e8a',
+                '#0077b6',
+                '#0096c7',
+                '#00b4d8',
+                '#48cae4',
+                ],
+            });
+            */
         })
 
         //CLEAR SCHEDULE AND SELECTIONS ON TERM CHANGE - FIXME
@@ -255,6 +297,12 @@
 <body>
     <nav class = "banner">
         {% include 'navigation.html' %}
+        {% comment %} <div id="schedule-dialog" title="Change Color">
+            <p style="text-align: center;"><span style="float:left; margin:12px 12px 20px 0;"></span>
+                Select a color.</br></br>
+                <input type="text" id="color" data-coloris value="rgb(255, 0, 0)" class="coloris"/>
+            </p>
+        </div> {% endcomment %}
     </nav>
 
     <header class = "student_info">

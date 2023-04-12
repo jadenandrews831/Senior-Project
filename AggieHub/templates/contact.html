@@ -55,6 +55,7 @@
                         <label class="box-title" for="cb2">What is considered part-time or full-time status?</label>
                         <label class="box-close" for="acc-close"></label>
                         <div class="box-content">Full-time status is <b>12 or more</b> credit hours. Part-time status is <b>11 or less</b> credit hours.</div>
+                                                {% comment %} </br><b>Graduate:</b> Full-time status is <b>9 to 12</b> credit hours.</div> {% endcomment %}
                     </section>
                     <input type="radio" name="accordion" id="cb3" />
                     <section class="box">
@@ -84,8 +85,8 @@
                 <p>We would love to hear from you!</p>
             </section>
             <section id = "contact_form">
-                {%csrf_token%}
-                <form>
+                <form method="POST">
+                    {%csrf_token%}
                     <div class="full_name">
                         <!--populate name from database-->
                         <input type="text" name="full_name" id="full_name" disabled value="Student Name">

@@ -1,7 +1,9 @@
 import json
+from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 from .models import *
 from .forms import *
 from .tasks import *
@@ -81,4 +83,12 @@ def guides(request):
     return render(request, 'guides.html')
 
 def contact(request):
+    if (request.method == 'POST'):
+        email = request.POST['email']
+        topic = request.POST['topic']
+        message = request.POST['message']
+    
+        send_mail(topic, message, email, 
+                  [settings.EMAIL_HOST_USER], 
+                  fail_silently=False)
     return render(request, 'contact.html')

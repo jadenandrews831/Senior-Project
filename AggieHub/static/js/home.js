@@ -17,6 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
         weekends: false,
         selectable: false,
         eventOverlap: false,
+        eventClick: function(info) {
+            alert('Event: ' + info.event.title);
+            // selected_event = info.event;
+            // dialog.dialog("open");
+            // selected_event.id.eventColor = color;
+            //get color from dialog box
+            //change color of event in table
+            //change color of event in calendar
+        } 
     });
     
     calendar.render();
@@ -183,25 +192,26 @@ function displaySection(index) {
                 var row_sec_array = row_sec.split("-");
                 var row_section = row_sec_array[0];
 
+                if (row.id == lecture.CRN) {
+                    alert("You have already added this section");
+                    clearSelection();
+                    check++;
+                    break;
+                }
+                
+
                 if (lecture.Time != "TBA" && lecture.Days != "TBA") {
                     if ((conflictTime(lecture.Time, lecture.Days) == true) || (conflictTime(lab.Time, lab.Days) == true)) {
-                        clearSelection();
                         alert("This class conflicts with another class you have added.");
+                        clearSelection();
                         check++;
                         break;
                     }
                 } 
 
-                if (row.id == lecture.CRN) {
-                    clearSelection();
-                    alert("You have already added this section");
-                    check++;
-                    break;
-                }
-
                 if (row_section == (lecture.Subj + " " + lecture.Crse)) {
                     if (row.cells[8].innerHTML == "") {
-                        if (row.cells[3].innerText != "TBA") {
+                        if (row.cells[4].innerText != "TBA") {
                             //remove lecture
                             calendar.getEventById(row.id).remove();
                             //remove lab
@@ -209,7 +219,7 @@ function displaySection(index) {
                             calendar.render();
                         }
                         
-                        //change le cture row
+                        //change lecture row
                         row.id = lecture.CRN;
                         row.cells[0].innerText = lecture.CRN;
                         row.cells[1].innerText = lecture.Subj + " " + lecture.Crse + "-" + lecture.Sec;
@@ -239,8 +249,8 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        clearSelection();
                         alert("You have already added a section for this course");
+                        clearSelection();
                         check++;
                         break;
                     }
@@ -284,30 +294,29 @@ function displaySection(index) {
                 var row_sec_array = row_sec.split("-");
                 var row_section = row_sec_array[0];
 
+                if (row.id == index.CRN) {
+                    alert("You have already added this section");
+                    clearSelection();
+                    check++;
+                    break;
+                }
+
                 if (index.Time != "TBA" && index.Days != "TBA") {
                     if (conflictTime(index.Time, index.Days) == true) {
-                        clearSelection();
                         alert("This class conflicts with another class you have added.");
+                        clearSelection();
                         check++;
                         break;
                     }
                 }
 
-                if (row.id == index.CRN) {
-                    clearSelection();
-                    alert("You have already added this section");
-                    check++;
-                    break;
-                }
-
                 if (row_section == (index.Subj + " " + index.Crse)) {
                     if (row.cells[8].innerHTML == "") {
-                        if (row.cells[3].innerText != "TBA") {
+                        if (row.cells[4].innerText != "TBA") {
                             //remove lecture
                             calendar.getEventById(row.id).remove();
                             calendar.render();
                         }
-
                         //change lecture row
                         row.id = index.CRN;
                         row.cells[0].innerText = index.CRN;
@@ -326,8 +335,8 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        clearSelection();
                         alert("You have already added a section for this course");
+                        clearSelection();
                         check++;
                         break;
                     }
@@ -407,13 +416,11 @@ function displaySection(index) {
 
 //FUNCTIONAL
 function removeClass(crn) {
-    console.log(crn);
     var table = document.getElementById("details");
-    var table_rows = table.rows.length;
     var row = document.getElementById(crn).rowIndex;
     //check that the row is not the last row
-    if (row != table_rows - 1) {
-        if ( table.rows[row + 1].cells[0].innerText == "") {
+    if (row != (table.rows.length) - 1) {
+        if (table.rows[row + 1].cells[0].innerText == "") {
             table.deleteRow(row+1);
             calendar.getEventById(crn + "L").remove();
         }
@@ -485,10 +492,21 @@ function getData(crn) {
 }
 
 //FUNCTIONAL
+function evalHexColor(color) {
+    //const hex = color.replace('#', '');
+    const rColor = parseInt(color.substring(0, 0 + 2), 16);
+    const gColor = parseInt(color.substring(2, 2 + 2), 16);
+    const bColor = parseInt(color.substring(4, 4 + 2), 16);
+    const brightness = ((rColor * 299) + (gColor * 587) + (bColor * 114)) / 1000;
+    return brightness > 155;
+}
+
+//FUNCTIONAL
 function addEvent(crn) {
 
     var data = getData(crn);
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
+    const textColor = evalHexColor(randomColor) ? 'black' : 'white';
 
     if (data == "virtual") {
         document.getElementById(crn).cells[0].style.backgroundColor = "white";
@@ -510,6 +528,7 @@ function addEvent(crn) {
               },
             editable: false,
             color: "#" + randomColor,
+            textColor: textColor,
         });
         calendar.addEvent({
             id: data[1],
@@ -525,9 +544,13 @@ function addEvent(crn) {
               },
             editable: false,
             color: "#" + randomColor,
+            textColor: textColor,
         });
         document.getElementById(data[1]).cells[0].style.backgroundColor = "#" + randomColor;
         document.getElementById(crn).cells[0].style.backgroundColor = "#" + randomColor;
+        //change text color to black if background color is light
+        document.getElementById(data[1]).cells[0].style.color = textColor;
+        document.getElementById(crn).cells[0].style.color = textColor;
     } else {
         calendar.addEvent({
             id: crn,
@@ -543,8 +566,10 @@ function addEvent(crn) {
               },
             editable: false,
             color: "#" + randomColor,
+            textColor: textColor,
         });
         document.getElementById(crn).cells[0].style.backgroundColor = "#" + randomColor;
+        document.getElementById(crn).cells[0].style.color = textColor;
     }
 
     calendar.render();
@@ -601,6 +626,7 @@ function update() {
 }
 
 //CONTINUE TESTING
+//clear all events from calendar and table when switching semesters
 // function clearSchedule() {
 //     //clear all events from calendar
 //     var table = document.getElementById("details");
@@ -614,18 +640,17 @@ function update() {
 
 //FUNCTIONAL
 function clearSelection() {
-    
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
     for (var i = 1; i < total_rows; i++) {
-        var row = table.rows[i];
-        var remove_cell = row.cells[8];
-        if (remove_cell.innerHTML == "") {
-            
-            removeClass(row.id);
-            update();
+        if (table.rows[i].cells[8].innerHTML == "") {
+            removeClass(table.rows[i].id);
             i--;
             total_rows--;
+            
+            if (table.rows.length < total_rows) {
+                i++;
+            }
         }
     }
     document.getElementById("available").selectedIndex = -1;
@@ -652,17 +677,20 @@ function register() {
    
 
     for (var i = 1; i < total_rows; i++) {
-        var row = table.rows[i];
-        crns.push(row.id);
-        titles.push(row.cells[2].innerText);
-        section.push(row.cells[1].innerText);
-        class_info = row.cells[1].innerText.split("-");
-        class_info = class_info[0].split(" ");
-        subj = class_info[0];
-        crse = class_info[1];
+        if (table.rows[i].cells[0].innerText != "") {
+            var row = table.rows[i];
+            crns.push(row.id);
+            titles.push(row.cells[2].innerText);
+            section.push(row.cells[1].innerText);
+            class_info = row.cells[1].innerText.split("-");
+            class_info = class_info[0].split(" ");
+            subj = class_info[0];
+            crse = class_info[1];
+        }
     }
     var message = "You are about to register for the following classes:";
     for (var i = 0; i < crns.length; i++) {
+
         message += "\n"  + section[i] + " - " + titles[i] + " (" + crns[i] + ")";
     }
     message += "\n\nAre you sure you want to continue?";

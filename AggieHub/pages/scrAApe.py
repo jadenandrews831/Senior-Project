@@ -4,7 +4,6 @@ import argparse
 import os
 import pickle
 import shelve
-import sqlite3
 import dbm.dumb
 
 from getpass import getpass
@@ -161,7 +160,7 @@ class Authenticate():
   self.session = {self.session}
   self.__dict__ = {self.__dict__}
     """
-  
+
   # pickle data for ScrAApe and database use
   @debug_decorator
   def save_data(self, db_name):
@@ -191,11 +190,10 @@ class Authenticate():
 
   def load_data(self, auth):
     print("Loading Data: ")
-    print(auth.items)
     for key, val in auth.items():
       print(key, val)
-    for key, val in auth.items():
       setattr(self, key, val)
+
     return self
   
 class ScrAApe():
@@ -222,10 +220,10 @@ class ScrAApe():
     self.auth = auth
 
   def update_cookies(self, response):
-    print(response.headers.items())
+    print("Response Headers: ", response.headers.items())
     try:
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
-      print(self.auth.cookies_)
+      print("Cookies: ", self.auth.cookies_)
     except:
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
       print('Session was not Authenticated. Please Authenticate before trying again')
@@ -260,17 +258,15 @@ class ScrAApe():
     pass
 
   def register(self, pkg):
-    for cls in pkg:
+    pin, term, subj, crs, crn = pkg.values()
 
-      pin, term, subj, crs, crn = cls.values()
-
-      print(f"""
-      Pin: {pin}
-      Term: {term}
-      Subject: {subj}
-      Course: {crs}
-      CRN: {crn}
-      """)
+    print(f"""
+    Pin: {pin}
+    Term: {term}
+    Subject: {subj}
+    Course: {crs}
+    CRN: {crn}
+    """)
 
   # Finish-Me
   def get_profile(self):
@@ -306,11 +302,7 @@ class ScrAApe():
     return self.auth.profile_
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
-    if 'terms_w_codes_' in self.__dict__:
-      print('get_terms(): found it!')
-      print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
-      return self.terms_w_codes_
-    print(uri)
+    print("uri", uri)
     self.auth.prev_site_ = uri
     response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
@@ -325,7 +317,6 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     content = response.text
-    print('Response:\n',response.text)
     self.update_cookies(response)
     #print(auth)
     soup = bs(content, 'html.parser')
@@ -336,7 +327,7 @@ class ScrAApe():
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
-    print('terms_w_codes', terms_w_codes)
+    print('terms_w_codes: ', terms_w_codes)
 
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
@@ -611,11 +602,15 @@ if __name__ == "__main__":
       rsrc = args.resource
       sess = args.session
       a = shelve.open(sess[:-3])
+      print("Opening Authenticate Shelf:")
       for key, val in a.items():
         print(key, ":", val)
-      auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+      try:
+        auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+      except:
+        print("Unable to create Authenticate Objejct. Check Session")
+        exit()
 
-      print(auth)
       scrape = ScrAApe(auth) # close the file
       
       if args.resource == 'term':
@@ -626,7 +621,6 @@ if __name__ == "__main__":
         subjs = scrape.get_subject()
 
       if args.resource == 'course':
-        print(scrape.auth)
         crss = scrape.get_course()
 
       if args.resource == 'section':

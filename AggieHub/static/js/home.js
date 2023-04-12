@@ -548,7 +548,7 @@ function addEvent(crn) {
         });
         document.getElementById(data[1]).cells[0].style.backgroundColor = "#" + randomColor;
         document.getElementById(crn).cells[0].style.backgroundColor = "#" + randomColor;
-        //change text color to black if background color is light
+        
         document.getElementById(data[1]).cells[0].style.color = textColor;
         document.getElementById(crn).cells[0].style.color = textColor;
     } else {
@@ -673,10 +673,11 @@ function register() {
     var subj = [];
     var class_info;
     var term = document.getElementById("select_term").value;
-    var register_info = {'term': term};
+    var register_info = {};
    
 
     for (var i = 1; i < total_rows; i++) {
+        //make sure to add only classes with i tag in last column
         if (table.rows[i].cells[0].innerText != "") {
             var row = table.rows[i];
             crns.push(row.id);
@@ -684,22 +685,22 @@ function register() {
             section.push(row.cells[1].innerText);
             class_info = row.cells[1].innerText.split("-");
             class_info = class_info[0].split(" ");
-            subj = class_info[0];
-            crse = class_info[1];
+            subj.push(class_info[0]);
+            crse.push(class_info[1]);
         }
     }
     var message = "You are about to register for the following classes:";
     for (var i = 0; i < crns.length; i++) {
-
         message += "\n"  + section[i] + " - " + titles[i] + " (" + crns[i] + ")";
     }
     message += "\n\nAre you sure you want to continue?";
     if (confirm(message)) {
         var pin = prompt("Please enter your registration pin");
         //add pin to register_info
-        register_info['pin'] = pin;
+        //register_info['pin'] = pin;
         //if the user hits cancel, close the prompt
         //register pin is _ digits 
+        var all_classes = [];
         if (pin.length != 6) {
             alert("Incorrect pin. Please try again."); 
         } else { //pin will be sent to scrAApe tool
@@ -708,8 +709,11 @@ function register() {
                 register_info['crn'] = crns[i];
                 register_info['subj'] = subj[i];
                 register_info['crs'] = crse[i];
+                all_classes.push(register_info);
+                register_info = {};
             }
-            return register_info;
+
+            return {'pkg': [term, pin, all_classes]};
         }
     }
 }

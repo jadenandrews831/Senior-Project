@@ -72,7 +72,9 @@ def get_terms(request):
 def register_student(request):
     if (request.method == 'POST'):
         schedule = request.POST['schedule']
-        
+        # print(json.loads(schedule))
+        # print(type(json.loads(schedule)))
+        # print(type(json.loads(schedule)['pkg']))
         response = task7(json.loads(schedule))
         return JsonResponse(response)
 

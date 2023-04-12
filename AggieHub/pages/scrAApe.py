@@ -259,7 +259,7 @@ class ScrAApe():
 
   def register(self, pkg):
     print(type(pkg), pkg)
-    term, pin, pkg = pkg[0], pkg[1], pkg[2]
+    term, pin, pkg = pkg.values()
     print("Term:", term)
     print("Pin:", pin)
     for cls in pkg:

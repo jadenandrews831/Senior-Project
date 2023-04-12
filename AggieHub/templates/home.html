@@ -1,27 +1,155 @@
 
-{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Aggie Bridge</title>
+    {% load static %}
     <link rel="stylesheet" href={% static 'css/homepage.css' %}>
+    {% comment %} <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> {% endcomment %}
     <script type="text/javascript" src="{% static 'js/jquery-3.6.3.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/home.js' %}"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script> {% endcomment %}
     <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
-
+    {% comment %} <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script> {% endcomment %}
     <script>
-        //gets available subjects based on term selection
+        //LOAD TERMS AND PROFILE DATA
         var course_sections;
+        //var color;
+        
+        $(document).ready(function() {
+            var new_terms = $("#select_term");
+            $.ajax({
+                type: "POST",
+                url: "{% url 'get_terms' %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var terms = response.terms;
+                    var p_term = response.p_term;
+                    html = '';
+
+                    $.each(terms, function(index, value) {
+                        if (!(value.includes("(View only)"))) {
+                        html = '<option value="' + p_term[index] + '">' + value + '</option>';
+                        new_terms.append(html);
+                        }
+                    });
+                }
+            });
+
+            $.ajax ({
+                type: "POST",
+                url: "{% url 'get_profile' %}",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var student_name = $("#student_name");
+                    var classification = $("#classification");
+                    student_name.html(response.first + ' ' + response.last);
+                    classification.html(response.classification);
+                }
+            });
+
+            /*
+            dialog = $("#schedule-dialog").dialog({
+                autoOpen: false,
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Save Changes": function() {
+                        color = $("#color").val();
+                        $(this).dialog("close");
+                    },
+                    Cancel: function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            Coloris({
+                el: '.coloris',
+                theme: 'polaroid',
+                themeMode: 'auto', // light, dark, auto
+                swatches: [
+                '#264653',
+                '#2a9d8f',
+                '#e9c46a',
+                '#f4a261',
+                '#e76f51',
+                '#d62828',
+                '#023e8a',
+                '#0077b6',
+                '#0096c7',
+                '#00b4d8',
+                '#48cae4',
+                ],
+            });
+            */
+        })
+
+        //CLEAR SCHEDULE AND SELECTIONS ON TERM CHANGE - FIXME
+        {% comment %} $(document).ready(function(){
+            //when user focuses on term dropdown, check if there is a schedule in progress
+            $("#select_term").focus(function(){
+                $("#select_term").blur();
+                if ($('#details').length > 1) {
+                    var answer = confirm("Changing the term will clear your current selections. Are you sure you want to change the term?");
+                    if (answer == true) {
+                        clearSchedule();
+                        $("#select_term").blur();
+                    } else {
+                        $("#select_term").blur();
+                    }
+                }
+            });
+        }); {% endcomment %}
+
+        //REGISTER SCHEDULE
         $(document).ready(function(){
-            $("#course_description").hide();
+           $("#register").click(function() {
+            var result = register();
+            console.log(result);
+            $.ajax ({
+
+                type: "POST",
+                url: "{% url 'register_student' %}",
+                data: {
+                    'schedule': JSON.stringify(result),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert("Schedule successfully registered!");
+                    } else {
+                        alert("Schedule could not be registered.");
+                    }
+                }
+            })
+           });
+        });
+
+        //LOAD SUBJECTS
+        $(document).ready(function(){
+            clearSelection();
+            $("#available").empty();
+            $("#description").hide();
+            $("#add").hide();
             $("#select_term").change(function(){
-                var term = $(this).children("option:selected").val();
+                var term = $(this).children("option:selected").text();                
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_subjects' %}",
@@ -34,13 +162,12 @@
                         var all_sections = $("#available");
                         all_sections.empty();
                         var course_select = $("#select_course");
+                        var subject_select = $("#select_subject");
                         course_select.empty();
                         course_select.append('<option disabled hidden selected>Select Course</option>');
-                        var subjects = response;
-                        var subject_select = $("#select_subject");
                         subject_select.empty();
                         subject_select.append('<option disabled hidden selected>Select Subject</option>');
-                        //add each subject in subjects to the subject select drop dropdown
+                        var subjects = response;
                         html = '';
                         $.each(subjects, function(index, value) {
                             for (var i = 0; i < value.length; i++) {
@@ -53,9 +180,14 @@
             });
         });
         
-        //gets available courses based on subject selection
+        //LOAD COURSES
         $(document).ready(function(){
             $("#select_subject").change(function(){
+                clearSelection();
+                $("#available").empty();
+                $("#description").hide();
+                $("#add").hide();
+
                 var subject = $(this).children("option:selected").val();
                 $.ajax({
                     type: "POST",
@@ -86,10 +218,14 @@
             });
         });
         
-        //gets available sections based on course selection
+        //LOAD SECTIONS
         $(document).ready(function(){
             $("#select_course").change(function(){
+                clearSelection();
+                $("#available").empty();
                 var course = $(this).children("option:selected").val();
+                $("#description").hide();
+                $("#add").hide();
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_sections' %}",
@@ -99,22 +235,33 @@
                     },
                     dataType: 'json',
                     success: function (response) {
-                        console.log(response);
-                        console.log(response.sections); 
                         var sections = response.sections;
                         course_sections = sections;
                         var all_sections = $("#available");
                         all_sections.empty();
                         html = '';
                         
+                        var course_description = $("#description");
+                        course_description.empty();
+                        course_description.append("<p>" + sections[0].description + "</p>");
+                        course_description.show();
+                        
                         for(var i=0;i,sections.length;i++) {
-                            if (sections[i].Rem == 0) {
+                            //check if section is online. if so, display "ONLINE" instead of days and time
+                            //check if section is full. if so, disable option
+                            //check if section is a lab. if so, display "LAB" instead of section number. give option the same value as the lecture section
+                            if (sections[i].Cmp == 'DL') {
+                                html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE</option>';
+                            } else if (sections[i].Rem == '0') {
                                 html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
-                            } else if (sections[i].Cmp == 'DL') {
-                                html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE </option>';
-                            } else{
+                            } else if (sections[i].Sec == '\xa0' && sections[i].Title == '\xa0') {
+                                html = '<option value="' + i + '" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LAB' + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                            } else if (sections[i].Days == '\xa0' && sections[i].Sec != '\xa0') {
+                                html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Time + '</option>';
+                            } else {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             }
+                            
                             all_sections.append(html);
                         }
                     }
@@ -122,78 +269,60 @@
             });
         });
 
-        {% comment %} //gets course description based on course selection
-        $(document).ready(function(){
-            $("#select_course").change(function(){
-                var course = $(this).children("option:selected").val();
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'get_description' %}",
-                    data: {
-                        'course': course,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function (response) {
-                        console.log(response);
-                        var description = JSON.parse(response);
-                        var course_description = $("#description");
-                        course_description.empty();
-                        course_description.append('<p>' + description + '</p>');
+    
+        //DISPLAY SELECTED SECTION
+       $(document).ready(function() {
+            $("#available").change(function() {
+                //if there are at least two sections in the course, check if the next section is a lab
+                //if it is, send both sections to displaySection
+                //if it isn't, send the selected section to displaySection
+                //if there is only one section in the course, send the selected section to displaySection
+                //make sure selected section is not the last section in #available
+                var selected = $("#available").children("option:selected").val();
+                var next = $("#available").children("option:selected").next().val();
+                if (course_sections.length > 1 && next != undefined) {
+                    if (course_sections[next].Sec == '\xa0' && course_sections[next].Title == '\xa0') {
+                        displaySection([course_sections[selected], course_sections[next]]);
+                    } else {
+                        displaySection(course_sections[selected]);
                     }
-                });
-            });
-        }); {% endcomment %}
-
-        //grey and disable #add until a section is selected
-        $(document).ready(function() {
-            $("#add").prop("disabled", true);
-            $("#add").css("cursor", "not-allowed");
-            $("#add").css("background-color", "#E0E0E0");
-            $("#available").change(function(){
-                if ($("#available").children("option:selected").val() == undefined) {
-                    //remove hover effect and box-shadow
                 } else {
-                    $("#add").prop("disabled", false);
-                    $("#add").css("background-color", "#BC5C45");
-                    $("#add").css("cursor", "pointer");
+                    displaySection(course_sections[selected]);
                 }
             });
         });
-
-        //displays selected section on calendar
-        //called whenever the selected section in available changes
-       $(document).ready(function() {
-            $("#available").change(function() {
-                var section = $(this).children("option:selected").val();
-                addClass(course_sections[section]); 
-            });
-        });
-
     </script>
 </head>
 
 <body>
     <nav class = "banner">
         {% include 'navigation.html' %}
+        {% comment %} <div id="schedule-dialog" title="Change Color">
+            <p style="text-align: center;"><span style="float:left; margin:12px 12px 20px 0;"></span>
+                Select a color.</br></br>
+                <input type="text" id="color" data-coloris value="rgb(255, 0, 0)" class="coloris"/>
+            </p>
+        </div> {% endcomment %}
     </nav>
 
     <header class = "student_info">
-        <p id = "reg_status" >Current Status: <span id = "status">STATUS</span></p>
-        <p id = "student_name">STUDENT NAME</p>
-        <p id = "classification">CLASSIFICATION</p>
+        <p id = "reg_status" >Current Status: <span id = "status"></span></p>
+        <p id = "student_name"></p>
+        <p id = "classification"></p>
     </header>
 
     <aside class = "options">
+        <div id="inner">
         <div id = "pageinfo">
             <h2>Course Registration</h2>
         </div>
         {% csrf_token %}
         <section class = "dropdowns">
-            <select id = "select_term">
+            <select id = "select_term"> 
                 <option disabled hidden selected>Select Term</option>
-                {% for term in terms %}
+                {% comment %} {% for term in terms %}
                 <option value="{{term}}">{{term}}</option>
-                {% endfor %}
+                {% endfor %} {% endcomment %}
             </select>
             <select id = "select_subject">
                 <option disabled hidden selected>Select Subject</option>
@@ -203,26 +332,26 @@
             </select>
         </section>
 
-        <section class = "description">
-            <p>Course Description</p>
+        <section id = "description">
+            
         </section>
 
         <section class = "select_section">
             <select id="available" size="5"></select>
         </section>
+    
 
-        <!--disable button until a section is selected-->
         <div id = "update">
-        <button id = "add" onclick="update(index)">Add to Schedule</button>
-        <button id = "register" onclick="populate()">Register</button>
+        <button id = "add" onclick="addClass()">Add to Schedule</button>
+        <button id = "register">Register</button>
         </div>
+    </div>
     </aside>
 
     <main class = "view">
         <div id = "scheduleview"></div>
     </main>
 
-    <!--rework table row ids-->
     <section class = "detailview">
         <table border id="details">
             <thead>
@@ -238,7 +367,6 @@
                     <th width = "3%" id = "dv_buttons" class = "dv_header"></th>
                 </tr> 
             </thead>
-            <!--detailed view should be blank? add and remove rows instead of clearing them out-->
         </table>
     </section>
     <footer class  = "footer">

@@ -13,7 +13,7 @@ def task2():
     global success
     scrape = ScrAApe(success)
     terms = scrape.get_terms()
-    return list(terms.keys())
+    return terms
 
 #get subjects
 def task3(term):
@@ -29,15 +29,8 @@ def task4(subject):
     courses = scrape.get_course(subject)
     return courses
 
-#get description of selected course
-def task5(course):
-    global success
-    scrape = ScrAApe(success)
-    description = scrape.get_description(course)
-    return description
-
 #pulls all sections for selected course
-def task6(course):
+def task5(course):
     global success
     scrape = ScrAApe(success)
     sections = scrape.get_section(course)
@@ -45,9 +38,15 @@ def task6(course):
     return sections
 
 #pulls student information
-def task7():
+def task6():
     global success
     scrape = ScrAApe(success)
     profile = scrape.get_profile()
-    print(profile)
+    #print(profile)
     return profile
+
+def task7(schedule):
+    global success
+    scrape = ScrAApe(success)
+    result = scrape.register(schedule)
+    return result

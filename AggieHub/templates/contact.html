@@ -11,6 +11,24 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
         <script src="https://kit.fontawesome.com/b12f80ab13.js" crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function() {
+                $.ajax ({
+                    type: "POST",
+                    url: "{% url 'get_profile' %}",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var advisor = $("#advisor");
+                        advisor.html(response.advisor);
+                        var name = $("#full_name");
+                        name.val(response.first + " " + response.last);
+                    }
+                });
+            })
+        </script>
     </head>
     <body>
         <nav class = "banner">
@@ -30,31 +48,32 @@
                     <section class="box">
                         <label class="box-title" for="cb1">Who is my academic advisor? How do I get in contact with them?</label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">Your academic advisor is <b>[insert advisor name]</b>. You can find their contact information <a href="https://www.ncat.edu/employee-directory.php" target="_blank"><b>here</b></a>.</div>
+                        <div class="box-content">Your academic advisor is <span id='advisor'></span>. You can find their contact information <a href="https://www.ncat.edu/employee-directory.php" target="_blank"><b>here</b></a>.</div>
                     </section>
                     <input type="radio" name="accordion" id="cb2" />
                     <section class="box">
                         <label class="box-title" for="cb2">What is considered part-time or full-time status?</label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">Full-time status is 12 or more credit hours. Part-time status is 11 or less credit hours.</div>
+                        <div class="box-content">Full-time status is <b>12 or more</b> credit hours. Part-time status is <b>11 or less</b> credit hours.</div>
+                                                {% comment %} </br><b>Graduate:</b> Full-time status is <b>9 to 12</b> credit hours.</div> {% endcomment %}
                     </section>
                     <input type="radio" name="accordion" id="cb3" />
                     <section class="box">
-                        <label class="box-title" for="cb3"> How do I register? </label>
+                        <label class="box-title" for="cb3"> I haven't declared a major, but I would like to. What do I do? </label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">ANSWER</div>
+                        <div class="box-content">You can send an email to <a href=mailto:registration@ncat.edu><b>registration@ncat.edu</b></a> to declare your major.</div>
                     </section>
                     <input type="radio" name="accordion" id="cb4" />
                     <section class="box">
                         <label class="box-title" for="cb4">How do I know what classes to register for?</label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">ANSWER</div>
+                        <div class="box-content">If you are unsure of what classes to take next for your degree path, or you aren't sure what degree path you are interested in, check the <a href = {% url 'guides' %}><b>curriculum guides</b></a> page.</div>
                     </section>
                     <input type="radio" name="accordion" id="cb5" />
                     <section class="box">
                         <label class="box-title" for="cb5">The class I need is unavailable. What do I do?</label>
                         <label class="box-close" for="acc-close"></label>
-                        <div class="box-content">Sections that are at capacity are automatically disabled to prevent too many students from registering. If a section you need is disabled, check the [link to] override page to get an override. </div>
+                        <div class="box-content">Sections that are at capacity are automatically disabled to prevent too many students from registering. If a section you need is disabled, check <a href={% url 'override' %}><b>this page</b></a> to learn how to request an override.</div>
                     </section>
                     <input type="radio" name="accordion" id="acc-close" />
             </section>    
@@ -66,8 +85,8 @@
                 <p>We would love to hear from you!</p>
             </section>
             <section id = "contact_form">
-                {%csrf_token%}
-                <form>
+                <form method="POST">
+                    {%csrf_token%}
                     <div class="full_name">
                         <!--populate name from database-->
                         <input type="text" name="full_name" id="full_name" disabled value="Student Name">

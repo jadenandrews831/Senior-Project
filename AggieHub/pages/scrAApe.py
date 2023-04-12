@@ -4,6 +4,7 @@ import argparse
 import os
 import pickle
 import shelve
+import dbm.dumb
 
 from getpass import getpass
 from requests import Session
@@ -21,7 +22,7 @@ def debug_decorator(func):
 
   return inner
 
-# # @debug_decorator
+@debug_decorator
 def file_to_dict(filename):
   """
   file_to_dict: returns encoded file as dictionary
@@ -48,6 +49,8 @@ class User_Profile():
     self.dept = '*'
     self.banner = '*'
     self.major = '*'
+    self.advisor = '*'
+    self.college = '*'
     print('New Profile Created')
 
   def add_headers(self, headers):
@@ -77,6 +80,9 @@ class User_Profile():
  Dept: {self.dept}   
  Major: {self.major}
  Banner: {self.banner}
+ Major: {self.major}
+ Advisor: {self.advisor}
+ College: {self.college}
  {self.headers_ if hasattr(self, 'headers_') else ""}
  {self.scts_ if hasattr(self, "scts_") else ""}
 >>>User_Profile Object<<<
@@ -143,6 +149,10 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
+ 
+    
+
+
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -150,9 +160,10 @@ class Authenticate():
   self.session = {self.session}
   self.__dict__ = {self.__dict__}
     """
-  
+
   # pickle data for ScrAApe and database use
-  def save_data(self, shelve_name):
+  @debug_decorator
+  def save_data(self, db_name):
     with shelve.open(shelve_name, 'n') as file:
       for key, val in self.__dict__.items():
         file[key] = val
@@ -162,16 +173,27 @@ class Authenticate():
       for key, val in file.items():
         print(key,':', val)
     print(f"Session Created! Saved to >>> {shelve_name}.db")
+
+    # conn = None
+    # try:
+    #   conn = sqlite3.connect(db_name)
+    #   print(sqlite3.version)
+    # except sqlite3.Error as e:
+    #   print(e)
+    # finally:
+    #   if conn:
+    #     conn.close()
+
+    
       
     return file
 
   def load_data(self, auth):
     print("Loading Data: ")
-    print(auth.items)
     for key, val in auth.items():
       print(key, val)
-    for key, val in auth.items():
       setattr(self, key, val)
+
     return self
   
 class ScrAApe():
@@ -198,9 +220,10 @@ class ScrAApe():
     self.auth = auth
 
   def update_cookies(self, response):
-    print(response.headers.items())
+    print("Response Headers: ", response.headers.items())
     try:
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
+      print("Cookies: ", self.auth.cookies_)
     except:
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
       print('Session was not Authenticated. Please Authenticate before trying again')
@@ -234,16 +257,53 @@ class ScrAApe():
   def get_description(self):
     pass
 
+  def register(self, pkg):
+    term, pin, pkg = pkg[0], pkg[1], pkg[2]
+    print("Term:", term)
+    print("Pin:", pin)
+    for cls in pkg:
+      str = ""
+      for key, val in cls.items():
+        str+=f"{key}: {val}"
+
+      print(str, end="\n\n")
+
+
   # Finish-Me
   def get_profile(self):
-    return self.auth.profile
+    uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
+    response = self.post_request(uri, {'term_in': '202410'}, referer=uri)
+    content = response.text
+
+    soup = bs(content, 'html.parser')
+    name = soup.find('div', {'class': 'staticheaders'})
+    keys = soup.find_all('th', {'class': 'ddlabel'}) # get profile name, banner, and term
+    vals = soup.find_all('td', {'class': 'dddefault'})
+
+    self.auth.profile_.first = ''.join(name.text.split()[1])
+    self.auth.profile_.last = ''.join(name.text.split()[3])
+    
+    for key, val in zip(keys, vals):
+      if key.text == 'Class:':
+        self.auth.profile_.classification = val.text
+
+      elif key.text == 'Major and Department:':
+        self.auth.profile_.major = ''.join(val.text.split(',')[0])
+        self.auth.profile_.dept = ''.join(val.text.split(',')[1])
+
+      elif key.text == 'Primary Advisor:':
+        self.auth.profile_.advisor = ''.join(val.text)
+
+      elif key.text == 'College:':
+        self.auth.profile_.college = ''.join(val.text)
+
+      else:
+        setattr(self.auth.profile_, key.text, val.text)
+    
+    return self.auth.profile_
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
-    if 'terms_w_codes_' in self.__dict__:
-      print('get_terms(): found it!')
-      print('>'*8+'get_term() DEBUG ENDS'+'<'*8+'\n')
-      return self.terms_w_codes_
-    print(uri)
+    print("uri", uri)
     self.auth.prev_site_ = uri
     response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
@@ -258,7 +318,6 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     content = response.text
-    print('Response:\n',response.text)
     self.update_cookies(response)
     #print(auth)
     soup = bs(content, 'html.parser')
@@ -269,7 +328,7 @@ class ScrAApe():
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
-    print('terms_w_codes', terms_w_codes)
+    print('terms_w_codes: ', terms_w_codes)
 
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
@@ -400,14 +459,44 @@ class ScrAApe():
         s[h.text] = d.text
       self.auth.profile_.scts_.append(s)
 
+    print('Sections:')
+    print(self.auth.profile_.scts_)
 
+    self.response_ = self.auth.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckschd.p_disp_listcrse', 
+                                            params={'term_in':self.auth.pterm,'crse_in':self.auth.crs,
+                                                 'crn_in':self.auth.profile_.scts_[0]['CRN'], 'subj_in':self.auth.pcode}, 
+                                            headers={
+                                              'Host': 'ssbprod-ncat.uncecs.edu', 
+                                              'Cookies': self.auth.format_cookies(self.auth.cookies_),
+                                              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+                                              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                                              'Accept-Language': 'en-US,en;q=0.5',
+                                              'Accept-Encoding': 'gzip, deflate',
+                                              'Content-Type': 'application/x-www-form-urlencoded',
+                                              'Orgin': 'https://ssbprod-ncat.uncecs.edu',
+                                              'Referer': uri,
+                                              'Upgrade-Insecure-Requests': '1',
+                                              'Sec-Fetch-Dest': 'document',
+                                              'Sec-Fetch-Mode': 'navigate', 
+                                              'Sec-Fetch-Site': 'same-origin',
+                                              'Sec-Fetch-User': '?1',
+                                              'Te': 'trailers',
+                                              'Connection': 'close'})
+    
+    
+    print('Description:')
+    print(self.response_.text)
+
+    soup = bs(self.response_.text, 'html.parser')
+    print('Soup:', soup)
+    select = soup.find('td', {'class':'dddefault'})
+    print('Select:')
+    print(select)
+    self.auth.profile_.scts_[0]['description'] = select.text.split('\n\n')[0]
+
+    print('Description:')
+    print(self.auth.profile_.scts_[0]['description'])
     return self.auth.profile_.scts_
-  
-  def get_user_profile(self):
-    print("get_user_profile >>> Getting User Profile")
-    profile = self.auth.profile
-    print(profile)
-    return profile
 
   def post_request(self, uri, data, referer=None):
     """
@@ -514,9 +603,15 @@ if __name__ == "__main__":
       rsrc = args.resource
       sess = args.session
       a = shelve.open(sess[:-3])
-      auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+      print("Opening Authenticate Shelf:")
+      for key, val in a.items():
+        print(key, ":", val)
+      try:
+        auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+      except:
+        print("Unable to create Authenticate Objejct. Check Session")
+        exit()
 
-      print(auth)
       scrape = ScrAApe(auth) # close the file
       
       if args.resource == 'term':
@@ -530,24 +625,22 @@ if __name__ == "__main__":
         crss = scrape.get_course()
 
       if args.resource == 'section':
+
         scts = scrape.get_section()
 
       if args.resource == 'session':
         print("Printing")
         print(scrape.auth)
 
+      if args.resource == 'profile':
+        prf = scrape.get_profile()
+
       shelve_name = f'.{auth.usrnme}-sess'
       auth.save_data(shelve_name)
-      with shelve.open(shelve_name, 'r') as file:
-        print("Printing saved data:")
-        for key, val in file.items():
-          print(key,':', val)
-        file.close()
+      db = dbm.open(shelve_name, 'w')
+      db.close()
+        
 
-      with shelve.open(shelve_name, 'r') as file:
-        print("Printing saved data:")
-        for key, val in file.items():
-          print(key,':', val)
     else:
       print('Hmm... something went wrong')
       print(args)

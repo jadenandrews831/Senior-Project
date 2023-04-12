@@ -10,55 +10,833 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        $(document).ready(function() {
-            $.ajax ({
-                type: "POST",
-                url: "{% url 'get_profile' %}",
-                data: {
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                dataType: 'json',
-                success: function (response) {
-                    var college = $("#college");
-                    var major = $("#major");
-                    college.html(response.college);
-                    major.html(response.major);
-                }
-            });
-        })
-    </script>
 </head>
 <body>
-    <nav class = "banner">
+    <nav class = "banner"> 
         {% include 'navigation.html' %}
     </nav>
 
     <header class = "student_info">
         <!--if major/dept are undeclared, display a different message to user (?)-->
         <!--if major/dept are declared, display the major/dept-->
-        <p id = "college"></p>
-        <p id = "major"></p>
+        <p id = "dept">Department</p>
+        <p id = "major">Major</p>
     </header>
     
-    <aside class = "sidebar">
-        <section id = "college_select">
-            <select id = "college">
-                <option disabled="disabled" selected="selected">Select Department</option>
+        <div id = "side">
+            <h3> Curriculum Guide List </h3>
+        <section id = "select_curriculum_guide">
+            <select id = "college" title="college list">
+                <option disabled selected hidden>Select College</option>
+                <option value ="College of Agriculture and Environmental Sciences">College of Agriculture and Environmental Sciences</option>
+                <option value ="College of Arts, Humanities, and Social Sciences">College of Arts, Humanities, and Social Sciences</option>
+                <option value ="Wille A. Deese College of Business and Economics">Wille A. Deese College of Business and Economics</option>
+                <option value ="College of Education">College of Education</option>
+                <option value ="College of Engineering">College of Engineering</option>
+                <option value ="College of Health and Human Sciences">College of Health and Human Sciences</option>
+                <option value ="College of Science and Technology">College of Science and Technology</option>
+                <option value ="Joint School of Nanoscience and Nanoengineering">Joint School of Nanoscience and Nanoengineering</option>
             </select>
         </section>
-        <section id = "guide_select">
-            <p> Select a guide </p>
-        </section>
-    </aside>
+       
+        <section id = "list_of_guides">
+            <section id = "inner">
+                
+                    <hr>
+                    
+                    <div class = "box" id="box">
+                    <script>
+                        function btnToPDF1(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src',"https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-agricultural-environmental-agribusiness-food-industry-management-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-agricultural-education-secondary-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-agricultural-education-agricultural-professional-2021-22.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-animal-science-2021-2022-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-animal-science-animal-industry-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-laboratory-animal-science-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break; 
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---child-devleopment-and-family-studies-child-development-and-family-relations.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---child-devleopment-and-family-studies-child-development-early-education-and-family-studies---b-k-licensure.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;  
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---family-and-consumer-sciences-fashion-merchandising-and-design.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---family-and-consumer-sciences-consumer-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---food-and-nutritional-sciences-human-nutition.pdf&embedded=true");
+                                    $('#content').show();
+                                    break; 
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---food-and-nutritional-sciences-food-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break; 
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/certificate---family-and-consumer-sciences1.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/certificate---human-lactation.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---agricultural-and-environmental-systems-sustainable-land-and-food-systems.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---agricultural-and-environmental-systems-enviornmental-studies.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biological-engineering-bioprocess-engineering-track.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biological-engineering-natural-resources-engineering-track.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---landscape-architecture.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---agricultural-education-professional-licensure.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---agricultural-education-professional-service.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '21':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---agricultural-and-environmental-systems-natural-resources--environmental.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '22':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---agricultural-and-environmental-systems-agribusiness--food-industry.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '23':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---agricultural-and-environmental-systems-integrated-animal-health-systems.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '24':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---food-and-nutritional-sciences.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '25':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d---agribusiness--applied-economics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '26':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d---agricultural--extension-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '27':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d---food-science,-human-nutrition--health.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '28':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d---sustainable-agriculture--environmental-sciences.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '29':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d---sustainable-animal-production-and-health.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                            };
+                        };
+                        function btnToPDF2(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---english-professional-english.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---english-african-american-literature.pdf&embedded=true" );
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---english-creative-writing.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---english-technical-writing.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---english-secondary-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---history.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---secondary-education-history.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---political-sciences.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/jomc-curriculum-guide--mmpr.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/jomc-curriculum-guide--mmjr.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/jomc-curriculum-guide--pbrl.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---liberal-studies-african-american-studies.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---liberal-studies-applied-cultural-thought.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---liberal-studies-pre-law.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---criminal-justice.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---criminal-justice,-certificate-in-forensic-sciences---crime-scene-investigation.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---design.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---media-design.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---secondary-education-art.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.f.a---professional-theatre-acting.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.f.a---professional-theatre-theatre-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '21':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---music-general.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '22':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---music-performance.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '23':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---music-performance,-piano-track.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '24':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---secondary-education-music-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '25':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---music-performance,-instrumental-track.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '26':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---music-secondary-education---instrumental-track.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '27':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.a.---english-and-african-american-literature.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '28':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.a.t.---history-education-grades-9-12.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '29':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/certificate---technical-and-professional-communication-tpc.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                             };
 
-    <main class = "g_form">
-        <section id = "g_pdf">
+                        };
+                        function btnToPDF3(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-accounting_2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-finance-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-business-information-technology_2021---2022-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-management-management-information-systems.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-economics-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-economics-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/cobe_2021-2022-bs-economics-business-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-economics-law-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/cobe_2021-2022-bs-management-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/cobe_2021-2022-bs-management-business-admin-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/cobe_2021-2022-bs-management-entrepreneurship-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/2021-2022-bs-management-international-management-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-marketing-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-marketing-sales-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/bs-supply-chain-2021-2022.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/scm-minor-jan-2019-prefix-update.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.acc---accountancy.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.b.a.---business-administration-general-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.b.a.---business-administration-accountancy.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.b.a.---business-administration-human-resouces-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                    case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.b.a.---business-administration-supply-chain-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                               };
+
+                        };
+                        function btnToPDF4(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.--elementary-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---biology-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---business-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---child-dev,-early-edu,-and-family-studies-b-k.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---elementary-education-k-6.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---english-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---family-and-consumer-sciences-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---health-and-physical-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---history-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---mathematics-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---special-education-general-curriculum-k-12.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.a.t.---technology-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.aed.---reading-education-k-12.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.s.---mental-health-counseling-clinical.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.s.---mental-health-counseling-rehabilitation.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.s.---school-counseling.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/ph.d.---rehabilitation-counseling-and-counselor-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/certificate---school-administration.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.s.---adult-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/m.s.a.---school-administration.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/ph.d.---leadership-studies.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                            };
+                        };
+                        function btnToPDF5(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---architectural-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---civil-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---computer-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mechanical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mechanical-engineering-aerospace.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---industrial-and-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---electrical-engineering_.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---computer-engineering_.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---bioengineering-general.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---bioengineering-innovation.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biological-engineering-bioprocess-engineering-track1.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biological-engineering-natural-resources-engineering-track1.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---chemical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---computational-data-science-and-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---computer-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---electrical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---industrial-and-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---mechanical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---bioengineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---chemical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---civil-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '21':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---civil-engineering-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '22':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---data-science-and-engineering-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '23':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---computer-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '24':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---data-science-and-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '25':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---electrical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '26':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---industrial-and-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '27':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---mechanical-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '28':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---mechanical-engineering-systems-engineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                               };
+                        };
+                        function btnToPDF6(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/kins-2021-exercise-science-concentration-exsc.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/kins-2021-recreation--sprt-mgmt-concentration-rcsm.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/2021---2022-accelerated-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/2021---2022-traditional-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/2021---2022-bsnc-full-time-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/2021---2022-bsnc-part-time-curriculum-guide.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---heath-services-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.a.---psychology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.-social-work.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.-sociology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.w.---social-work.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---social-work.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                };
+                        };
+                        function btnToPDF7(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---applied-engineering-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---automotive-engineering-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '2':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biology-pre-medical.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '3':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---biology-general-biology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '4':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---secondary-education-biology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '5':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---consturction-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '6':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---environmental-health-and-safety-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '7':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---environmental-health-and-safety-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '8':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---geomatics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '9':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/minor-department-of-built-environment-cm-5-12-2020.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '10':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/geom-minor.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '11':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ohs-undergrad-certificate-2020-2021.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '12':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---chemistry-acs-certified.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '13':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---chemistry-biochemistry-and-biomedical-sciences.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '14':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---chemistry-secondary-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '15':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---electronics-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '16':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---information-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '17':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---graphic-communicatins-systems.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '18':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---computer-graphic-technology-technical-design.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '19':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---computer-graphic-technology-user-experience.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '20':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mathematics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '21':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mathematics-applied-mathematics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '22':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mathematics-statistics--data-science.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '23':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---mathematics-statistics--data-science1.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '24':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---physics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '25':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---physics-engineering-physics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '26':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---physics-biological-physics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '27':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---physics-interdisciplinary-physics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '28':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---physics-secondary-education.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '29':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/b.s.---atomspheric-sciences-and-meterology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '30':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---applied-mathematics.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '31':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---biology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '32':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---biology-industrial-biosciences-psm.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '33':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---chemistry.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '34':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---chemistry-applied-chemistry-and-chemical-sciences-psm.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '35':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---information-technology.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '36':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---technology-management.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '37':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ast-2022-23-curriculum-guide_final-1.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                };
+                        };
+                        function btnToPDF8(button){
+                            var x = button.id;
+                            switch (x) {
+                                case '0':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/m.s.---nanoengineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                                case '1':
+                                    $('#content').attr('src', "https://docs.google.com/gview?url=https://www.ncat.edu/provost/academic-affairs/curriculum-guides/ph.d.---nanoengineering.pdf&embedded=true");
+                                    $('#content').show();
+                                    break;
+                            };
+                        };
+                    </script>
+
+                    
+                    </div>
+                
+            </section>
+        </section>
+    </div>
+
+    <main class = "override_form">
+        <section id = "override_pdf">
+            <iframe id="content" src="" frameborder="0" allowtransparency="true" width="100%" height="100%"></iframe>
         </section>
     </main>
 
     <footer class = "footer">
-        <p> footer </p> 
+        <p> &#169;Aggie Bridge. All Rights Reserved. </p> 
     </footer>
 </body>
 </html>

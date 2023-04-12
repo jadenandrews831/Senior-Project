@@ -263,7 +263,8 @@ class ScrAApe():
       for key, val in cls.items():
         str+=f"{key}: {val}"
 
-      print(str)
+      print(str, end="\n\n")
+
 
   # Finish-Me
   def get_profile(self):

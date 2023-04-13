@@ -75,7 +75,7 @@ def register_student(request):
         # print(json.loads(schedule))
         # print(type(json.loads(schedule)))
         # print(type(json.loads(schedule)['pkg']))
-        response = task7(json.loads(schedule))
+        response = task7((json.loads(schedule)['pkg']))
         return JsonResponse(response)
 
 def override(request):

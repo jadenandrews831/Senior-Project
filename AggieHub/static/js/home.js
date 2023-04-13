@@ -493,7 +493,6 @@ function getData(crn) {
 
 //FUNCTIONAL
 function evalHexColor(color) {
-    //const hex = color.replace('#', '');
     const rColor = parseInt(color.substring(0, 0 + 2), 16);
     const gColor = parseInt(color.substring(2, 2 + 2), 16);
     const bColor = parseInt(color.substring(4, 4 + 2), 16);
@@ -678,7 +677,8 @@ function register() {
 
     for (var i = 1; i < total_rows; i++) {
         //make sure to add only classes with i tag in last column
-        if (table.rows[i].cells[0].innerText != "") {
+        if (table.rows[i].cells[8].innerHTML != "" && table.rows[i].cells[0].innerText != " ") {
+            //make sure to add only classes with i tag in last column)
             var row = table.rows[i];
             crns.push(row.id);
             titles.push(row.cells[2].innerText);

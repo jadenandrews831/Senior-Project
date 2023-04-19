@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+'''
+assoc_term_in=dummy&crn=dummy&start_date_in=dummy&end_date_in=dummy&rsts=dummy&subj=dummy&crse=dummy&sec=dummy&levl=dummy&gmod=dummy&cred=dummy&title=dummy&mesg=dummy&regs_row=0&wait_row=0&add_row=10&TERM_IN=202340&sel_crn=dummy&assoc_term_in=dummy&ADD_BTN=dummy&sel_crn=40811+202340&assoc_term_in=202340&ADD_BTN=Register
+'''
+
 import argparse
 import os
 import pickle
@@ -149,10 +153,6 @@ class Authenticate():
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
- 
-    
-
-
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -163,7 +163,7 @@ class Authenticate():
 
   # pickle data for ScrAApe and database use
   @debug_decorator
-  def save_data(self, db_name):
+  def save_data(self, shelve_name):
     with shelve.open(shelve_name, 'n') as file:
       for key, val in self.__dict__.items():
         file[key] = val
@@ -172,7 +172,7 @@ class Authenticate():
       print("Printing saved data:")
       for key, val in file.items():
         print(key,':', val)
-    print(f"Session Created! Saved to >>> {shelve_name}.db")
+    print(f"Session Created! Saved to >>> {shelve_name}")
 
     # conn = None
     # try:
@@ -258,21 +258,66 @@ class ScrAApe():
     pass
 
   def register(self, pkg):
-    term, pin, pkg = pkg[0], pkg[1], pkg[2]
+    #pkg changed to crns since you can register right from here: https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_AltPin
+    term, pin, crns = pkg[0], pkg[1], pkg[2]
     print("Term:", term)
     print("Pin:", pin)
-    for cls in pkg:
-      str = ""
-      for key, val in cls.items():
-        str+=f"{key}: {val}"
+    print("CRNs:")
+    for crn in crns:
+      print(crn, end=", ")
+    print()
 
-      print(str, end="\n\n")
+    # Select Term to Register For
+    term_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_AltPin'
+    response = self.post_request(term_page_uri, {'term_in':self.auth.pterm}, referer=term_page_uri)
+    self.auth.prev_site_ = term_page_uri
+    self.update_cookies(response)
+    
+    # Enter Pin for Registration
+    chk_pin_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_CheckAltPin'
+    response = self.post_request(chk_pin_uri, {'pin':pin})
+    self.auth.prev_site_ = chk_pin_uri
+    self.update_cookies(response)
+
+    # Register with Given CRNs
+    """
+    term_in=202340&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=DUMMY&start_date_in=DUMMY&end_date_in=DUMMY&
+    SUBJ=DUMMY&CRSE=DUMMY&SEC=DUMMY&LEVL=DUMMY&CRED=DUMMY&GMOD=DUMMY&TITLE=DUMMY&MESG=DUMMY&REG_BTN=DUMMY&
+    MESG=DUMMY&RSTS_IN=&assoc_term_in=202340&CRN_IN=40811&start_date_in=06%2F29%2F2023&end_date_in=08%2F04%2F2023&
+    SUBJ=CST&CRSE=460&SEC=04A&LEVL=Undergraduate&CRED=++++3.000&GMOD=Standard+Letter+Grade&
+    TITLE=System+Integra+and+Architec&CRN_IN=40991&RSTS_IN=RW&CRN_IN=40991&assoc_term_in=&start_date_in=&
+    end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
+    start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&
+    assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&
+    RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&
+    end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
+    start_date_in=&end_date_in=&regs_row=1&wait_row=0&add_row=10&REG_BTN=Submit+Changes
+    """
+
+    reg_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckcoms.P_Regs'
+    reg_data = {'RSTS_IN':['DUMMY', 'RW'], 'assoc_term_in':['DUMMY', ''],'term_in':term,
+            'start_date_in':['DUMMY', ''], 'end_date_in':['DUMMY', ''], 'SUBJ':'DUMMY', 'CRSE':'DUMMY', 
+            'SEC':'DUMMY', 'LEVL':'DUMMY', 'CRED':'DUMMY', 'CRN_IN':['DUMMY', ''].extend(crns), 
+            'GMOD':'DUMMY', 'TITLE':'DUMMY', 'MESG':'DUMMY', 'REG_BTN':['DUMMY', 'Submit+Changes'],
+            'regs_row':'1', 'assoc_term_in':term, 'wait_row':'0', 'add_row':'10',
+            }
+    response = self.post_request(reg_page_uri, reg_data, referer=term_page_uri)
+    self.auth.prev_site_ = term_page_uri
+    self.update_cookies(response) 
+
+    # FIND: <table  CLASS="datadisplaytable" SUMMARY="Current Schedule">
+    # AND GET: <input name="?" />, ?=CRN_IN,SUBJ,CRSE,SEC,LEVL,CRED,GMOD,TITLE
+    # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
+    # AND GET: <td CLASS="dddefault">
+    # RETURN: {unknown} // {Class CRNs with registration issues, Class CRNS without registration issues, Full Confirmation}
+
+    
 
 
   # Finish-Me
   def get_profile(self):
     uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
-    response = self.post_request(uri, {'term_in': '202410'}, referer=uri)
+    response = self.post_request(uri, {'term_in': '202410'}, referer=uri)   #make termin dynamic
     content = response.text
 
     soup = bs(content, 'html.parser')
@@ -575,8 +620,8 @@ if __name__ == "__main__":
     a = Authenticate(sid, pin)
     a.login(NCAT_URI)
 
-    pickle_name = f'.{sid}-sess'
-    a.save_data(pickle_name)
+    shelve_name = f'.{sid}-sess.db'
+    a.save_data(shelve_name)
 
   if args.command == 'auth':
     if args.destfile:
@@ -585,15 +630,15 @@ if __name__ == "__main__":
       pin = d[1]
       a = Authenticate(sid, pin)
 
-      shelve_name = f'.{sid}-sess'
+      shelve_name = f'.{sid}-sess.db'
       a.save_data(shelve_name)
     elif args.username and args.pin:
       sid = args.username
       pin = args.pin
       a = Authenticate(sid, pin)
 
-      pickle_name = f'.{sid}-sess'
-      a.save_data(pickle_name)
+      shelve_name = f'.{sid}-sess.db'
+      a.save_data(shelve.db_name)
     else:
       print('Hmm... something went wrong')
       print(args)
@@ -602,12 +647,13 @@ if __name__ == "__main__":
     if args.resource and args.session:
       rsrc = args.resource
       sess = args.session
-      a = shelve.open(sess[:-3])
+      a = shelve.open(sess)
       print("Opening Authenticate Shelf:")
       for key, val in a.items():
         print(key, ":", val)
       try:
         auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
+        a.close()
       except:
         print("Unable to create Authenticate Objejct. Check Session")
         exit()
@@ -635,11 +681,13 @@ if __name__ == "__main__":
       if args.resource == 'profile':
         prf = scrape.get_profile()
 
-      shelve_name = f'.{auth.usrnme}-sess'
+      if args.resource == 'register':
+        term, pin, pkg = input('Term:'), input('Pin:'), ['202340', ]
+        reg = scrape.register()
+
+      shelve_name = f'.{auth.usrnme}-sess.db'
       auth.save_data(shelve_name)
-      db = dbm.open(shelve_name, 'w')
-      db.close()
-        
+
 
     else:
       print('Hmm... something went wrong')

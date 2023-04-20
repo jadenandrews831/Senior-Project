@@ -72,7 +72,7 @@ button {
     font-weight: 500;
     background: #BC5C45;
     color: #FFF;
-    max-width: 300px;
+    width: 300px;
     border: none;
     margin: 10px 0 25px;
     align-items: center;

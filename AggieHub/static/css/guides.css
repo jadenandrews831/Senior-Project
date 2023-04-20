@@ -47,15 +47,19 @@ body {
 }
 
 hr {
-    border-bottom: thin solid black;
+    border-top: medium solid black;
+    align-items: center;
+    width:85%;
+    margin-top: -15px;
 }
+
 
 .box {
     justify-content: center;
     align-items: center;
     max-height: 650px;
     width: auto;
-    margin-top: -5px;
+    margin-top: 25px;
     display: block;
     overflow:auto;
     overflow-x: hidden;
@@ -68,10 +72,9 @@ button {
     font-weight: 500;
     background: #BC5C45;
     color: #FFF;
-    width: 200px;
+    width: 300px;
     border: none;
     margin: 10px 0 25px;
-    /*padding: 10px;*/
     align-items: center;
 }
 

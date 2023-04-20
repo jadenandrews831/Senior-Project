@@ -2,13 +2,13 @@ import json
 from django.core.mail import send_mail
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
+#from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from .models import *
 from .forms import *
 from .tasks import *
 
-#login required, redirect if not logged in
 def home(request):
         #if (request.session.has_key('banner_id') == False):
         #     return redirect('login')
@@ -94,3 +94,6 @@ def contact(request):
                   [settings.EMAIL_HOST_USER], 
                   fail_silently=False)
     return render(request, 'contact.html')
+
+def logout(request):
+    return redirect('login')

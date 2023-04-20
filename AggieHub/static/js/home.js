@@ -705,16 +705,16 @@ function register() {
             //alert("Incorrect pin. Please try again."); 
             showDialog(9);
         } else { //pin will be sent to scrAApe tool
-            for (var i = 0; i < crns.length; i++) {
-                //add subj, crse, and section to dict
-                register_info['crn'] = crns[i];
-                register_info['subj'] = subj[i];
-                register_info['crs'] = crse[i];
-                all_classes.push(register_info);
-                register_info = {};
-            }
+            // for (var i = 0; i < crns.length; i++) {
+            //     //add subj, crse, and section to dict
+            //     register_info['crn'] = crns[i];
+            //     register_info['subj'] = subj[i];
+            //     register_info['crs'] = crse[i];
+            //     all_classes.push(register_info);
+            //     register_info = {};
+            // }
 
-            return {'pkg': [term, pin, all_classes]};
+            return {'pkg': [term, pin, crns]};
         }
     }
 }

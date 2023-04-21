@@ -354,7 +354,9 @@ class ScrAApe():
     
     # RETURN: {unknown} // {Class CRNs with registration issues, Class CRNS without registration issues, Full Confirmation}
     print("finished registration")
-    pkg = (cur, err, bool(not err))
+    pkg = dict()
+    for attr in (cur, err, bool(not err)):
+      setattr(pkg, attr.__name__, attr)
     print('pkg:',pkg)
     return pkg
     

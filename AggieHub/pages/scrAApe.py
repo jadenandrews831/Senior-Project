@@ -9,13 +9,14 @@ import os
 import pickle
 import shelve
 import dbm.dumb
+import re
 
 from getpass import getpass
 from requests import Session
 from bs4 import BeautifulSoup as bs
 
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
-rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile', 'session']
+rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile', 'session', 'register']
 
 def debug_decorator(func):
   def inner(*args, **kwargs):
@@ -227,12 +228,15 @@ class ScrAApe():
     except:
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
       print('Session was not Authenticated. Please Authenticate before trying again')
-      exit()
+      exit(0)
     print('cookies >>> ',self.auth.cookies_)
 
   # @debug_decorator
-  def get_data(self, uri, data, sel, attr):
-    response = self.post_request(uri, data)
+  def get_data(self, uri, data, sel, attr, referrer=None):
+    if referrer:
+      response = self.post_request(uri, data, referrer)
+    else:
+      response = self.post_request(uri, data)
     print(response.text)
     self.auth.prev_site_ = uri
     content = response.text
@@ -243,8 +247,11 @@ class ScrAApe():
     return select, soup
 
   # @debug_decorator
-  def get_all_data(self, uri, data, sel, attr):
-    response = self.post_request(uri, data)
+  def get_all_data(self, uri, data, sel, attr, referrer=None):
+    if referrer:
+      response = self.post_request(uri, data, referrer)
+    else:
+      response = self.post_request(uri, data)
     print(response.text)
     self.auth.prev_site_ = uri
     content = response.text
@@ -258,6 +265,8 @@ class ScrAApe():
     pass
 
   def register(self, pkg):
+
+
     #pkg changed to crns since you can register right from here: https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_AltPin
     term, pin, crns = pkg[0], pkg[1], pkg[2]
     print("Term:", term)
@@ -269,48 +278,85 @@ class ScrAApe():
 
     # Select Term to Register For
     term_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_AltPin'
-    response = self.post_request(term_page_uri, {'term_in':self.auth.pterm}, referer=term_page_uri)
-    self.auth.prev_site_ = term_page_uri
-    self.update_cookies(response)
-    
+    select, soup = self.get_data(term_page_uri, {'term_in':term}, 'OPTION', {'VALUE': term}, term_page_uri)
+    print("finished select term to register for")
+
     # Enter Pin for Registration
     chk_pin_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_CheckAltPin'
-    response = self.post_request(chk_pin_uri, {'pin':pin})
-    self.auth.prev_site_ = chk_pin_uri
-    self.update_cookies(response)
+    crn_in, soup = self.get_all_data(chk_pin_uri, {'pin':pin}, 'input', {'name': 'CRN_IN', 'value': re.compile(r"\d{5}")}, term_page_uri)
+    assoc_term_in = [x['value'] for x in soup.find_all('input', {'name': 'assoc_term_in'})]
+    start_date_in = [x['value'] for x in soup.find_all('input', {'name': 'start_date_in'})]
+    end_date_in = [x['value'] for x in soup.find_all('input', {'name': 'end_date_in'})]
+    SUBJ = [x['value'] for x in soup.find_all('input', {'name': 'SUBJ'})]
+    CRSE = [x['value'] for x in soup.find_all('input', {'name': 'CRSE'})]
+    TITLE = [x['value'] for x in soup.find_all('input', {'name': 'TITLE'})]
+    RSTS_IN = [x['value'] for x in soup.find_all('input', {'name': 'RSTS_IN'})]
+    LEVL = [x['value'] for x in soup.find_all('input', {'name': 'LEVL'})]
+    SEC = [x['value'] for x in soup.find_all('input', {'name': 'SEC'})]
+    CRED = [x['value'] for x in soup.find_all('input', {'name': 'CRED'})]
+    GMOD = [x['value'] for x in soup.find_all('input', {'name': 'GMOD'})]
+    assoc_term_in = [x['value'] for x in soup.find_all('input', {'name': 'assoc_term_in'})]
+    print("finished enter pin")
+    for cel in crn_in:
+      crns.append(cel['value'])
+    print("crns", crns)
+    RSTS_IN.extend([""*len(crn_in)])
+
 
     # Register with Given CRNs
     """
-    term_in=202340&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=DUMMY&start_date_in=DUMMY&end_date_in=DUMMY&
-    SUBJ=DUMMY&CRSE=DUMMY&SEC=DUMMY&LEVL=DUMMY&CRED=DUMMY&GMOD=DUMMY&TITLE=DUMMY&MESG=DUMMY&REG_BTN=DUMMY&
-    MESG=DUMMY&RSTS_IN=&assoc_term_in=202340&CRN_IN=40811&start_date_in=06%2F29%2F2023&end_date_in=08%2F04%2F2023&
-    SUBJ=CST&CRSE=460&SEC=04A&LEVL=Undergraduate&CRED=++++3.000&GMOD=Standard+Letter+Grade&
-    TITLE=System+Integra+and+Architec&CRN_IN=40991&RSTS_IN=RW&CRN_IN=40991&assoc_term_in=&start_date_in=&
-    end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
-    start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&
-    assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&
-    RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&
-    end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
-    start_date_in=&end_date_in=&regs_row=1&wait_row=0&add_row=10&REG_BTN=Submit+Changes
+    term_in=202340&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=DUMMY&start_date_in=DUMMY&
+    end_date_in=DUMMY&SUBJ=DUMMY&CRSE=DUMMY&SEC=DUMMY&LEVL=DUMMY&CRED=DUMMY&GMOD=DUMMY&
+    TITLE=DUMMY&MESG=DUMMY&REG_BTN=DUMMY&MESG=DUMMY&RSTS_IN=&assoc_term_in=202340&CRN_IN=40811&
+    start_date_in=06%2F29%2F2023&end_date_in=08%2F04%2F2023&SUBJ=CST&CRSE=460&SEC=04A&LEVL=Undergraduate&
+    CRED=++++3.000&GMOD=Standard+Letter+Grade&TITLE=System+Integra+and+Architec&RSTS_IN=RW&
+    CRN_IN=40991&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
+    start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&
+    RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&
+    start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&
+    CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&
+    end_date_in=&RSTS_IN=RW&CRN_IN=&assoc_term_in=&start_date_in=&end_date_in=&RSTS_IN=RW&CRN_IN=&
+    assoc_term_in=&start_date_in=&end_date_in=&regs_row=1&wait_row=0&add_row=10&REG_BTN=Submit+Changes
     """
 
     reg_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckcoms.P_Regs'
-    reg_data = {'RSTS_IN':['DUMMY', 'RW'], 'assoc_term_in':['DUMMY', ''],'term_in':term,
-            'start_date_in':['DUMMY', ''], 'end_date_in':['DUMMY', ''], 'SUBJ':'DUMMY', 'CRSE':'DUMMY', 
-            'SEC':'DUMMY', 'LEVL':'DUMMY', 'CRED':'DUMMY', 'CRN_IN':['DUMMY', ''].extend(crns), 
-            'GMOD':'DUMMY', 'TITLE':'DUMMY', 'MESG':'DUMMY', 'REG_BTN':['DUMMY', 'Submit+Changes'],
-            'regs_row':'1', 'assoc_term_in':term, 'wait_row':'0', 'add_row':'10',
+    lst = ['DUMMY']
+    crns.extend(['']*(10-len(crn_in)))
+    lst.extend(crns)
+    reg_data = {'term_in':term, 'RSTS_IN':RSTS_IN, 'assoc_term_in':assoc_term_in,
+            'start_date_in':start_date_in, 'end_date_in':end_date_in, 'SUBJ':SUBJ, 'CRSE':CRSE, 
+            'SEC':SEC, 'LEVL':LEVL, 'CRED':CRED, 'CRN_IN': lst, 
+            'GMOD':GMOD, 'TITLE':TITLE, 'MESG':'DUMMY', 'regs_row':'1', 
+            'assoc_term_in':assoc_term_in, 'wait_row':'0', 'add_row':'10','REG_BTN':['DUMMY', 'Submit Changes'],
             }
-    response = self.post_request(reg_page_uri, reg_data, referer=term_page_uri)
-    self.auth.prev_site_ = term_page_uri
-    self.update_cookies(response) 
-
+    
     # FIND: <table  CLASS="datadisplaytable" SUMMARY="Current Schedule">
+    cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'SUMMARY': 'Current Schedule'}, referrer=chk_pin_uri) 
     # AND GET: <input name="?" />, ?=CRN_IN,SUBJ,CRSE,SEC,LEVL,CRED,GMOD,TITLE
+    soup_cp = soup
+    print("soup_cp", soup_cp)
+    cur = list()
+    for tag in ["CRN_IN","SUBJ","CRSE","SEC","LEVL","CRED",'GMOD','TITLE']:
+      t = soup.find_all('input', {'name':tag, 'value':re.compile(r".*")})
+      for i in t:
+        if i['value'] == 'DUMMY': continue
+        cur.append((tag, i['value']))
     # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
+    soup = soup_cp
+    err_sch = soup.find('table', {"summary": re.compile(r".*Registration Errors.*")})
+    print(err_sch)
     # AND GET: <td CLASS="dddefault">
+    soup = bs(str(err_sch), 'html.parser')
+    err = list()
+    for info in soup.find_all('td', {'class':'dddefault'}):
+      i = info.text
+      err.append(i)
+    
     # RETURN: {unknown} // {Class CRNs with registration issues, Class CRNS without registration issues, Full Confirmation}
-
+    print("finished registration")
+    pkg = (cur, err, bool(not err))
+    print('pkg:',pkg)
+    return pkg
     
 
 
@@ -567,6 +613,12 @@ class ScrAApe():
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
     print(self.response_.text)
+    
+    
+    print("Request BODY:", self.response_.request.headers)
+    print("Request HEADERS:")
+    for pair in self.response_.request.body.split('&'):
+      print(pair.split('='))
     for header, item in self.response_.headers.items():
       print(header,':', item)
     print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
@@ -595,7 +647,7 @@ if __name__ == "__main__":
   subparser = parser.add_subparsers(dest="command")
   authenticate = subparser.add_parser('auth', help="option to authenticate. Either use credentials or '.shadow'")
   get = subparser.add_parser('get', help="get data from the given uri")
-  post = subparser.add_parser('post', help="post data to the given uri")
+  register = subparser.add_parser('register', help="post data to the given uri")
 
   group = authenticate.add_mutually_exclusive_group()
   group.add_argument('-d', '--destfile', type=str, help='file where login credentials are located')
@@ -606,9 +658,9 @@ if __name__ == "__main__":
   get.add_argument('resource', type=str, help='target resource type {term, subject,...}', choices=rsrc_choices)
   get.add_argument('session', type=str, help='session file address')
   
-  post.add_argument('resource', type=str, help='target resource type {term, subject,...}', choices=rsrc_choices)
-  post.add_argument('data', type=str, help="data file with data to be posted to target")
-  post.add_argument('session', type=str, help='session file address')
+  register.add_argument('-d', '--destfile', type=str, help='file where login credentials are located')
+  # register.add_argument('data', type=str, help="data file with data to be posted to target")
+  # register.add_argument('session', type=str, help='session file address')
 
   args = parser.parse_args()
 
@@ -638,7 +690,7 @@ if __name__ == "__main__":
       a = Authenticate(sid, pin)
 
       shelve_name = f'.{sid}-sess.db'
-      a.save_data(shelve.db_name)
+      a.save_data(shelve_name)
     else:
       print('Hmm... something went wrong')
       print(args)
@@ -655,7 +707,7 @@ if __name__ == "__main__":
         auth = Authenticate(a['usrnme'], a['psswd']).load_data(a)
         a.close()
       except:
-        print("Unable to create Authenticate Objejct. Check Session")
+        print("Unable to create Authenticate Object. Check Session")
         exit()
 
       scrape = ScrAApe(auth) # close the file
@@ -681,9 +733,7 @@ if __name__ == "__main__":
       if args.resource == 'profile':
         prf = scrape.get_profile()
 
-      if args.resource == 'register':
-        term, pin, pkg = input('Term:'), input('Pin:'), ['202340', ]
-        reg = scrape.register()
+      
 
       shelve_name = f'.{auth.usrnme}-sess.db'
       auth.save_data(shelve_name)
@@ -693,23 +743,16 @@ if __name__ == "__main__":
       print('Hmm... something went wrong')
       print(args)
 
-  if args.command == 'post':
-    if args.resource and args.session:
-      rsrc = args.resource
-      sess = args.session
-      data = file_to_dict(args.data)
-
-      auth = shelve.open(sess[:-3])
-      print(auth)
-      scrape = ScrAApe(auth)
-      print(scrape)
-
-      if rsrc == 'term':
-        uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_disp_dyn_ctlg'
-      else:
-        uri = ''
-      
-      response = scrape.post_request(uri, data)
+  elif args.command == 'register':
+    if args.destfile:
+      d = list(file_to_dict(args.destfile).items())[0]
+      sid = d[0]
+      pin = d[1]
+      a = Authenticate(sid, pin)
+      print(a)
+      pkg = (input('Term:'), input('Pin:'), ['40991', ])
+      scrape = ScrAApe(a) # close the file
+      reg = scrape.register(pkg)
 
     else:
       print('Hmm... something went wrong')

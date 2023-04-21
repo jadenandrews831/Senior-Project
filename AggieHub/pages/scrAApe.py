@@ -336,11 +336,13 @@ class ScrAApe():
     soup_cp = soup
     print("soup_cp", soup_cp)
     cur = list()
+    acpt = dict()
     for tag in ["CRN_IN","SUBJ","CRSE","SEC","LEVL","CRED",'GMOD','TITLE']:
+      acpt[tag] = list()
       t = soup.find_all('input', {'name':tag, 'value':re.compile(r".*")})
       for i in t:
         if i['value'] == 'DUMMY': continue
-        cur.append((tag, i['value']))
+        acpt[tag].append(i['value'])
     # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
     soup = soup_cp
     err_sch = soup.find('table', {"summary": re.compile(r".*Registration Errors.*")})
@@ -348,15 +350,23 @@ class ScrAApe():
     # AND GET: <td CLASS="dddefault">
     soup = bs(str(err_sch), 'html.parser')
     err = list()
+    rgct = dict()
+    j = 0
     for info in soup.find_all('td', {'class':'dddefault'}):
       i = info.text
       err.append(i)
+      j += 1
+      if j%6 == 5:
+        rgct[str(len(rgct))] = err
+        err = list()
+        j = 0
+      
     
     # RETURN: {unknown} // {Class CRNs with registration issues, Class CRNS without registration issues, Full Confirmation}
     print("finished registration")
     pkg = dict()
     i = 0
-    for attr in (cur, err, bool(not err)):
+    for attr in (acpt, rgct, bool(not err)):
       pkg[str(i)] = attr
       i += 1
     print('pkg:',pkg)

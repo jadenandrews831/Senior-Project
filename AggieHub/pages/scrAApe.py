@@ -354,6 +354,7 @@ class ScrAApe():
     j = 0
     for info in soup.find_all('td', {'class':'dddefault'}):
       i = info.text
+      if i == '\xa0':continue
       err.append(i)
       j += 1
       if j%6 == 5:

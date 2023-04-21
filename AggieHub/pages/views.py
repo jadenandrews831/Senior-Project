@@ -1,33 +1,39 @@
 import json
 from django.core.mail import send_mail
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
-#from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from .models import *
 from .forms import *
 from .tasks import *
+from .authentication import StudentBackend
 
+#@login_required(login_url='login')
 def home(request):
-        #if (request.session.has_key('banner_id') == False):
-        #     return redirect('login')
-        # banner_id = request.session['banner_id']
-        #terms = task2()
-        #context = {'terms': terms}
+    if(request.session.has_key('banner_id')):
         return render(request, 'home.html')
+    else:
+        return redirect('login')
 
 #form data should be used to autheticate session for user through scrAApe and redirect to home page
 def login(request):
     if (request.method == 'POST'): 
         form = loginForm(request.POST)
         if(form.is_valid()):
-            form.banner_id = form.cleaned_data['banner_id']
-            form.pin = form.cleaned_data['pin']
-            response = task1(form.banner_id, form.pin)
-            if (response == True):
-                #request.session['banner_id'] = form.banner_id
+            # authenticate user and create session
+            user = StudentBackend.authenticate(username=form.cleaned_data['banner_id'], password=form.cleaned_data['pin'])
+            # print (user)
+            # form.banner_id = form.cleaned_data['banner_id']
+            # form.pin = form.cleaned_data['pin']
+            # response = task1(form.banner_id, form.pin)
+            if user is not None:
+                request.session['banner_id'] = form.cleaned_data['banner_id']
                 return redirect('home')
+            # if (response == True):
+            #     return redirect('home')
+            # else:
+            #     return render(request, 'login.html', {'form': form, 'error': 'Invalid Banner ID or PIN'})
     return render(request, 'login.html', {'form': loginForm})
     
 def get_subjects(request):
@@ -78,22 +84,35 @@ def register_student(request):
         response = task7((json.loads(schedule)['pkg']))
         return JsonResponse(response)
 
+#@login_required(login_url='login')
 def override(request):
-    return render(request, 'override.html')
+    if(request.session.has_key('banner_id')):
+        return render(request, 'override.html')
+    else:
+        return redirect('login')
 
+#@login_required(login_url='login')
 def guides(request):
-    return render(request, 'guides.html')
+    if(request.session.has_key('banner_id')):
+        return render(request, 'guides.html')
+    else:
+        return redirect('login')
 
+#@login_required(login_url='login')
 def contact(request):
-    if (request.method == 'POST'):
-        email = request.POST['email']
-        topic = request.POST['topic']
-        message = request.POST['message']
-    
-        send_mail(topic, message, email, 
-                  [settings.EMAIL_HOST_USER], 
-                  fail_silently=False)
-    return render(request, 'contact.html')
+    if(request.session.has_key('banner_id')):
+        if (request.method == 'POST'):
+            email = request.POST['email']
+            topic = request.POST['topic']
+            message = request.POST['message']
+        
+            send_mail(topic, message, email, 
+                    [settings.EMAIL_HOST_USER], 
+                    fail_silently=False)
+        return render(request, 'contact.html')
+    else:
+        return redirect('login')
 
 def logout(request):
+    del request.session['banner_id']
     return redirect('login')

@@ -1,5 +1,6 @@
 var calendar = null;
-var course_sections;
+//var course;
+var selected_event;
 
 //creates the calendar and render it - FUNCTIONAL
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,13 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: false,
         eventOverlap: false,
         eventClick: function(info) {
-            alert('Event: ' + info.event.title);
-            // selected_event = info.event;
-            // dialog.dialog("open");
-            // selected_event.id.eventColor = color;
-            //get color from dialog box
-            //change color of event in table
-            //change color of event in calendar
+            selected_event = info.event;
+            showDialog(1);
         } 
     });
     
@@ -161,7 +157,8 @@ function addClass() {
             last_cell.innerHTML = '<i></i>';
             document.getElementById("available").selectedIndex = -1;
         } else {
-            alert("Please select a section to add");
+            //alert("Please select a section to add");
+            showDialog(2);
         }
         update();
     } else {
@@ -169,17 +166,19 @@ function addClass() {
             last_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
             document.getElementById("available").selectedIndex = -1;
         } else {
-            alert("Please select a section to add");
+            //alert("Please select a section to add");
+            showDialog(2);
         }
         update();
     }
 }
 
 //FUNCTIONAL
-function displaySection(index) {
+function displaySection(index) { 
     var table = document.getElementById("details");
     var all_rows = table.rows.length;
     var check = 0;
+    //course = index;
 
     if (all_rows > 1) {
         if (index.length == 2) {
@@ -193,7 +192,8 @@ function displaySection(index) {
                 var row_section = row_sec_array[0];
 
                 if (row.id == lecture.CRN) {
-                    alert("You have already added this section");
+                    //alert("You have already added this section");
+                    showDialog(3);
                     clearSelection();
                     check++;
                     break;
@@ -202,7 +202,8 @@ function displaySection(index) {
 
                 if (lecture.Time != "TBA" && lecture.Days != "TBA") {
                     if ((conflictTime(lecture.Time, lecture.Days) == true) || (conflictTime(lab.Time, lab.Days) == true)) {
-                        alert("This class conflicts with another class you have added.");
+                        //alert("This class conflicts with another class you have added");
+                        showDialog(4);
                         clearSelection();
                         check++;
                         break;
@@ -249,7 +250,8 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        alert("You have already added a section for this course");
+                        //alert("You have already added a section for this course");
+                        showDialog(5);
                         clearSelection();
                         check++;
                         break;
@@ -295,7 +297,8 @@ function displaySection(index) {
                 var row_section = row_sec_array[0];
 
                 if (row.id == index.CRN) {
-                    alert("You have already added this section");
+                    //alert("You have already added this section");
+                    showDialog(3);
                     clearSelection();
                     check++;
                     break;
@@ -303,7 +306,8 @@ function displaySection(index) {
 
                 if (index.Time != "TBA" && index.Days != "TBA") {
                     if (conflictTime(index.Time, index.Days) == true) {
-                        alert("This class conflicts with another class you have added.");
+                        //alert("This class conflicts with another class you have added.");
+                        showDialog(4);
                         clearSelection();
                         check++;
                         break;
@@ -335,7 +339,8 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        alert("You have already added a section for this course");
+                        //alert("You have already added a section for this course");
+                        showDialog(5);
                         clearSelection();
                         check++;
                         break;
@@ -477,7 +482,7 @@ function getData(crn) {
         var nextCRN = nextRow.id;
         var nextTime = nextRow.cells[4].innerText;
         var nextDay = nextRow.cells[3].innerText;
-        var nextTitle = title + " - LAB";
+        var nextTitle = title;
         var nextInstructor = nextRow.cells[5].innerText;
         var nextLocation = nextRow.cells[6].innerText;
         var nextCredits = nextRow.cells[7].innerText;
@@ -491,8 +496,8 @@ function getData(crn) {
     }    
 }
 
+//FUNCTIONAL
 function evalHexColor(color) {
-    //const hex = color.replace('#', '');
     const rColor = parseInt(color.substring(0, 0 + 2), 16);
     const gColor = parseInt(color.substring(2, 2 + 2), 16);
     const bColor = parseInt(color.substring(4, 4 + 2), 16);
@@ -502,7 +507,6 @@ function evalHexColor(color) {
 
 //FUNCTIONAL
 function addEvent(crn) {
-
     var data = getData(crn);
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
     const textColor = evalHexColor(randomColor) ? 'black' : 'white';
@@ -547,7 +551,7 @@ function addEvent(crn) {
         });
         document.getElementById(data[1]).cells[0].style.backgroundColor = "#" + randomColor;
         document.getElementById(crn).cells[0].style.backgroundColor = "#" + randomColor;
-        //change text color to black if background color is light
+        
         document.getElementById(data[1]).cells[0].style.color = textColor;
         document.getElementById(crn).cells[0].style.color = textColor;
     } else {
@@ -570,10 +574,8 @@ function addEvent(crn) {
         document.getElementById(crn).cells[0].style.backgroundColor = "#" + randomColor;
         document.getElementById(crn).cells[0].style.color = textColor;
     }
-
     calendar.render();
     //set background color of crn column of row to match event color
-    
 }
 
 //FUNCTIONAL
@@ -581,7 +583,6 @@ function update() {
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
     var total_credits = 0;
-
 
     if (total_rows == 1) {
         document.getElementById("reg_status").style.visibility = "hidden";
@@ -598,7 +599,7 @@ function update() {
             document.getElementById("register").style.display = "none";
             document.getElementById("add").style.display = "none";
         } else if (total_credits > 0 && total_credits < 12) {
-            document.getElementById("status").innerHTML = "PART-TIME";
+            document.getElementById("status").innerHTML = "PART-TIME" + " (" + total_credits + " credits)";
             document.getElementById("status").style.color = "#BC5C45";
             document.getElementById("register").style.backgroundColor = "#BC5C45";
             document.getElementById("register").style.cursor = "pointer";
@@ -606,7 +607,7 @@ function update() {
             document.getElementById("register").style.display = "inline-block";
             document.getElementById("reg_status").style.visibility = "visible";
         } else if (total_credits >= 12 && total_credits <= 18) {
-            document.getElementById("status").innerHTML = "FULL-TIME";
+            document.getElementById("status").innerHTML = "FULL-TIME" + " (" + total_credits + " credits)";
             document.getElementById("status").style.color = "#BC5C45";
             document.getElementById("register").style.backgroundColor = "#BC5C45";
             document.getElementById("register").style.cursor = "pointer";
@@ -614,7 +615,8 @@ function update() {
             document.getElementById("register").style.display = "inline-block";
             document.getElementById("reg_status").style.visibility = "visible";
         } else {
-            alert("To register for more than 18 credits, you need to get approval from both the department head and dean.");
+            //alert("To register for more than 18 credits, you need to get approval from both the department head and dean.");
+            showDialog(6);
             document.getElementById("register").style.backgroundColor = "#EACEC7";
             document.getElementById("register").style.cursor = "not-allowed";
             document.getElementById("register").disabled = true;
@@ -625,6 +627,7 @@ function update() {
 }
 
 //CONTINUE TESTING
+//clear all events from calendar and table when switching semesters
 // function clearSchedule() {
 //     //clear all events from calendar
 //     var table = document.getElementById("details");
@@ -671,43 +674,107 @@ function register() {
     var subj = [];
     var class_info;
     var term = document.getElementById("select_term").value;
-    var register_info = {'term': term};
+    var register_info = {};
    
 
     for (var i = 1; i < total_rows; i++) {
-        if (table.rows[i].cells[0].innerText != "") {
+        //make sure to add only classes with i tag in last column
+        if (table.rows[i].cells[8].innerHTML != "" && table.rows[i].cells[0].innerText != " ") {
+            //make sure to add only classes with i tag in last column)
             var row = table.rows[i];
             crns.push(row.id);
             titles.push(row.cells[2].innerText);
             section.push(row.cells[1].innerText);
             class_info = row.cells[1].innerText.split("-");
             class_info = class_info[0].split(" ");
-            subj = class_info[0];
-            crse = class_info[1];
+            subj.push(class_info[0]);
+            crse.push(class_info[1]);
         }
     }
     var message = "You are about to register for the following classes:";
     for (var i = 0; i < crns.length; i++) {
-
         message += "\n"  + section[i] + " - " + titles[i] + " (" + crns[i] + ")";
     }
     message += "\n\nAre you sure you want to continue?";
     if (confirm(message)) {
         var pin = prompt("Please enter your registration pin");
-        //add pin to register_info
-        register_info['pin'] = pin;
-        //if the user hits cancel, close the prompt
-        //register pin is _ digits 
+        //var pin = showDialog(8);
+        var all_classes = [];
         if (pin.length != 6) {
-            alert("Incorrect pin. Please try again."); 
+            //alert("Incorrect pin. Please try again."); 
+            showDialog(9);
         } else { //pin will be sent to scrAApe tool
-            for (var i = 0; i < crns.length; i++) {
-                //add subj, crse, and section to dict
-                register_info['crn'] = crns[i];
-                register_info['subj'] = subj[i];
-                register_info['crs'] = crse[i];
-            }
-            return register_info;
+            // for (var i = 0; i < crns.length; i++) {
+            //     //add subj, crse, and section to dict
+            //     register_info['crn'] = crns[i];
+            //     register_info['subj'] = subj[i];
+            //     register_info['crs'] = crse[i];
+            //     all_classes.push(register_info);
+            //     register_info = {};
+            // }
+
+            return {'pkg': [term, pin, crns]};
         }
     }
+}
+
+function showDialog(options)
+{
+    var message = "";
+    switch(options){
+        case 1:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Select a color.</br></br><input type='text' id='color' data-coloris value='#000000' class=coloris'/></p>";    
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>");
+            break;
+        case 2:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>";    
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>");
+            break;
+        case 3:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            break;
+        case 4:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>This class conflicts with another class you have added.</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            break;
+        case 5:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added a section for this course.</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            break;
+        case 6:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>To register for more than 18 credits, you need to get approval from both the department head and dean.</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            break;
+        case 7:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            break;
+        case 8:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your registration pin.</p>");
+            break;
+        case 9:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Incorrect PIN. Please try again.</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Incorrect pin. Please try again.</p>");
+            break;
+        case 10:
+            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
+            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Registration successful.</p>");
+            break;
+    }
+    $("#dialog-box").html(message);
+    $("#dialog-box").dialog("open");
+}
+
+function updateColor(event, color) {
+    //remove the events from the calendar
+    //add event back to the calendar with the new color
+    //update the color for the event in the first column of the table
+    var table = document.getElementById("details");
+    
+    calendar.getEventById(event.groupId).backgroundColor = color;
+    calendar.render();
+    console.log(calendar.getEventById(event.groupId));
+    //calendar.render();
 }

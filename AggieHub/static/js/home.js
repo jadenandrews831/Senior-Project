@@ -482,7 +482,7 @@ function getData(crn) {
         var nextCRN = nextRow.id;
         var nextTime = nextRow.cells[4].innerText;
         var nextDay = nextRow.cells[3].innerText;
-        var nextTitle = title + " - LAB";
+        var nextTitle = title;
         var nextInstructor = nextRow.cells[5].innerText;
         var nextLocation = nextRow.cells[6].innerText;
         var nextCredits = nextRow.cells[7].innerText;
@@ -583,7 +583,6 @@ function update() {
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
     var total_credits = 0;
-
 
     if (total_rows == 1) {
         document.getElementById("reg_status").style.visibility = "hidden";

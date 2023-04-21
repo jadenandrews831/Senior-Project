@@ -132,6 +132,7 @@
             clearSelection();
             $("#available").empty();
             $("#description").hide();
+            $(".select_section").hide();
             $("#add").hide();
             $("#select_term").change(function(){
                 var term = $(this).children("option:selected").text();                
@@ -171,6 +172,7 @@
                 clearSelection();
                 $("#available").empty();
                 $("#description").hide();
+                $(".select_section").hide();
                 $("#add").hide();
 
                 var subject = $(this).children("option:selected").val();
@@ -230,6 +232,7 @@
                         course_description.empty();
                         course_description.append("<p>" + sections[0].description + "</p>");
                         course_description.show();
+                        $(".select_section").show();
                         
                         for(var i=0;i,sections.length;i++) {
                             //check if section is online. if so, display "ONLINE" instead of days and time
@@ -238,9 +241,9 @@
                             if (sections[i].Cmp == 'DL') {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE</option>';
                             } else if (sections[i].Rem == '0') {
-                                html = '<option value="' + i + '" disabled>' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                                html = '<option value="' + i + '" disabled> FULL - ' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             } else if (sections[i].Sec == '\xa0' && sections[i].Title == '\xa0') {
-                                html = '<option value="' + i + '" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LAB' + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
+                                html = '<option value="' + i + '" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             } else if (sections[i].Days == '\xa0' && sections[i].Sec != '\xa0') {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ' + sections[i].Time + '</option>';
                             } else {

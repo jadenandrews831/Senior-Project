@@ -103,7 +103,7 @@ body {
 
 tr {height: 26px;}  
 
-.select_section {padding: 10px; background-color: white;}
+.select_section {padding: 10px; background-color: white; display: none;}
 
 .select_section select {font-family: inherit;}
 

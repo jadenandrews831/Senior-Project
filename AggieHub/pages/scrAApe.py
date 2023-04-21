@@ -357,7 +357,7 @@ class ScrAApe():
     pkg = dict()
     i = 0
     for attr in (cur, err, bool(not err)):
-      setattr(pkg, str(i), attr)
+      pkg[str(i)] = attr
       i += 1
     print('pkg:',pkg)
     return pkg

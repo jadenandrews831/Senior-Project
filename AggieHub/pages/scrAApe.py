@@ -5,10 +5,7 @@ assoc_term_in=dummy&crn=dummy&start_date_in=dummy&end_date_in=dummy&rsts=dummy&s
 '''
 
 import argparse
-import os
-import pickle
 import shelve
-import dbm.dumb
 import re
 
 from getpass import getpass
@@ -20,9 +17,9 @@ rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'l
 
 def debug_decorator(func):
   def inner(*args, **kwargs):
-    print(">"*8+func.__name__+'() DEBUG BEGS'+"<"*8)
+    #print(">"*8+func.__name__+'() DEBUG BEGS'+"<"*8)
     data = func(*args, **kwargs)
-    print(">"*8+func.__name__+'() DEBUG ENDS'+"<"*8)
+    #print(">"*8+func.__name__+'() DEBUG ENDS'+"<"*8)
     return data
 
   return inner
@@ -39,7 +36,7 @@ def file_to_dict(filename):
     for line in data:
       d.update(dict(sub.split(':') for sub in line.decode().split(',')))
 
-    print('d >>>',d)
+    #print('d >>>',d)
     return d
   
 
@@ -56,7 +53,7 @@ class User_Profile():
     self.major = '*'
     self.advisor = '*'
     self.college = '*'
-    print('New Profile Created')
+    #print('New Profile Created')
 
   def add_headers(self, headers):
     self.headers_ = headers
@@ -121,7 +118,7 @@ class Authenticate():
   def login(self, uri):
     self.profile_ = User_Profile()
     self.site_ = self.session.get(uri)
-    print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
+    #print('DEBUG >>> Session Cookies: ', self.session.cookies.get_dict())
     self.cookies_ = self.session.cookies.get_dict()
     login_data = {"sid":self.usrnme, 'PIN':self.psswd}
     response = ScrAApe(self).post_request(uri, login_data, 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_WWWLogin')
@@ -141,13 +138,13 @@ class Authenticate():
     '''
     '''
     self.print_headers(response)
-    print(self.cookies_)
-    print(response.status_code)
-    print(response.text)
+    #print(self.cookies_)
+    #print(response.status_code)
+    #print(response.text)
     # FIXME: add logic here for successful and unsuccessful logins
     soup = bs(response.content, 'html.parser')
     url = soup.meta['content']          # url for second page after authentication FIXME: make this a regex
-    print(url)
+    #print(url)
     return (True, response.status_code) if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else (False, response.status_code)
 
   def print_headers(self, response):
@@ -168,19 +165,19 @@ class Authenticate():
     with shelve.open(shelve_name, 'n') as file:
       for key, val in self.__dict__.items():
         file[key] = val
-      print("Saved Data:")
+      #print("Saved Data:")
     with shelve.open(shelve_name, 'r') as file:
-      print("Printing saved data:")
+      #print("Printing saved data:")
       for key, val in file.items():
         print(key,':', val)
-    print(f"Session Created! Saved to >>> {shelve_name}")
+    #print(f"Session Created! Saved to >>> {shelve_name}")
 
     # conn = None
     # try:
     #   conn = sqlite3.connect(db_name)
-    #   print(sqlite3.version)
+    #   #print(sqlite3.version)
     # except sqlite3.Error as e:
-    #   print(e)
+    #   #print(e)
     # finally:
     #   if conn:
     #     conn.close()
@@ -190,9 +187,9 @@ class Authenticate():
     return file
 
   def load_data(self, auth):
-    print("Loading Data: ")
+    #print("Loading Data: ")
     for key, val in auth.items():
-      print(key, val)
+      #print(key, val)
       setattr(self, key, val)
 
     return self
@@ -221,7 +218,7 @@ class ScrAApe():
     self.auth = auth
 
   def update_cookies(self, response):
-    print("Response Headers: ", response.headers.items())
+    #print("Response Headers: ", response.headers.items())
     try:
       self.auth.cookies_['SESSID'] = dict(response.headers.items())['Set-Cookie'].split('=')[1]
       print("Cookies: ", self.auth.cookies_)
@@ -229,7 +226,7 @@ class ScrAApe():
       print('Didn\'t find Set-Cookie >> ', response.headers.items())
       print('Session was not Authenticated. Please Authenticate before trying again')
       exit(0)
-    print('cookies >>> ',self.auth.cookies_)
+    #print('cookies >>> ',self.auth.cookies_)
 
   # @debug_decorator
   def get_data(self, uri, data, sel, attr, referrer=None):
@@ -237,7 +234,7 @@ class ScrAApe():
       response = self.post_request(uri, data, referrer)
     else:
       response = self.post_request(uri, data)
-    print(response.text)
+    #print(response.text)
     self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
@@ -252,7 +249,7 @@ class ScrAApe():
       response = self.post_request(uri, data, referrer)
     else:
       response = self.post_request(uri, data)
-    print(response.text)
+    #print(response.text)
     self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
@@ -276,6 +273,8 @@ class ScrAApe():
       print(crn, end=", ")
     print()
 
+    crns_len = len(crns)
+
     # Select Term to Register For
     term_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfreg.P_AltPin'
     select, soup = self.get_data(term_page_uri, {'term_in':term}, 'OPTION', {'VALUE': term}, term_page_uri)
@@ -298,9 +297,9 @@ class ScrAApe():
     assoc_term_in = [x['value'] for x in soup.find_all('input', {'name': 'assoc_term_in'})]
     print("finished enter pin")
     for cel in crn_in:
-      crns.append(cel['value'])
+      crns.insert(0, cel['value'])
     print("crns", crns)
-    RSTS_IN.extend([""*len(crn_in)])
+    RSTS_IN.insert(1, "")
 
 
     # Register with Given CRNs
@@ -327,14 +326,15 @@ class ScrAApe():
             'start_date_in':start_date_in, 'end_date_in':end_date_in, 'SUBJ':SUBJ, 'CRSE':CRSE, 
             'SEC':SEC, 'LEVL':LEVL, 'CRED':CRED, 'CRN_IN': lst, 
             'GMOD':GMOD, 'TITLE':TITLE, 'MESG':'DUMMY', 'regs_row':'1', 
-            'assoc_term_in':assoc_term_in, 'wait_row':'0', 'add_row':'10','REG_BTN':['DUMMY', 'Submit Changes'],
+            'assoc_term_in':assoc_term_in, 'wait_row':'0', 'add_row':'10','REG_BTN':['DUMMY', 'Submit+Changes'],
             }
     
     # FIND: <table  CLASS="datadisplaytable" SUMMARY="Current Schedule">
-    cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'SUMMARY': 'Current Schedule'}, referrer=chk_pin_uri) 
+    cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'summary': 'Current Schedule'}, referrer=chk_pin_uri)
+    print("cur_sch", cur_sch) 
     # AND GET: <input name="?" />, ?=CRN_IN,SUBJ,CRSE,SEC,LEVL,CRED,GMOD,TITLE
     soup_cp = soup
-    print("soup_cp", soup_cp)
+    soup = bs(str(cur_sch), 'html.parser')
     cur = list()
     acpt = dict()
     for tag in ["CRN_IN","SUBJ","CRSE","SEC","LEVL","CRED",'GMOD','TITLE']:
@@ -346,7 +346,7 @@ class ScrAApe():
     # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
     soup = soup_cp
     err_sch = soup.find('table', {"summary": re.compile(r".*Registration Errors.*")})
-    print(err_sch)
+    #print(err_sch)
     # AND GET: <td CLASS="dddefault">
     soup = bs(str(err_sch), 'html.parser')
     err = list()
@@ -354,7 +354,7 @@ class ScrAApe():
     j = 0
     for info in soup.find_all('td', {'class':'dddefault'}):
       i = info.text
-      if i == '\xa0':continue
+      if i == '\xa0': continue;
       err.append(i)
       j += 1
       if j%6 == 5:
@@ -371,6 +371,7 @@ class ScrAApe():
       pkg[str(i)] = attr
       i += 1
     print('pkg:',pkg)
+    #print("RSTS_IN", RSTS_IN)
     return pkg
     
 
@@ -409,7 +410,7 @@ class ScrAApe():
     return self.auth.profile_
 
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
-    print("uri", uri)
+    #print("uri", uri)
     self.auth.prev_site_ = uri
     response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
@@ -425,7 +426,7 @@ class ScrAApe():
                                                     'Connection': 'close'})
     content = response.text
     self.update_cookies(response)
-    #print(auth)
+    ##print(auth)
     soup = bs(content, 'html.parser')
     select = soup.find('select', {'name': 'p_term'})
     s = soup.find('div', {'class':'staticheaders'})
@@ -434,7 +435,7 @@ class ScrAApe():
     terms = select.findChildren()[1:6]
     terms_w_codes = {}
     for term in terms: terms_w_codes[term.text] = term.get('value') 
-    print('terms_w_codes: ', terms_w_codes)
+    #print('terms_w_codes: ', terms_w_codes)
 
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
@@ -453,17 +454,17 @@ class ScrAApe():
       data = input("Data: ")
     if self.auth.terms_w_codes_:
       self.auth.pterm = self.auth.terms_w_codes_[data]
-      print("Code:",self.auth.pterm)
+      #print("Code:",self.auth.pterm)
     else:
-      print('Needs a valid term')
+      #print('Needs a valid term')
       return
     
     select, soup = self.get_data(uri, {'p_calling_proc':'P_CrseSearch', 'p_term':self.auth.pterm, 'p_by_date':'Y','p_from_date':'','p_to_date':''}, 'select', {'name': 'sel_subj'})
-    print("Select: ", select, soup)
+    #print("Select: ", select, soup)
     subjs = select.findChildren()
     subjs_w_codes = {}
     for subj in subjs: subjs_w_codes[subj.text] = subj.get('value')
-    print('subjs_w_codes', subjs_w_codes)
+    #print('subjs_w_codes', subjs_w_codes)
 
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
@@ -482,7 +483,7 @@ class ScrAApe():
       self.auth.pcode = self.auth.subjs_w_codes[data]
       ptrm = self.auth.pterm
     else:
-      print('Needs a valid term')
+      #print('Needs a valid term')
       return
 
     data = {'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', self.auth.pcode],
@@ -505,7 +506,7 @@ class ScrAApe():
     for crs, cd in zip(crss, cds): 
       self.auth.crss_[cd.text] = crs.text
 
-    print(self.auth.crss_)
+    #print(self.auth.crss_)
 
     return self.auth.crss_
   
@@ -540,22 +541,22 @@ class ScrAApe():
       data = input("Course: ")
     if self.auth.crss_:
       self.auth.crs = data
-      print('Crs:',self.auth.crs)
+      #print('Crs:',self.auth.crs)
     else:
-      print('Needs a valid term')
+      #print('Needs a valid term')
       return
     
-    print(self.auth)
+    #print(self.auth)
 
     
     self.auth.profile_.headers_['SEL_CRSE'] = data
-    print(self.auth.profile_.headers_)
+    #print(self.auth.profile_.headers_)
     self.auth.profile_.scts_ = []
     
     headers, soup = self.get_all_data(uri, self.auth.profile_.headers_, 'th', {'class': "ddheader"})
-    print("Headers: ", headers)
+    #print("Headers: ", headers)
     vals = soup.find_all('td', {'class': "dddefault"})
-    print('Vals:', vals)
+    #print('Vals:', vals)
     self.auth.profile_.scts_ = list()
     for i in range(len(vals) // 23):
       sect_data = vals[i*23:i*23+23]
@@ -565,8 +566,8 @@ class ScrAApe():
         s[h.text] = d.text
       self.auth.profile_.scts_.append(s)
 
-    print('Sections:')
-    print(self.auth.profile_.scts_)
+    #print('Sections:')
+    #print(self.auth.profile_.scts_)
 
     self.response_ = self.auth.session.get('https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckschd.p_disp_listcrse', 
                                             params={'term_in':self.auth.pterm,'crse_in':self.auth.crs,
@@ -590,18 +591,18 @@ class ScrAApe():
                                               'Connection': 'close'})
     
     
-    print('Description:')
-    print(self.response_.text)
+    #print('Description:')
+    #print(self.response_.text)
 
     soup = bs(self.response_.text, 'html.parser')
-    print('Soup:', soup)
+    #print('Soup:', soup)
     select = soup.find('td', {'class':'dddefault'})
-    print('Select:')
-    print(select)
+    #print('Select:')
+    #print(select)
     self.auth.profile_.scts_[0]['description'] = select.text.split('\n\n')[0]
 
-    print('Description:')
-    print(self.auth.profile_.scts_[0]['description'])
+    #print('Description:')
+    #print(self.auth.profile_.scts_[0]['description'])
     return self.auth.profile_.scts_
 
   def post_request(self, uri, data, referer=None):
@@ -609,8 +610,8 @@ class ScrAApe():
     post_request: takes an authenticated session, and posts data to the given uri
     """
     if not referer: referer = self.auth.prev_site_
-    print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
-    print('Cookies:', self.auth.cookies_)
+    #print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
+    #print('Cookies:', self.auth.cookies_)
     self.response_ = self.auth.session.post(uri, data=data, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
                                                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
@@ -627,16 +628,17 @@ class ScrAApe():
                                                     'Sec-Fetch-User': '?1',
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
-    print(self.response_.text)
+    #print(self.response_.text)
     
     
-    print("Request BODY:", self.response_.request.headers)
-    print("Request HEADERS:")
+    print("Request HEADERS:", self.response_.request.headers)
+
+    #print("Request BODY:")
     for pair in self.response_.request.body.split('&'):
       print(pair.split('='))
     for header, item in self.response_.headers.items():
       print(header,':', item)
-    print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
+    #print('>'*8+'post_request() DEBUG ENDS'+'<'*8+'\n')
     return self.response_
   
   def __str__(self):
@@ -681,7 +683,7 @@ if __name__ == "__main__":
 
   if not args.command:
     parser.print_help()
-    print('Aggie Access Authenticator\n')
+    #print('Aggie Access Authenticator\n')
     sid = input('SID: ')
     pin = getpass('PIN: ')
     a = Authenticate(sid, pin)
@@ -715,7 +717,7 @@ if __name__ == "__main__":
       rsrc = args.resource
       sess = args.session
       a = shelve.open(sess)
-      print("Opening Authenticate Shelf:")
+      #print("Opening Authenticate Shelf:")
       for key, val in a.items():
         print(key, ":", val)
       try:
@@ -764,7 +766,7 @@ if __name__ == "__main__":
       sid = d[0]
       pin = d[1]
       a = Authenticate(sid, pin)
-      print(a)
+      #print(a)
       pkg = (input('Term:'), input('Pin:'), ['40991', ])
       scrape = ScrAApe(a) # close the file
       reg = scrape.register(pkg)

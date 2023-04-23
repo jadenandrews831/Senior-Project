@@ -296,12 +296,12 @@ class ScrAApe():
     GMOD = [x['value'] for x in soup.find_all('input', {'name': 'GMOD'})]
     assoc_term_in = [x['value'] for x in soup.find_all('input', {'name': 'assoc_term_in'})]
     print("finished enter pin")
+    len_crn = len(crn_in)
     for cel in crn_in:
       crns.insert(0, cel['value'])
+      RSTS_IN.insert(1, "")
     print("crns", crns)
-    RSTS_IN.insert(1, "")
-
-
+    
     # Register with Given CRNs
     """
     term_in=202340&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=DUMMY&start_date_in=DUMMY&
@@ -325,7 +325,7 @@ class ScrAApe():
     reg_data = {'term_in':term, 'RSTS_IN':RSTS_IN, 'assoc_term_in':assoc_term_in,
             'start_date_in':start_date_in, 'end_date_in':end_date_in, 'SUBJ':SUBJ, 'CRSE':CRSE, 
             'SEC':SEC, 'LEVL':LEVL, 'CRED':CRED, 'CRN_IN': lst, 
-            'GMOD':GMOD, 'TITLE':TITLE, 'MESG':'DUMMY', 'regs_row':'1', 
+            'GMOD':GMOD, 'TITLE':TITLE, 'MESG':'DUMMY', 'regs_row':str(len_crn), 
             'assoc_term_in':assoc_term_in, 'wait_row':'0', 'add_row':'10','REG_BTN':['DUMMY', 'Submit+Changes'],
             }
     
@@ -633,7 +633,7 @@ class ScrAApe():
     
     print("Request HEADERS:", self.response_.request.headers)
 
-    #print("Request BODY:")
+    print("Request BODY:")
     for pair in self.response_.request.body.split('&'):
       print(pair.split('='))
     for header, item in self.response_.headers.items():

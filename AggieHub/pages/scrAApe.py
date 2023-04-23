@@ -234,7 +234,7 @@ class ScrAApe():
       response = self.post_request(uri, data, referrer)
     else:
       response = self.post_request(uri, data)
-    #print(response.text)
+    print(response.text)
     self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
@@ -295,13 +295,15 @@ class ScrAApe():
     CRED = [x['value'] for x in soup.find_all('input', {'name': 'CRED'})]
     GMOD = [x['value'] for x in soup.find_all('input', {'name': 'GMOD'})]
     assoc_term_in = [x['value'] for x in soup.find_all('input', {'name': 'assoc_term_in'})]
-    print("finished enter pin")
+    
     len_crn = len(crn_in)
+    
     for cel in crn_in:
       crns.insert(0, cel['value'])
       RSTS_IN.insert(1, "")
     print("crns", crns)
-    
+    print("len_crn:", len_crn)
+    print(f"finished enter pin {str(len_crn)}")
     # Register with Given CRNs
     """
     term_in=202340&RSTS_IN=DUMMY&assoc_term_in=DUMMY&CRN_IN=DUMMY&start_date_in=DUMMY&
@@ -320,16 +322,20 @@ class ScrAApe():
 
     reg_page_uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckcoms.P_Regs'
     lst = ['DUMMY']
-    crns.extend(['']*(10-len(crn_in)))
+    crns.extend(['']*(10-crns_len))
     lst.extend(crns)
     reg_data = {'term_in':term, 'RSTS_IN':RSTS_IN, 'assoc_term_in':assoc_term_in,
             'start_date_in':start_date_in, 'end_date_in':end_date_in, 'SUBJ':SUBJ, 'CRSE':CRSE, 
             'SEC':SEC, 'LEVL':LEVL, 'CRED':CRED, 'CRN_IN': lst, 
-            'GMOD':GMOD, 'TITLE':TITLE, 'MESG':'DUMMY', 'regs_row':str(len_crn), 
+            'GMOD':GMOD, 'TITLE':TITLE, 'MESG':['DUMMY'], 'regs_row':[str(len_crn)], 
             'assoc_term_in':assoc_term_in, 'wait_row':'0', 'add_row':'10','REG_BTN':['DUMMY', 'Submit+Changes'],
             }
     
     # FIND: <table  CLASS="datadisplaytable" SUMMARY="Current Schedule">
+    print("Getting Data")
+    for key, item in reg_data.items():
+        print(key, '=', item, end=', ')
+    [print()]
     cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'summary': 'Current Schedule'}, referrer=chk_pin_uri)
     print("cur_sch", cur_sch) 
     # AND GET: <input name="?" />, ?=CRN_IN,SUBJ,CRSE,SEC,LEVL,CRED,GMOD,TITLE
@@ -345,7 +351,7 @@ class ScrAApe():
         acpt[tag].append(i['value'])
     # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
     soup = soup_cp
-    err_sch = soup.find('table', {"summary": re.compile(r".*Registration Errors.*")})
+    err_sch = soup.find('table', {"summary": re.compile(r".*Registra.*")})
     #print(err_sch)
     # AND GET: <td CLASS="dddefault">
     soup = bs(str(err_sch), 'html.parser')
@@ -414,7 +420,7 @@ class ScrAApe():
     self.auth.prev_site_ = uri
     response = self.auth.session.get(uri, headers={'Host': 'ssbprod-ncat.uncecs.edu', 
                                                     'Cookies': self.auth.format_cookies(self.auth.cookies_),
-                                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+                                                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0',
                                                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
                                                     'Accept-Language': 'en-US,en;q=0.5',
                                                     'Accept-Encoding': 'gzip, deflate',
@@ -628,7 +634,7 @@ class ScrAApe():
                                                     'Sec-Fetch-User': '?1',
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
-    #print(self.response_.text)
+    print(self.response_.text)
     
     
     print("Request HEADERS:", self.response_.request.headers)
@@ -767,7 +773,7 @@ if __name__ == "__main__":
       pin = d[1]
       a = Authenticate(sid, pin)
       #print(a)
-      pkg = (input('Term:'), input('Pin:'), ['40991', ])
+      pkg = (input('Term:'), input('Pin:'), ['40811', ])
       scrape = ScrAApe(a) # close the file
       reg = scrape.register(pkg)
 

@@ -351,7 +351,7 @@ class ScrAApe():
         acpt[tag].append(i['value'])
     # THEN FIND: <table  CLASS="datadisplaytable" SUMMARY="This layout table is used to present Registration Errors.">
     soup = soup_cp
-    err_sch = soup.find('table', {"summary": re.compile(r".*Registra.*")})
+    err_sch = soup.find('table', {"summary": re.compile(r".*Registration Errors.*")})
     #print(err_sch)
     # AND GET: <td CLASS="dddefault">
     soup = bs(str(err_sch), 'html.parser')
@@ -363,7 +363,7 @@ class ScrAApe():
       if i == '\xa0': continue;
       err.append(i)
       j += 1
-      if j%6 == 5:
+      if j%9 == 8:
         rgct[str(len(rgct))] = err
         err = list()
         j = 0

@@ -71,6 +71,15 @@
                             $('#contact_name').show();
                             $('#contact_email').show();
                             break;
+                        case "CHEM":
+                            instructions.hide();
+                            html = "Complete the form shown to submit your override request.</br></br>";
+                            name.html(html);
+                            $('#contact_name').show();
+                            $('#contact_email').hide();
+                            $('#content').show();
+                            $('#content').attr('src', 'https://ncat.az1.qualtrics.com/jfe/form/SV_d70M6hoDOXtD22V');
+                            break;
                     }
                 }
                 else{
@@ -117,11 +126,11 @@
         <section id = "select_dept">
             <select id = "depts">
                 <option disabled selected hidden>Select Department</option>
-                <option value="ACCT" id="noform">Accounting</option>
+                {% comment %} <option value="ACCT" id="noform">Accounting</option>
                 <option value="ADED" id="noform">Adult Education</option>
-                <option value="AERO" id="noform">Aerospace Studies</option>
+                <option value="AERO" id="noform">Aerospace Studies</option> {% endcomment %}
                 <option value="ABM" id="noform">Agribusiness Management</option>
-                <option value="AGRI" id="noform">Agricultural</option>
+                {% comment %} <option value="AGRI" id="noform">Agricultural</option>
                 <option value="AGEC" id="noform">Agricultural Economics</option>
                 <option value="AGER" id="noform">Agricultural Ed Research</option>
                 <option value="AGED" id="noform">Agricultural Education</option>
@@ -133,18 +142,18 @@
                 <option value="ASME" id="noform">Atmospheric Sci &amp; Meteorology</option>
                 <option value="BIOE" id="noform">Biological Engineering</option>
                 <option value="BIOL" id="noform">Biology</option>
-                <option value="BMEN" id="noform">Biomedical Engineering</option>
+                <option value="BMEN" id="noform">Biomedical Engineering</option> {% endcomment %}
                 <option value="BUAN" id="noform">Business Analytics</option>
                 <option value="BTEC" id="noform">Business Info Tech</option>
-                <option value="SCS" id="noform">Center for Academic Excellence</option>
-                <option value="CHEN" id="noform">Chemical Engineering</option>
+                {% comment %} <option value="SCS" id="noform">Center for Academic Excellence</option>
+                <option value="CHEN" id="noform">Chemical Engineering</option> {% endcomment %}
                 <option value="CHEM" id="noform">Chemistry</option>
-                <option value="CIEN" id="noform">Civil Engineering</option>
+                {% comment %} <option value="CIEN" id="noform">Civil Engineering</option>
                 <option value="CAEE" id="noform">Civil, Arch &amp; Envir Engineer</option>
                 <option value="CSE" id="noform">Computational Sci &amp; Engineer</option>
-                <option value="CGT" id="noform">Computer Graphics Technology</option>
+                <option value="CGT" id="noform">Computer Graphics Technology</option> {% endcomment %}
                 <option value="COMP.pdf" id="COMP">Computer Science</option>
-                <option value="CST" id="noform">Computer Systems Technology</option>
+                {% comment %} <option value="CST" id="noform">Computer Systems Technology</option>
                 <option value="CM" id="noform">Construction Management</option>
                 <option value="COOP" id="noform">Cooperative Education</option>
                 <option value="COUN" id="noform">Counseling</option>
@@ -153,9 +162,9 @@
                 <option value="DANC" id="noform">Dance</option>
                 <option value="DISU" id="noform">Dissertation</option>
                 <option value="ECON" id="noform">Economics</option>
-                <option value="EDPR" id="noform">Educator Preparation</option>
+                <option value="EDPR" id="noform">Educator Preparation</option> {% endcomment %}
                 <option value="ECEN.pdf" id="ECEN">Electrical &amp; Computer Engineer</option>
-                <option value="ELED" id="noform">Elementary Education</option>
+                {% comment %} <option value="ELED" id="noform">Elementary Education</option>
                 <option value="ENGL" id="noform">English</option>
                 <option value="EHS" id="noform">Environmental Health &amp; Safety</option>
                 <option value="ENVS" id="noform">Environmental Studies</option>
@@ -170,9 +179,9 @@
                 <option value="GRAD" id="noform">Graduate Thesis Cont</option>
                 <option value="GCS" id="noform">Graphic Communications</option>
                 <option value="HPED" id="noform">Health &amp; Physical Education</option>
-                <option value="HSM" id="noform">Health Services Management</option>
+                <option value="HSM" id="noform">Health Services Management</option> {% endcomment %}
                 <option value="HIST" id="noform">History</option>
-                <option value="HORT" id="noform">Horticulture</option>
+                {% comment %} <option value="HORT" id="noform">Horticulture</option>
                 <option value="ISEN" id="noform">Industrial Systems Engineering</option>
                 <option value="JOMC" id="noform">Journalism &amp; Mass Communicatio</option>
                 <option value="KINS" id="noform">Kinesiology</option>
@@ -184,17 +193,17 @@
                 <option value="MGMT" id="noform">Management</option>
                 <option value="MKTG" id="noform">Marketing</option>
                 <option value="MSA" id="noform">Masters School Administration</option>
-                <option value="MATH" id="noform">Mathematics</option>
+                <option value="MATH" id="noform">Mathematics</option> {% endcomment %}
                 <option value="MEEN.pdf" id="MEEN">Mechanical Engineering</option>
-                <option value="MISC" id="noform">Military Science</option>
+                {% comment %} <option value="MISC" id="noform">Military Science</option>
                 <option value="MUSI" id="noform">Music</option>
                 <option value="NANO" id="noform">Nanoengineering</option>
                 <option value="NARS" id="noform">Natural Resources</option>
                 <option value="NURS" id="noform">Nursing</option>
                 <option value="PHIL" id="noform">Philosophy</option>
-                <option value="PHYS" id="noform">Physics</option>
+                <option value="PHYS" id="noform">Physics</option> {% endcomment %}
                 <option value="POLI" id="noform">Political Science</option>
-                <option value="PSYC" id="noform">Psychology</option>
+                {% comment %} <option value="PSYC" id="noform">Psychology</option>
                 <option value="SOWK" id="noform">Social Work</option>
                 <option value="SOCI" id="noform">Sociology</option>
                 <option value="SOSW" id="noform">Sociology and Social Work</option>
@@ -209,7 +218,7 @@
                 <option value="SYEN" id="noform">Systems Engineering</option>
                 <option value="TECH" id="noform">Technology</option>
                 <option value="THEA" id="noform">Theatre</option>
-                <option value="WMI" id="noform">Waste Management</option>
+                <option value="WMI" id="noform">Waste Management</option> {% endcomment %}
             </select>
         </section>
         <!--contact_info is hidden by default-->
@@ -230,8 +239,7 @@
 
     <main class = "override_form">
         <section id = "override_pdf">
-            <!--MEEN form used as a placeholder for now. what will default placeholder be? form from first dept alphabetically or no form? something else??-->
-            <iframe id="content" src="/static/docs/ncat-colleges.pdf#toolbar=0" width="100%" height="100%"></iframe>
+            <iframe id="content" frameborder="0" allowtransparency="true" src="/static/docs/ncat-colleges.pdf#toolbar=0" width="100%" height="100%"></iframe>
         </section>
     </main>
 

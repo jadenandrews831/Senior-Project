@@ -1,8 +1,13 @@
 var calendar = null;
-//var course;
-var selected_event;
+//var selected_event;
+var response = null;
 
-//creates the calendar and render it - FUNCTIONAL
+/**
+ * @description: This function initializes the calendar and renders it to the page
+ * @param: None
+ * @return: None
+ *  
+ */
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('scheduleview');
   
@@ -18,16 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
         weekends: false,
         selectable: false,
         eventOverlap: false,
-        eventClick: function(info) {
-            selected_event = info.event;
-            showDialog(1);
-        } 
+        // eventClick: function(info) {
+        //     var selected_event = info.event;
+        //     showDialog(1);
+        // } 
     });
     
     calendar.render();
 });
 
-//FUNCTIONAL
+/**
+ * @description: This function compares the start and end times of two events to check for overlap
+ * @param: new_time 
+ * @param: days 
+ * @returns true if there is a time conflict, false if there is no time conflict
+ */
 function conflictTime(new_time, days) {
     var table = document.getElementById("details");
     var all_rows = table.rows.length;
@@ -60,29 +70,44 @@ function conflictTime(new_time, days) {
             var row_start_date = new Date("01/01/2021 " + row_start);
             var row_end_date = new Date("01/01/2021 " + row_end);
     
-            if (start_date >= row_start_date && start_date < row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            // functional
+            // if (start_date >= row_start_date && start_date < row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            //     clash++;
+            // } else if (end_date > row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            //     clash++;
+            // } else if (start_date <= row_start_date && end_date >= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            //     clash++;
+            // } else if (start_date >= row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            //     clash++;
+            // } else if (start_date == row_start_date  && end_date == row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            //     clash++;
+            // } else {
+            //     continue;
+            // }
+
+            //tester
+            if ((((start_date <= row_start_date) && (start_date < row_end_date)) && ((end_date <= row_end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
-            } else if (end_date > row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            } else if ((((row_start_date <= start_date) && (start_date < row_end_date)) && ((row_end_date <= end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
-            } else if (start_date <= row_start_date && end_date >= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            } else if ((((row_start_date <= start_date) && (start_date < row_end_date)) && ((end_date <= row_end_date) && (end_date > row_start_date)))  && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
-            } else if (start_date >= row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            } else if ((((start_date <= row_start_date) && (start_date < row_end_date)) && ((row_start_date < end_date) && (row_end_date <= end_date)))  && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
-            } else if (start_date == row_start_date  && end_date == row_end_date && (row_days.includes(days) || days.includes(row_days))) {
+            } else if ((((row_start_date == start_date) && (end_date == row_end_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
             } else {
                 continue;
             }
+
         }
-    
+
         if (clash > 0) {
-            console.log("clash: " + clash);
             return true;
         } else {
-            console.log("clash: " + clash);
             return false;
         }
-        }
+    }
     //check if the new_time conflicts with any of the times in the table
 }
 
@@ -157,7 +182,6 @@ function addClass() {
             last_cell.innerHTML = '<i></i>';
             document.getElementById("available").selectedIndex = -1;
         } else {
-            //alert("Please select a section to add");
             showDialog(2);
         }
         update();
@@ -166,7 +190,6 @@ function addClass() {
             last_cell.innerHTML = '<i class="fa-solid fa-xmark" id="updateView" onclick="removeClass(' + crn + ')"></i>';
             document.getElementById("available").selectedIndex = -1;
         } else {
-            //alert("Please select a section to add");
             showDialog(2);
         }
         update();
@@ -192,7 +215,6 @@ function displaySection(index) {
                 var row_section = row_sec_array[0];
 
                 if (row.id == lecture.CRN) {
-                    //alert("You have already added this section");
                     showDialog(3);
                     clearSelection();
                     check++;
@@ -202,7 +224,6 @@ function displaySection(index) {
 
                 if (lecture.Time != "TBA" && lecture.Days != "TBA") {
                     if ((conflictTime(lecture.Time, lecture.Days) == true) || (conflictTime(lab.Time, lab.Days) == true)) {
-                        //alert("This class conflicts with another class you have added");
                         showDialog(4);
                         clearSelection();
                         check++;
@@ -242,6 +263,8 @@ function displaySection(index) {
                         lab_row.cells[5].innerText = lab.Instructor;
                         lab_row.cells[6].innerText = lab.Location;
                         lab_row.cells[7].innerText = "0.000";
+                        //change cell 7 text to white
+                        lab_row.cells[7].style.color = "white";
                         lab_row.cells[8].innerHTML = "";
 
                         //add lecture and lab to calendar
@@ -250,7 +273,6 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        //alert("You have already added a section for this course");
                         showDialog(5);
                         clearSelection();
                         check++;
@@ -283,6 +305,7 @@ function displaySection(index) {
                 lab_row.insertCell(5).innerText = lab.Instructor;
                 lab_row.insertCell(6).innerText = lab.Location;
                 lab_row.insertCell(7).innerText = "0.000";
+                lab_row.cells[7].style.color = "white";
                 lab_row.insertCell(8).innerHTML = "";
 
                 //add lecture and lab to calendar
@@ -297,7 +320,6 @@ function displaySection(index) {
                 var row_section = row_sec_array[0];
 
                 if (row.id == index.CRN) {
-                    //alert("You have already added this section");
                     showDialog(3);
                     clearSelection();
                     check++;
@@ -306,7 +328,6 @@ function displaySection(index) {
 
                 if (index.Time != "TBA" && index.Days != "TBA") {
                     if (conflictTime(index.Time, index.Days) == true) {
-                        //alert("This class conflicts with another class you have added.");
                         showDialog(4);
                         clearSelection();
                         check++;
@@ -339,7 +360,6 @@ function displaySection(index) {
                         check++;
                         break;
                     } else {
-                        //alert("You have already added a section for this course");
                         showDialog(5);
                         clearSelection();
                         check++;
@@ -395,6 +415,7 @@ function displaySection(index) {
             lab_row.insertCell(5).innerText = lab.Instructor;
             lab_row.insertCell(6).innerText = lab.Location;
             lab_row.insertCell(7).innerText = "0.000";
+            lab_row.cells[7].style.color = "white";
             lab_row.insertCell(8).innerHTML = "";
 
             addEvent(lecture_row.id);
@@ -431,11 +452,16 @@ function removeClass(crn) {
         }
     }
 
-    table.deleteRow(row);
+    //if class is not online, remove from calendar else just remove from table
+    if (table.rows[row].cells[4].innerText != "TBA") {
+        table.deleteRow(row);
 
-    calendar.getEventById(crn).remove();
-    calendar.render();
-    update();
+        calendar.getEventById(crn).remove();
+        calendar.render();
+        update();
+    } else {
+        table.deleteRow(row);
+    }
 }
 
 //get the class data from the table needed for the event
@@ -591,7 +617,6 @@ function update() {
     } else {
         for (var i = 1; i < total_rows; i++) {
             total_credits += parseInt(table.rows[i].cells[7].innerText);
-            console.log("total credits: " + total_credits);
         }
 
         if (total_credits == 0) {
@@ -615,7 +640,6 @@ function update() {
             document.getElementById("register").style.display = "inline-block";
             document.getElementById("reg_status").style.visibility = "visible";
         } else {
-            //alert("To register for more than 18 credits, you need to get approval from both the department head and dean.");
             showDialog(6);
             document.getElementById("register").style.backgroundColor = "#EACEC7";
             document.getElementById("register").style.cursor = "not-allowed";
@@ -654,6 +678,7 @@ function clearSelection() {
             }
         }
     }
+
     document.getElementById("available").selectedIndex = -1;
 }
 
@@ -667,19 +692,18 @@ function register() {
     //PIN, TERM, CRSE, SUBJ, CRN (send as dict)
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
-    var crns = [];
+    crns = [];
     var titles = [];
     var section = [];
     var crse = [];
     var subj = [];
     var class_info;
-    var term = document.getElementById("select_term").value;
-    var register_info = {};
+    term = document.getElementById("select_term").value;
    
 
     for (var i = 1; i < total_rows; i++) {
         //make sure to add only classes with i tag in last column
-        if (table.rows[i].cells[8].innerHTML != "" && table.rows[i].cells[0].innerText != " ") {
+        if (table.rows[i].cells[8].innerHTML != "" && table.rows[i].cells[0].innerText != "") {
             //make sure to add only classes with i tag in last column)
             var row = table.rows[i];
             crns.push(row.id);
@@ -691,31 +715,109 @@ function register() {
             crse.push(class_info[1]);
         }
     }
-    var message = "You are about to register for the following classes:";
+    var message = "You are about to register for the following classes:</br>";
     for (var i = 0; i < crns.length; i++) {
-        message += "\n"  + section[i] + " - " + titles[i] + " (" + crns[i] + ")";
+        message += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"  + section[i] + " - " + titles[i] + " (" + crns[i] + ")</br>";
     }
-    message += "\n\nAre you sure you want to continue?";
-    if (confirm(message)) {
-        var pin = prompt("Please enter your registration pin");
-        //var pin = showDialog(8);
-        var all_classes = [];
-        if (pin.length != 6) {
-            //alert("Incorrect pin. Please try again."); 
-            showDialog(9);
-        } else { //pin will be sent to scrAApe tool
-            // for (var i = 0; i < crns.length; i++) {
-            //     //add subj, crse, and section to dict
-            //     register_info['crn'] = crns[i];
-            //     register_info['subj'] = subj[i];
-            //     register_info['crs'] = crse[i];
-            //     all_classes.push(register_info);
-            //     register_info = {};
-            // }
+    message += "</br>Please review your schedule before continuing.";
 
-            return {'pkg': [term, pin, crns]};
+    confirmation(message).then(function(decision){
+        var selected_option = (String(decision) == "true");
+        if(selected_option){
+            getPIN().then(function(selection){
+                var choice = (String(selection) == "true");
+                if(choice) {
+                    var pin = document.getElementById("PIN").value;
+                    response = {'pkg': [term, pin, crns]};
+                    var button = document.getElementById("submit_classes");
+                    button.click();
+                }
+            });
         }
-    }
+    });
+    
+    // var pin = document.getElementById("PIN").value;
+    // return {'pkg': [term, pin, crns]};
+    // if (pin.length != 6) {
+    //     //alert("Incorrect pin. Please try again."); 
+    //     showDialog(9);
+    // } else { //pin will be sent to scrAApe tool
+    //     // for (var i = 0; i < crns.length; i++) {
+    //     //     //add subj, crse, and section to dict
+    //     //     register_info['crn'] = crns[i];
+    //     //     register_info['subj'] = subj[i];
+    //     //     register_info['crs'] = crse[i];
+    //     //     all_classes.push(register_info);
+    //     //     register_info = {};
+    //     // }
+
+    //     return {'pkg': [term, pin, crns]};
+    // }
+}
+
+function submit() {
+    //send all classes to be registered to scrAApe tool
+    return response;
+}
+
+function confirmation(message) {
+    //summary-box popup that shows ups for user to confirm classes before registering
+    var defer = $.Deferred();
+    $('<div></div>')
+        .html("<p style='text-align: left;'>" + message + "</p>")
+        .dialog({
+            autoOpen: true,
+            resizable: false,
+            width: 'auto',
+            height: "auto",
+            modal: true,
+            title: 'Course Selection - Summary',
+            buttons: {
+                "Confirm": function () {
+                    defer.resolve("true");
+                    $(this).dialog("close");
+                },
+                "Cancel": function () {
+                    defer.resolve("false");
+                    $(this).dialog("close");
+                }
+            },
+            close: function () {
+                //$(this).remove();
+                $(this).dialog('destroy').remove()
+            }
+        });
+    return defer.promise();
+}
+
+function getPIN() {
+    //pin-box popup that asks for user to enter their pin
+    var defer = $.Deferred();
+    $('<div></div>')
+        .html("<p style='text-align:center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your PIN for registration.</br></br><input type='text' id='PIN'/>")
+        .dialog({
+            autoOpen: true,
+            resizable: false,
+            width: 400,
+            height: "auto",
+            modal: true,
+            title: 'Registration PIN',
+            buttons: {
+                "Register": function () {
+                    defer.resolve("true");
+                    $(this).dialog("close");
+                },
+                "Cancel": function () {
+                    defer.resolve("false");
+                    $(this).dialog("close");
+                }
+            },
+            // close: function () {
+            //     //$(this).remove();
+            //     $(this).dialog('destroy').remove()
+            // }
+        });
+    return defer.promise();
 }
 
 function showDialog(options)
@@ -746,35 +848,84 @@ function showDialog(options)
             message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>To register for more than 18 credits, you need to get approval from both the department head and dean.</p>";  
             //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
             break;
-        case 7:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
-            break;
-        case 8:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your registration pin.</p>");
-            break;
-        case 9:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Incorrect PIN. Please try again.</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Incorrect pin. Please try again.</p>");
-            break;
-        case 10:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>TEST</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Registration successful.</p>");
-            break;
     }
     $("#dialog-box").html(message);
     $("#dialog-box").dialog("open");
 }
 
-function updateColor(event, color) {
-    //remove the events from the calendar
-    //add event back to the calendar with the new color
-    //update the color for the event in the first column of the table
-    var table = document.getElementById("details");
+// function updateColor(event, color) {
+//     //remove the events from the calendar
+//     //add event back to the calendar with the new color
+//     //update the color for the event in the first column of the table
+//     var table = document.getElementById("details");
     
-    calendar.getEventById(event.groupId).backgroundColor = color;
-    calendar.render();
-    console.log(calendar.getEventById(event.groupId));
-    //calendar.render();
+//     calendar.getEventById(event.groupId).backgroundColor = color;
+//     calendar.render();
+// }
+
+function displayConfirmation(output) {
+    var successful = output[0];
+    var failed = output[1];
+    var message = "";
+
+    if (output[2] == false) {
+        message = "<b>Successfully registered: </b></br>";
+        for (var i = 0; i < (successful.CRN_IN).length; i++) {
+            // for (var j = 1; j < total_rows; j++) {
+            //     if (table.rows[j].cells[0].innerHTML == successful.CRN_IN[i]) {
+            //         message += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"  + table.rows[j].cells[1].innerHTML + " - " + table.rows[j].cells[2].innerHTML + "(" + successful.CRN_IN[i]+ ")</br>";
+            //     }
+            // }
+            message += "&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa-solid fa-check' style='color: #000000;'></i>&nbsp;"  + (successful.SUBJ[i]) + " " + (successful.CRSE[i]) + "-" + (successful.SEC[i]) + " - " + (successful.TITLE[i]) + " (" + (successful.CRN_IN[i]) + ")</br>";
+        }
+    } else {
+        if ((successful.CRN_IN).length > 0) {
+            message = "<b>Successfully registered: </b></br>";
+            for (var i = 0; i < (successful.CRN_IN).length; i++) {
+                // for (var j = 1; j < total_rows; j++) {
+                //     if (table.rows[j].cells[0].innerHTML == successful.CRN_IN[i]) {
+                //         message += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"  + table.rows[j].cells[1].innerHTML + " - " + table.rows[j].cells[2].innerHTML + "(" + successful.CRN_IN[i]+ ")</br>";
+                //     }
+                // }
+                message += "&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa-solid fa-check' style='color: #000000;'></i>&nbsp;"  + (successful.SUBJ[i]) + " " + (successful.CRSE[i]) + "-" + (successful.SEC[i]) + " - " + (successful.TITLE[i]) + " (" + (successful.CRN_IN[i]) + ")</br>";
+            }
+
+            if (failed.length > 0) {
+                message += "</br></br><b>Unable to register: </b></br>";
+                for (var i = 0; i < failed.length; i++) {
+                    message += "&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa-solid fa-xmark' style='color: #000000;'></i>&nbsp;"  + (failed[i])[2] + " " + (failed[i])[3] + "-" + (failed[i])[4] + " - " + (failed[i])[8] + " (" + (failed[i])[1] + ")</br>";
+                    message += "<i>" + (failed[i])[0] + "</i></br></br>";
+                }
+            }
+        } else {
+            if (failed.length > 0) {
+                message = "<b>Unable to register: </b></br>";
+                for (var i = 0; i < failed.length; i++) {
+                    message += "&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa-solid fa-xmark' style='color: #000000;'></i>&nbsp;"  + (failed[i])[2] + " " + (failed[i])[3] + "-" + (failed[i])[4] + " - " + (failed[i])[8] + " (" + (failed[i])[1] + ")</br>";
+                    message += "<i>" + (failed[i])[0] + "</i></br></br>";
+                }
+            }
+        }
+        
+    }  
+
+    $('<div></div>')
+    .html("<p style='text-align:center;'>" + message + "</p>")
+    .dialog({
+        autoOpen: true,
+        resizable: false,
+        width: 'auto',
+        height: "auto",
+        modal: true,
+        title: 'Registration Confirmation',
+        buttons: {
+            "OK": function () {
+                $(this).dialog("close");
+            }
+        },
+        close: function () {
+            //$(this).remove();
+            $(this).dialog('destroy').remove()
+        }
+    });
 }

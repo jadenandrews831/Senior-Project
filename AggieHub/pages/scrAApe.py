@@ -634,7 +634,7 @@ class ScrAApe():
                                                     'Sec-Fetch-User': '?1',
                                                     'Te': 'trailers',
                                                     'Connection': 'close'})
-    print(self.response_.text)
+   #print(self.response_.text)
     
     
     print("Request HEADERS:", self.response_.request.headers)
@@ -773,7 +773,7 @@ if __name__ == "__main__":
       pin = d[1]
       a = Authenticate(sid, pin)
       #print(a)
-      pkg = (input('Term:'), input('Pin:'), ['40811', ])
+      pkg = (input('Term:'), input('Pin:'), ['40811', '40991', ])
       scrape = ScrAApe(a) # close the file
       reg = scrape.register(pkg)
 

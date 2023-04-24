@@ -492,7 +492,8 @@ class ScrAApe():
       #print('Needs a valid term')
       return
 
-    data = {'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', self.auth.pcode],
+    data = {
+            'rsts':'dummy', 'crn':'dummy','term_in':self.auth.pterm, 'sel_subj':['dummy', self.auth.pcode],
             'sel_day':'dummy', 'sel_schd':'dummy', 'sel_insm':'dummy', 'sel_camp':'dummy', 
             'sel_levl':'dummy', 'sel_sess':'dummy', 'sel_instr':'dummy', 'sel_ptrm':['dummy', '%'], 
             'sel_attr':'dummy', 'sel_crse':'', 'sel_title':'', 'sel_from_cred':'',

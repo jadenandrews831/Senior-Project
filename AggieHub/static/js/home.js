@@ -1,12 +1,11 @@
 var calendar = null;
-//var selected_event;
 var response = null;
 
 /**
  * @description: This function initializes the calendar and renders it to the page
  * @param: None
  * @return: None
- *  
+ * 
  */
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('scheduleview');
@@ -794,7 +793,7 @@ function getPIN() {
     //pin-box popup that asks for user to enter their pin
     var defer = $.Deferred();
     $('<div></div>')
-        .html("<p style='text-align:center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your PIN for registration.</br></br><input type='text' id='PIN'/>")
+        .html("<p style='text-align:center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your PIN for registration.</br></br><input type='password' id='PIN'/>")
         .dialog({
             autoOpen: true,
             resizable: false,

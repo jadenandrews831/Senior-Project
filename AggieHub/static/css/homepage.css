@@ -58,6 +58,10 @@ body {
     box-shadow: 0 0 6px rgba(0,0,0,.16), 0 6px 12px rgba(0,0,0,.32);
 }
 
+.ui-widget {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
 .dropdowns {
     height: 150px;
     display: flex;
@@ -147,6 +151,10 @@ tr {height: 26px;}
     display: none;
 }
 
+#submit_classes {
+    display: none;
+}
+
 .fc-event-title {
     font-size: 10px;
 }
@@ -180,9 +188,9 @@ tr {height: 26px;}
 
 .fc-day-today {background-color: inherit !important;}
 
-.fc-event {
+/* .fc-event {
     cursor: pointer;
-}
+} */
 
 #add:hover{background: #C9634B;}
 

@@ -356,15 +356,15 @@ class ScrAApe():
     # AND GET: <td CLASS="dddefault">
     soup = bs(str(err_sch), 'html.parser')
     err = list()
-    rgct = dict()
+    rgct = list()
     j = 0
     for info in soup.find_all('td', {'class':'dddefault'}):
       i = info.text
       if i == '\xa0': continue;
       err.append(i)
       j += 1
-      if j%9 == 8:
-        rgct[str(len(rgct))] = err
+      if j%9 == 0:
+        rgct.append(err)
         err = list()
         j = 0
       

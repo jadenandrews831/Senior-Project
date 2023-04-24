@@ -9,7 +9,6 @@ from .forms import *
 from .tasks import *
 from .authentication import StudentBackend
 
-#@login_required(login_url='login')
 def home(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'home.html')
@@ -23,17 +22,9 @@ def login(request):
         if(form.is_valid()):
             # authenticate user and create session
             user = StudentBackend.authenticate(username=form.cleaned_data['banner_id'], password=form.cleaned_data['pin'])
-            # print (user)
-            # form.banner_id = form.cleaned_data['banner_id']
-            # form.pin = form.cleaned_data['pin']
-            # response = task1(form.banner_id, form.pin)
             if user is not None:
                 request.session['banner_id'] = form.cleaned_data['banner_id']
                 return redirect('home')
-            # if (response == True):
-            #     return redirect('home')
-            # else:
-            #     return render(request, 'login.html', {'form': form, 'error': 'Invalid Banner ID or PIN'})
     return render(request, 'login.html', {'form': loginForm})
     
 def get_subjects(request):
@@ -78,27 +69,21 @@ def get_terms(request):
 def register_student(request):
     if (request.method == 'POST'):
         schedule = request.POST['schedule']
-        # print(json.loads(schedule))
-        # print(type(json.loads(schedule)))
-        # print(type(json.loads(schedule)['pkg']))
         response = task7((json.loads(schedule)['pkg']))
         return JsonResponse(response)
 
-#@login_required(login_url='login')
 def override(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'override.html')
     else:
         return redirect('login')
 
-#@login_required(login_url='login')
 def guides(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'guides.html')
     else:
         return redirect('login')
 
-#@login_required(login_url='login')
 def contact(request):
     if(request.session.has_key('banner_id')):
         if (request.method == 'POST'):

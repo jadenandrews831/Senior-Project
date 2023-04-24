@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +34,6 @@
                     var terms = response.terms;
                     var p_term = response.p_term;
                     html = '';
-
                     $.each(terms, function(index, value) {
                         if (!(value.includes("(View only)"))) {
                         html = '<option value="' + p_term[index] + '">' + value + '</option>';
@@ -64,14 +61,15 @@
             $("#dialog-box").dialog({
                 autoOpen: false, //set this to hide at initial stage
                 resizable: false,
-                width: 400,
+                width: 'auto',
                 height: "auto",
                 modal: true,
+                title: "Notification",
                 buttons: {
                     "OK": function() {
                         //color = $("#color").val();
                         //updateColor(selected_event, color);
-                        $( this ).dialog( "close" );
+                        $(this).dialog("close");
                     }
                 }
             });
@@ -105,10 +103,13 @@
         //REGISTER SCHEDULE
         $(document).ready(function(){
            $("#register").click(function() {
-            var result = register();
-            console.log(result);
-            $.ajax ({
+            register();
+            })
 
+           $("#submit_classes").click(function() {
+            var result = submit();
+
+            $.ajax ({
                 type: "POST",
                 url: "{% url 'register_student' %}",
                 data: {
@@ -117,7 +118,7 @@
                 },
                 dataType: 'json',
                 success: function (response) {
-                    alert(response);
+                    displayConfirmation(response);
                 }
             })
            });
@@ -125,12 +126,12 @@
 
         //LOAD SUBJECTS
         $(document).ready(function(){
-            clearSelection();
-            $("#available").empty();
-            $("#description").hide();
-            $(".select_section").hide();
-            $("#add").hide();
             $("#select_term").change(function(){
+                clearSelection();
+                $("#available").empty();
+                $("#add").hide();
+                $("#description").hide();
+                $(".select_section").hide();
                 var term = $(this).children("option:selected").text();                
                 $.ajax({
                     type: "POST",
@@ -206,9 +207,9 @@
             $("#select_course").change(function(){
                 clearSelection();
                 $("#available").empty();
-                var course = $(this).children("option:selected").val();
                 $("#description").hide();
                 $("#add").hide();
+                var course = $(this).children("option:selected").val();
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_sections' %}",
@@ -236,7 +237,7 @@
                             //check if section is a lab. if so, display "LAB" instead of section number. give option the same value as the lecture section
                             if (sections[i].Cmp == 'DL') {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE</option>';
-                            } else if (sections[i].Rem == '0') {
+                            } else if (sections[i].Rem == '0' || sections[i].Rem == '-1') {
                                 html = '<option value="' + i + '" disabled> FULL - ' + sections[i].Sec + ', ' + sections[i].Days + ', ' + sections[i].Time + '</option>';
                             } else if (sections[i].Sec == '\xa0' && sections[i].Title == '\xa0') {
                                 html = '<option value="' + i + '" disabled>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + sections[i].Days + ', ' + sections[i].Time + '</option>';
@@ -299,9 +300,6 @@
         <section class = "dropdowns">
             <select id = "select_term"> 
                 <option disabled hidden selected>Select Term</option>
-                {% comment %} {% for term in terms %}
-                <option value="{{term}}">{{term}}</option>
-                {% endfor %} {% endcomment %}
             </select>
             <select id = "select_subject">
                 <option disabled hidden selected>Select Subject</option>
@@ -332,7 +330,7 @@
     </main>
 
     <section class = "detailview">
-        <table border id="details">
+        <table border id = "details">
             <thead>
                 <tr>
                     <th width = "4%" id = "dv_crn" class = "dv_header">CRN</th>
@@ -344,12 +342,13 @@
                     <th width = "9%" id = "dv_location" class = "dv_header">Location</th>
                     <th width = "4%" id = "dv_credits" class = "dv_header">Credits</th>
                     <th width = "3%" id = "dv_buttons" class = "dv_header"></th>
-                </tr> 
+                </tr>
             </thead>
         </table>
     </section>
-    <footer class  = "footer">
+    <footer class = "footer">
         <p> &#169;Aggie Bridge. All Rights Reserved. </p>
+        <button id ="submit_classes"></button>
     </footer>
 </body>
 </html>

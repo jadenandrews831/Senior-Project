@@ -18,9 +18,8 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
     <script>
         //LOAD TERMS AND PROFILE DATA
-        var course_sections;
-        var color;
-        
+        var course_sections; 
+
         $(document).ready(function() {
             var new_terms = $("#select_term");
             $.ajax({
@@ -57,48 +56,29 @@
                     classification.html(response.classification);
                 }
             });
-
-            $("#dialog-box").dialog({
-                autoOpen: false, //set this to hide at initial stage
-                resizable: false,
-                width: 'auto',
-                height: "auto",
-                modal: true,
-                title: "Notification",
-                buttons: {
-                    "OK": function() {
-                        //color = $("#color").val();
-                        //updateColor(selected_event, color);
-                        $(this).dialog("close");
-                    }
-                }
-            });
-
-            Coloris({
-                el: '.coloris',
-                theme: 'polaroid',
-                themeMode: 'auto', // light, dark, auto
-                defaultColor: '#000000',
-                alpha: false,
-            });
         });
 
-        //CLEAR SCHEDULE AND SELECTIONS ON TERM CHANGE - FIXME
-        {% comment %} $(document).ready(function(){
-            //when user focuses on term dropdown, check if there is a schedule in progress
+        //CLEAR SCHEDULE AND SELECTIONS ON TERM CHANGE
+        $(document).ready(function(){
             $("#select_term").focus(function(){
-                $("#select_term").blur();
-                if ($('#details').length > 1) {
+                if ($("#details tr").length > 1) {
                     var answer = confirm("Changing the term will clear your current selections. Are you sure you want to change the term?");
                     if (answer == true) {
                         clearSchedule();
-                        $("#select_term").blur();
+                        var all_sections = $("#available");
+                        all_sections.empty();
+                        var course_select = $("#select_course");
+                        var subject_select = $("#select_subject");
+                        course_select.empty();
+                        course_select.append('<option disabled hidden selected>Select Course</option>');
+                        subject_select.empty();
+                        subject_select.append('<option disabled hidden selected>Select Subject</option>');
                     } else {
                         $("#select_term").blur();
                     }
                 }
             });
-        }); {% endcomment %}
+        });
 
         //REGISTER SCHEDULE
         $(document).ready(function(){
@@ -132,7 +112,8 @@
                 $("#add").hide();
                 $("#description").hide();
                 $(".select_section").hide();
-                var term = $(this).children("option:selected").text();                
+                var term = $(this).children("option:selected").text();
+
                 $.ajax({
                     type: "POST",
                     url: "{% url 'get_subjects' %}",
@@ -189,7 +170,6 @@
                         course_select.empty();
                         course_select.append('<option disabled hidden selected>Select Course</option>');
                         html = '';
-                        //display course id - course name in dropdown
                         var course_ids = courses.course_id;
                         var course_names = courses.course_name;
                         
@@ -232,9 +212,6 @@
                         $(".select_section").show();
                         
                         for(var i=0;i,sections.length;i++) {
-                            //check if section is online. if so, display "ONLINE" instead of days and time
-                            //check if section is full. if so, disable option
-                            //check if section is a lab. if so, display "LAB" instead of section number. give option the same value as the lecture section
                             if (sections[i].Cmp == 'DL') {
                                 html = '<option value="' + i + '">' + sections[i].Sec + ', ONLINE</option>';
                             } else if (sections[i].Rem == '0' || sections[i].Rem == '-1') {
@@ -258,11 +235,6 @@
         //DISPLAY SELECTED SECTION
        $(document).ready(function() {
             $("#available").change(function() {
-                //if there are at least two sections in the course, check if the next section is a lab
-                //if it is, send both sections to displaySection
-                //if it isn't, send the selected section to displaySection
-                //if there is only one section in the course, send the selected section to displaySection
-                //make sure selected section is not the last section in #available
                 var selected = $("#available").children("option:selected").val();
                 var next = $("#available").children("option:selected").next().val();
                 if (course_sections.length > 1 && next != undefined) {
@@ -282,7 +254,6 @@
 <body>
     <nav class = "banner">
         {% include 'navigation.html' %}
-        <div id="dialog-box"></div>
     </nav>
 
     <header class = "student_info">
@@ -293,36 +264,36 @@
 
     <aside class = "options">
         <div id="inner">
-        <div id = "pageinfo">
-            <h2>Course Registration</h2>
+            <div id = "pageinfo">
+                <h2>Course Registration</h2>
+            </div>
+            {% csrf_token %}
+            <section class = "dropdowns">
+                <select id = "select_term"> 
+                    <option disabled hidden selected>Select Term</option>
+                </select>
+                <select id = "select_subject">
+                    <option disabled hidden selected>Select Subject</option>
+                </select>
+                <select id = "select_course">
+                    <option disabled hidden selected>Select Course</option>
+                </select>
+            </section>
+
+            <section id = "description">
+                
+            </section>
+
+            <section class = "select_section">
+                <select id="available" size="5"></select>
+            </section>
+        
+
+            <div id = "update">
+            <button id = "add" onclick="addClass()">Add to Schedule</button>
+            <button id = "register">Register</button>
+            </div>
         </div>
-        {% csrf_token %}
-        <section class = "dropdowns">
-            <select id = "select_term"> 
-                <option disabled hidden selected>Select Term</option>
-            </select>
-            <select id = "select_subject">
-                <option disabled hidden selected>Select Subject</option>
-            </select>
-            <select id = "select_course">
-                <option disabled hidden selected>Select Course</option>
-            </select>
-        </section>
-
-        <section id = "description">
-            
-        </section>
-
-        <section class = "select_section">
-            <select id="available" size="5"></select>
-        </section>
-    
-
-        <div id = "update">
-        <button id = "add" onclick="addClass()">Add to Schedule</button>
-        <button id = "register">Register</button>
-        </div>
-    </div>
     </aside>
 
     <main class = "view">

@@ -1,5 +1,8 @@
 from django.db import models
 
+## A model for the student data
+#
+#  This model is used to store the student data in the database.
 class StudentData(models.Model):
     banner_id = models.CharField(max_length=9, primary_key=True)
     pin = models.CharField(max_length=15)
@@ -11,14 +14,3 @@ class StudentData(models.Model):
     
     def __str__(self):
         return self.pin
-
-class StudentInfo(models.Model):
-    banner_id = models.CharField(max_length=9, primary_key=True)
-    pin = models.CharField(max_length=6)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    major = models.CharField(max_length=50)
-    level = models.CharField(max_length=15)
-    classification = models.CharField(max_length=15)
-    
-    ordering = [last_name]

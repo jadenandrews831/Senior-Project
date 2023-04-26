@@ -459,6 +459,7 @@ class ScrAApe():
     if not data:
       data = input("Data: ")
     if self.auth.terms_w_codes_:
+      print(self.auth.terms_w_codes_)
       self.auth.pterm = self.auth.terms_w_codes_[data]
       #print("Code:",self.auth.pterm)
     else:

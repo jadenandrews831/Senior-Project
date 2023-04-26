@@ -1,6 +1,6 @@
-const { getDays } = require('../static/js/home.js');
-const { getTime } = require('../static/js/home.js');
-const { evalHexColor } = require('../static/js/home.js');
+const { getDays } = require('../AggieHub/static/js/home.js');
+const { getTime } = require('../AggieHub/static/js/home.js');
+const { evalHexColor } = require('../AggieHub/static/js/home.js');
 
 describe('converts string of weekdays to array of numbers', () => {
     it("should return '135'", () => {

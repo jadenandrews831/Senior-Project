@@ -1,6 +1,11 @@
 from django.contrib.auth.backends import BaseBackend
 from .tasks import *
 
+## An authentication backend for the student data
+#
+#  This backend is used to authenticate the student data.
+#  @param BaseBackend The base backend for the student data
+
 class StudentBackend(BaseBackend):
     def authenticate(username=None, password=None):
         try:

@@ -15,12 +15,10 @@ def home(request):
     else:
         return redirect('login')
 
-#form data should be used to autheticate session for user through scrAApe and redirect to home page
 def login(request):
     if (request.method == 'POST'): 
         form = loginForm(request.POST)
         if(form.is_valid()):
-            # authenticate user and create session
             user = StudentBackend.authenticate(username=form.cleaned_data['banner_id'], password=form.cleaned_data['pin'])
             if user is not None:
                 request.session['banner_id'] = form.cleaned_data['banner_id']

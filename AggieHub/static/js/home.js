@@ -1,14 +1,17 @@
-var calendar = null;
-var response = null;
+var calendar = null; /*!< the calendar object */
+var response = null; /*!< the registration response object */
 
-/**
- * @description: This function initializes the calendar and renders it to the page
- * @param: None
- * @return: None
+/****************************************************************************************
+ * This event initializes the calendar and renders it to the page.
  * 
- */
+ * Using the FullCalendar API, the calendar is initialized, customized, and rendered.
+ * 
+ * @param None
+ * @return None
+ * 
+ ****************************************************************************************/
 document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('scheduleview');
+    var calendarEl = document.getElementById('scheduleview'); 
   
     calendar = new FullCalendar.Calendar(calendarEl, {
         timeZone: 'UTC',
@@ -25,51 +28,54 @@ document.addEventListener('DOMContentLoaded', function() {
         // eventClick: function(info) {
         //     var selected_event = info.event;
         //     showDialog(1);
-        // } 
+        // }
     });
     
     calendar.render();
 });
 
-/**
- * @description: This function compares the start and end times of two events to check for overlap
- * @param: new_time 
- * @param: days 
- * @returns true if there is a time conflict, false if there is no time conflict
- */
+/***************************************************************************************
+ * This function compares the times and dates of two events to check for overlap.
+ * 
+ * Using the day(s) and time of a selected class, the function checks if there is a time 
+ * currently in the calendar that conflicts with the selected class.
+ * 
+ * @param new_time the time of the selected section
+ * @param days the day(s) of the selected section
+ * @return true if there is a time or date conflict,
+ *         false if there is no time or date conflict
+ * 
+ ***************************************************************************************/
 function conflictTime(new_time, days) {
-    var table = document.getElementById("details");
-    var all_rows = table.rows.length;
-    var section_time =  getTime(new_time);
-    var start = section_time[0];
-    var end = section_time[1];
-    var clash = 0;
-    //convert start and end to Date objects to compare times
+    var table = document.getElementById("details"); /*!< the table containing the pre-selected classes */
+    var all_rows = table.rows.length; /*!< the number of rows in the table */
+    var section_time =  getTime(new_time); /*!< the start and end time of the selected section */
+    var start = section_time[0]; /*!< the start time of the selected section */
+    var end = section_time[1]; /*!< the end time of the selected section */
+    var clash = 0; /*!< the number of time conflicts */
 
-    //check if last row is a lab to change the iteration length
-    var start_date = new Date("01/01/2021 " + start);
-    var end_date = new Date("01/01/2021 " + end);
+    var start_date = new Date("01/01/2021 " + start); /*!< the selected section's start time as a Date object */
+    var end_date = new Date("01/01/2021 " + end); /*!< the selected section's end time as a Date object  */
     
     for (var i = 1; i < all_rows; i++) {
         if (table.rows[i].cells[8].innerHTML == "") { 
             return false;
         } else {
-            var row = table.rows[i];
-            var row_days = row.cells[3].innerText;
-            var row_time = row.cells[4].innerText;
+            var row = table.rows[i]; /*!< the current row in the table */
+            var row_days = row.cells[3].innerText; /*!< the day(s) of the current row */
+            var row_time = row.cells[4].innerText; /*!< the time range of the current row */
     
             if (row_time == "TBA") {
                 return false;
             }
     
-            var row_time_array = getTime(row_time);
-            var row_start = row_time_array[0];
-            var row_end = row_time_array[1];
+            var row_time_array = getTime(row_time); /*!< the start and end time of the current row */
+            var row_start = row_time_array[0]; /*!< the start time of the current row */
+            var row_end = row_time_array[1]; /*!< the end time of the current row */
     
-            var row_start_date = new Date("01/01/2021 " + row_start);
-            var row_end_date = new Date("01/01/2021 " + row_end);
+            var row_start_date = new Date("01/01/2021 " + row_start); /*!< the start date of the current row as a Date object */
+            var row_end_date = new Date("01/01/2021 " + row_end); /*!< the end date of the current row as a Date object */
     
-            // functional
             // if (start_date >= row_start_date && start_date < row_end_date && (row_days.includes(days) || days.includes(row_days))) {
             //     clash++;
             // } else if (end_date > row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
@@ -84,7 +90,6 @@ function conflictTime(new_time, days) {
             //     continue;
             // }
 
-            //tester
             if ((((start_date <= row_start_date) && (start_date < row_end_date)) && ((end_date <= row_end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
                 clash++;
             } else if ((((row_start_date <= start_date) && (start_date < row_end_date)) && ((row_end_date <= end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
@@ -98,7 +103,6 @@ function conflictTime(new_time, days) {
             } else {
                 continue;
             }
-
         }
 
         if (clash > 0) {
@@ -107,10 +111,19 @@ function conflictTime(new_time, days) {
             return false;
         }
     }
-    //check if the new_time conflicts with any of the times in the table
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function converts days to numbers to be used to add to the calendar.
+ * 
+ * Each day of the week (M-F) is assigned a number (1-5), respectively. The numbers are
+ * added to an array to be used in populating the calendar.
+ * Sections that meet on multiple days will have their numbers added to the array of days.
+ * 
+ * @param day the day of the selected section
+ * @return An array of numbers representing the days of the week that the class is held on
+ * 
+ ***************************************************************************************/
 function getDays(day) {
     var days = [];
     for (var i = 0; i < day.length; i++) {
@@ -127,7 +140,17 @@ function getDays(day) {
     return days;
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function converts the time of a selected section to a 24-hour format.
+ * 
+ * The function splits the time into a start and end time. Seconds are added to the time 
+ * to be used in the Date object. If the time is in the afternoon (pm), 12 hours are added 
+ * to the time to convert it to a 24-hour format.
+ * 
+ * @param time the time of the proposed section
+ * @return An array of the start and end time of the proposed section in 24-hour format
+ * 
+ ***************************************************************************************/
 function getTime(time) {
 
     var timeArray = time.split("-");
@@ -164,10 +187,18 @@ function getTime(time) {
     return [start, end];
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function adds a class permanently to the calendar and details table.
+ * 
+ * The function adds a button to the last cell of the last row in the details table. This 
+ * button allows the user to remove the class from the calendar and details table. The last
+ * row being populated prevents it from being removed when the user selects a new section.
+ * 
+ * @param None
+ * @return None
+ * 
+ ***************************************************************************************/
 function addClass() {
-    //add i icon to last cell of last row in table if there is not already an i icon
-    //if there is an i icon in the last cell, send message to user that they need to select a section to add
     var table = document.getElementById("details");
     var all_rows = table.rows.length;
     var last_row = table.rows[all_rows - 1];
@@ -195,12 +226,25 @@ function addClass() {
     }
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function compares the times and dates of two events to check for overlap.
+ * 
+ * The function has two cases: one for lectures with labs and one for lectures without labs.
+ * Going row by row, each case first checks if the section is already in the calendar. If 
+ * it is, the function then checks for time conflicts. If there are no conflicts, the 
+ * function checks if the class in the row has been added or not. If it has not been added,
+ * the function overwrites theq row with the new section. If it has been added, the function
+ * adds a new row to the table. If there are any conflicts, the function displays an error
+ * message via the showDialog function.
+ * 
+ * @param index the index of the selected section
+ * @return None
+ * 
+ ***************************************************************************************/
 function displaySection(index) { 
     var table = document.getElementById("details");
     var all_rows = table.rows.length;
     var check = 0;
-    //course = index;
 
     if (all_rows > 1) {
         if (index.length == 2) {
@@ -219,7 +263,6 @@ function displaySection(index) {
                     check++;
                     break;
                 }
-                
 
                 if (lecture.Time != "TBA" && lecture.Days != "TBA") {
                     if ((conflictTime(lecture.Time, lecture.Days) == true) || (conflictTime(lab.Time, lab.Days) == true)) {
@@ -233,14 +276,11 @@ function displaySection(index) {
                 if (row_section == (lecture.Subj + " " + lecture.Crse)) {
                     if (row.cells[8].innerHTML == "") {
                         if (row.cells[4].innerText != "TBA") {
-                            //remove lecture
                             calendar.getEventById(row.id).remove();
-                            //remove lab
                             calendar.getEventById(row.id + "L").remove();
                             calendar.render();
                         }
                         
-                        //change lecture row
                         row.id = lecture.CRN;
                         row.cells[0].innerText = lecture.CRN;
                         row.cells[1].innerText = lecture.Subj + " " + lecture.Crse + "-" + lecture.Sec;
@@ -251,7 +291,7 @@ function displaySection(index) {
                         row.cells[6].innerText = lecture.Location;
                         row.cells[7].innerText = lecture.Cred;
                         row.cells[8].innerHTML = "";
-                        //change lab row
+                        
                         var lab_row = table.rows[i + 1];
                         lab_row.id = lecture.CRN + "L";
                         lab_row.cells[0].innerText = "";
@@ -262,11 +302,9 @@ function displaySection(index) {
                         lab_row.cells[5].innerText = lab.Instructor;
                         lab_row.cells[6].innerText = lab.Location;
                         lab_row.cells[7].innerText = "0.000";
-                        //change cell 7 text to white
                         lab_row.cells[7].style.color = "white";
                         lab_row.cells[8].innerHTML = "";
 
-                        //add lecture and lab to calendar
                         addEvent(lecture.CRN);
                         document.getElementById("add").style.display = "inline-block";
                         check++;
@@ -281,7 +319,6 @@ function displaySection(index) {
             }
 
             if (check == 0) {
-                //add lecture row
                 var lecture_row = table.insertRow(all_rows);
                 lecture_row.id = lecture.CRN;
                 lecture_row.insertCell(0).innerText = lecture.CRN;
@@ -293,7 +330,7 @@ function displaySection(index) {
                 lecture_row.insertCell(6).innerText = lecture.Location;
                 lecture_row.insertCell(7).innerText = lecture.Cred;
                 lecture_row.insertCell(8).innerHTML = "";
-                //add lab row
+                
                 var lab_row = table.insertRow(all_rows + 1);
                 lab_row.id = lecture.CRN + "L";
                 lab_row.insertCell(0).innerText = "";
@@ -307,7 +344,6 @@ function displaySection(index) {
                 lab_row.cells[7].style.color = "white";
                 lab_row.insertCell(8).innerHTML = "";
 
-                //add lecture and lab to calendar
                 addEvent(lecture.CRN);
                 document.getElementById("add").style.display = "inline-block";
             }
@@ -337,11 +373,10 @@ function displaySection(index) {
                 if (row_section == (index.Subj + " " + index.Crse)) {
                     if (row.cells[8].innerHTML == "") {
                         if (row.cells[4].innerText != "TBA") {
-                            //remove lecture
                             calendar.getEventById(row.id).remove();
                             calendar.render();
                         }
-                        //change lecture row
+
                         row.id = index.CRN;
                         row.cells[0].innerText = index.CRN;
                         row.cells[1].innerText = index.Subj + " " + index.Crse + "-" + index.Sec;
@@ -353,7 +388,6 @@ function displaySection(index) {
                         row.cells[7].innerText = index.Cred;
                         row.cells[8].innerHTML = "";
 
-                        //add lecture to calendar
                         addEvent(index.CRN);
                         document.getElementById("add").style.display = "inline-block";
                         check++;
@@ -368,7 +402,6 @@ function displaySection(index) {
             }
 
             if (check == 0) {
-                //add lecture row
                 var lecture_row = table.insertRow(all_rows);
                 lecture_row.id = index.CRN;
                 lecture_row.insertCell(0).innerText = index.CRN;
@@ -381,7 +414,6 @@ function displaySection(index) {
                 lecture_row.insertCell(7).innerText = index.Cred;
                 lecture_row.insertCell(8).innerHTML = "";
 
-                //add lecture and lab to calendar
                 addEvent(index.CRN);
                 document.getElementById("add").style.display = "inline-block";
             }
@@ -391,7 +423,6 @@ function displaySection(index) {
             var lecture = index[0];
             var lab = index[1];
 
-            //add lecture row
             var lecture_row = table.insertRow(all_rows);
             lecture_row.id = lecture.CRN;
             lecture_row.insertCell(0).innerText = lecture.CRN;
@@ -403,7 +434,7 @@ function displaySection(index) {
             lecture_row.insertCell(6).innerText = lecture.Location;
             lecture_row.insertCell(7).innerText = lecture.Cred;
             lecture_row.insertCell(8).innerHTML = "";
-            //add lab row
+            
             var lab_row = table.insertRow(all_rows + 1);
             lab_row.id = lecture.CRN + "L";
             lab_row.insertCell(0).innerText = "";
@@ -420,7 +451,6 @@ function displaySection(index) {
             addEvent(lecture_row.id);
             document.getElementById("add").style.display = "inline-block";
         } else {
-            //add lecture row
             var lecture_row = table.insertRow(all_rows);
             lecture_row.id = index.CRN;
             lecture_row.insertCell(0).innerText = index.CRN;
@@ -439,11 +469,20 @@ function displaySection(index) {
     }
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function removes a class from the calendar and the table.
+ * 
+ * The CRN is used to find the row in the table and the event in the calendar.
+ * The row is then removed from the table and the event is removed from the calendar.
+ * If the class is a lecture and lab, the lab is also removed from the table.
+ * 
+ * @param crn the crn of the class to be removed
+ * @return None
+ * 
+ ***************************************************************************************/
 function removeClass(crn) {
     var table = document.getElementById("details");
     var row = document.getElementById(crn).rowIndex;
-    //check that the row is not the last row
     if (row != (table.rows.length) - 1) {
         if (table.rows[row + 1].cells[0].innerText == "") {
             table.deleteRow(row+1);
@@ -451,7 +490,6 @@ function removeClass(crn) {
         }
     }
 
-    //if class is not online, remove from calendar else just remove from table
     if (table.rows[row].cells[4].innerText != "TBA") {
         table.deleteRow(row);
 
@@ -463,10 +501,18 @@ function removeClass(crn) {
     }
 }
 
-//get the class data from the table needed for the event
-    //called at the end of the addClass function when a class is added to the schedule
-
-//FUNCTIONAL
+/***************************************************************************************
+ * This function gets the data used to display the section in the calendar.
+ * 
+ * The crn is used to find the row in the table. The time and day of the class are converted
+ * to the correct format for the calendar. The subject and course are also extracted from the
+ * table. If the class is a lecture and lab, the lab is also added to the calendar. If the
+ * class is online, the class is not added to the calendar. 
+ * 
+ * @param crn the crn of the selected class
+ * @return An array of the data used to display the section in the calendar
+ * 
+ ***************************************************************************************/
 function getData(crn) {
     var table = document.getElementById("details");
     var row = document.getElementById(crn);
@@ -482,7 +528,6 @@ function getData(crn) {
         if (time.includes("TBA")) {
             return "virtual";
         }
-        //convert to 24 hour time
         var timeRange = getTime(time);
         var days = getDays(day);
     
@@ -495,8 +540,7 @@ function getData(crn) {
     } else {
         if (time.includes("TBA")) {
             return "virtual";
-        }
-        //convert to 24 hour time    
+        }  
         var crn = row.cells[0].innerText;
         var title = subj + " " + crse + " - " + row.cells[2].innerText;
         var instructors = row.cells[5].innerText;
@@ -521,7 +565,18 @@ function getData(crn) {
     }    
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function determines if a hex color is light or dark.
+ * 
+ * The function determines the brightness of the color by splitting the color into its
+ * red, green, and blue components. The brightness is then calculated using the formula
+ * for relative luminance. If the brightness is greater than 155, the color is light. 
+ * If the brightness is less than 155, the color is dark.
+ * 
+ * @param color the time of the selected section
+ * @return true if the color is light,
+ *         false if the color is dark
+ ***************************************************************************************/
 function evalHexColor(color) {
     const rColor = parseInt(color.substring(0, 0 + 2), 16);
     const gColor = parseInt(color.substring(2, 2 + 2), 16);
@@ -530,7 +585,19 @@ function evalHexColor(color) {
     return brightness > 155;
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function adds a class to the calendar. 
+ * 
+ * The crn is used to get the data for the class. The data is then used to add the class
+ * to the calendar. The color of the class is randomly generated. If the color is light,
+ * the text color is set to black. If the color is dark, the text color is set to white.
+ * If the class is a lecture and lab, the lab is also added to the calendar.
+ * If the class is online, the class is not added to the calendar.
+ * 
+ * @param crn the crn of the selected section
+ * @return None
+ * 
+ ***************************************************************************************/
 function addEvent(crn) {
     var data = getData(crn);
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
@@ -600,10 +667,20 @@ function addEvent(crn) {
         document.getElementById(crn).cells[0].style.color = textColor;
     }
     calendar.render();
-    //set background color of crn column of row to match event color
 }
 
-//FUNCTIONAL
+/***************************************************************************************
+ * This function calculates the number of credits a student is registered for.
+ *  
+ * The function loops through the table of registered classes and adds the number of
+ * credits for each class to the total number of credits. The total number of credits
+ * is then displayed on the page. If the total number of credits is greater than 18, a 
+ * warning is displayed.
+ * 
+ * @param None
+ * @return None
+ * 
+ ***************************************************************************************/
 function update() {
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
@@ -643,26 +720,47 @@ function update() {
             document.getElementById("register").style.backgroundColor = "#EACEC7";
             document.getElementById("register").style.cursor = "not-allowed";
             document.getElementById("register").disabled = true;
-            //remove last class added
             removeClass(table.rows[total_rows - 1].id);
         }
     }
 }
 
-//CONTINUE TESTING
-//clear all events from calendar and table when switching semesters
-// function clearSchedule() {
-//     //clear all events from calendar
-//     var table = document.getElementById("details");
-//     var total_rows = table.rows.length;
+/***************************************************************************************
+ * This function removes all classes from the calendar and table.
+ * 
+ * This function is called when the user attempts to change the current registration
+ * term after they have already added classes to their schedule. The function loops
+ * through the table of registered classes and removes all classes.
+ * 
+ * @param None
+ * @return None
+ * 
+ ***************************************************************************************/
+function clearSchedule() {
+    var table = document.getElementById("details");
+    var total_rows = table.rows.length;
+    for (var i = 1; i < total_rows; i++) {
+        removeClass(table.rows[i].id);
+        i--;
+        total_rows--;
+        
+        if (table.rows.length < total_rows) {
+            i++;
+        }
+    }
+}
 
-//     for (var i = 1; i < total_rows; i++) {
-//         var crn = table.rows[i].id;
-//         removeClass(crn);
-//     }
-// }
-
-//FUNCTIONAL
+/***************************************************************************************
+ * This function removes all non-permanent classes from the calendar and table.
+ * 
+ * The function loops through the table of registered classes and removes all classes
+ * that are not permanent. This is used when switching between subjects, courses, and 
+ * sections. 
+ * 
+ * @param None
+ * @return None
+ * 
+ ***************************************************************************************/
 function clearSelection() {
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
@@ -681,14 +779,20 @@ function clearSelection() {
     document.getElementById("available").selectedIndex = -1;
 }
 
-//CONTINUE TESTING
+/***************************************************************************************
+ * This function registers the student for all permanent classes in the table.
+ * 
+ * The function loops through the table of registered classes and adds the CRN of each 
+ * permanent class to a list. The list is then sent, by the submit() function, to the 
+ * server with the current term and the student's registeration PIN to register the student 
+ * for the classes. If the PIN is correct, the student is registered for the classes and the
+ * schedule is cleared.
+ * 
+ * @param None
+ * @return None
+ * 
+ ***************************************************************************************/
 function register() {
-    //get all row ids and display them in a popup asking for confirmation
-    //if confirmed, prompt for user to enter their registration pin
-    //if pin is correct, display a success message and clear the schedule
-    //if pin is incorrect, display the error message
-
-    //PIN, TERM, CRSE, SUBJ, CRN (send as dict)
     var table = document.getElementById("details");
     var total_rows = table.rows.length;
     crns = [];
@@ -701,9 +805,7 @@ function register() {
    
 
     for (var i = 1; i < total_rows; i++) {
-        //make sure to add only classes with i tag in last column
         if (table.rows[i].cells[8].innerHTML != "" && table.rows[i].cells[0].innerText != "") {
-            //make sure to add only classes with i tag in last column)
             var row = table.rows[i];
             crns.push(row.id);
             titles.push(row.cells[2].innerText);
@@ -734,33 +836,36 @@ function register() {
             });
         }
     });
-    
-    // var pin = document.getElementById("PIN").value;
-    // return {'pkg': [term, pin, crns]};
-    // if (pin.length != 6) {
-    //     //alert("Incorrect pin. Please try again."); 
-    //     showDialog(9);
-    // } else { //pin will be sent to scrAApe tool
-    //     // for (var i = 0; i < crns.length; i++) {
-    //     //     //add subj, crse, and section to dict
-    //     //     register_info['crn'] = crns[i];
-    //     //     register_info['subj'] = subj[i];
-    //     //     register_info['crs'] = crse[i];
-    //     //     all_classes.push(register_info);
-    //     //     register_info = {};
-    //     // }
-
-    //     return {'pkg': [term, pin, crns]};
-    // }
 }
 
+/***************************************************************************************
+ * This function submits the student's registration for all permanent classes in the table.
+ * 
+ * The function is called by register() and sends the term, PIN, and CRNs of the classes
+ * the student is registering for to the server. The server then registers the student for
+ * the classes and returns a response. The response is then displayed to the student.
+ * 
+ * @param None
+ * @return The term, PIN, and CRNs of the classes the student is registering for.
+ * 
+ ***************************************************************************************/
 function submit() {
-    //send all classes to be registered to scrAApe tool
     return response;
 }
 
+/***************************************************************************************
+ * This function displays a popup window with all proposed classes for registration.
+ * 
+ * Using JQuery UI, a dialog box is created with a message passed to the function from 
+ * register(). The dialog box has two buttons, "Confirm" and "Cancel". If the user clicks
+ * "Confirm", the function returns "true" and the function prompting for the PIN is called.
+ * If the user clicks "Cancel", the function returns "false" and the process is cancelled.
+ * 
+ * @param message The message to be displayed in the class summary popup.
+ * @return defer.promise(): The user's decision to register for the classes or not.
+ * 
+ ***************************************************************************************/
 function confirmation(message) {
-    //summary-box popup that shows ups for user to confirm classes before registering
     var defer = $.Deferred();
     $('<div></div>')
         .html("<p style='text-align: left;'>" + message + "</p>")
@@ -789,8 +894,20 @@ function confirmation(message) {
     return defer.promise();
 }
 
+/***************************************************************************************
+ * This function displays a popup window that asks for the student's registration PIN.
+ * 
+ * The function creates a dialog box, using JQuery UI, with a text box for the student to 
+ * enter their PIN. The dialog box has two buttons, "Register" and "Cancel". If the user
+ * clicks "Register", the function returns "true" and the classes are submitted for
+ * registration. If the user clicks "Cancel", the function returns "false" and the process
+ * is cancelled.
+ * 
+ * @param None
+ * @return defer.promise(): The user's decision to register for the classes or not.
+ * 
+ ***************************************************************************************/
 function getPIN() {
-    //pin-box popup that asks for user to enter their pin
     var defer = $.Deferred();
     $('<div></div>')
         .html("<p style='text-align:center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please enter your PIN for registration.</br></br><input type='password' id='PIN'/>")
@@ -810,58 +927,160 @@ function getPIN() {
                     defer.resolve("false");
                     $(this).dialog("close");
                 }
-            },
-            // close: function () {
-            //     //$(this).remove();
-            //     $(this).dialog('destroy').remove()
-            // }
+            }
         });
     return defer.promise();
 }
 
+/***************************************************************************************
+ * This function displays a popup window.
+ * 
+ * The function creates a dialog box, using JQuery UI, with a message passed to the function
+ * depending on the options parameter. The dialog box has one button, "OK". If the user
+ * clicks "OK", the dialog box is closed.
+ * 
+ * @param options A number representing the message to display.
+ * @return None
+ * 
+ ***************************************************************************************/
 function showDialog(options)
 {
-    var message = "";
     switch(options){
         case 1:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Select a color.</br></br><input type='text' id='color' data-coloris value='#000000' class=coloris'/></p>";    
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Select a color.</br></br><input type='text' id='color' data-coloris value='#000000' class=coloris'/></p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 'auto',
+                height: "auto",
+                modal: true,
+                title: 'Color Picker',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
         case 2:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>";    
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>Please select a section to add.</p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 'auto',
+                height: "auto",
+                modal: true,
+                title: 'No Section Selected',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
         case 3:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 'auto',
+                height: "auto",
+                modal: true,
+                title: 'Section Already Added',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
         case 4:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>This class conflicts with another class you have added.</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>This class conflicts with another class you have added.</p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 'auto',
+                height: "auto",
+                modal: true,
+                title: 'Time Conflict',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
         case 5:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added a section for this course.</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added a section for this course.</p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 'auto',
+                height: "auto",
+                modal: true,
+                title: 'Course Already Added',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
         case 6:
-            message = "<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>To register for more than 18 credits, you need to get approval from both the department head and dean.</p>";  
-            //$("#dialog-box").html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>You have already added this section.</p>");
+            $('<div></div>')
+            .html("<p style='text-align: center;'><span style='float:left; margin:12px 12px 20px 0;'></span>To register for more than 18 credits, you need to get approval from both the department head and dean.</p>")
+            .dialog({
+                autoOpen: true,
+                resizable: false,
+                width: 400,
+                height: "auto",
+                modal: true,
+                title: 'Credit Limit Exceeded',
+                buttons: {
+                    "OK": function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    $(this).dialog('destroy').remove()
+                }
+            });
             break;
     }
-    $("#dialog-box").html(message);
-    $("#dialog-box").dialog("open");
 }
 
-// function updateColor(event, color) {
-//     //remove the events from the calendar
-//     //add event back to the calendar with the new color
-//     //update the color for the event in the first column of the table
-//     var table = document.getElementById("details");
-    
-//     calendar.getEventById(event.groupId).backgroundColor = color;
-//     calendar.render();
-// }
-
+/***************************************************************************************
+ * This function displays a popup window with the results of the registration.
+ * 
+ * The function creates a dialog box, using JQuery UI, and displays the results of the
+ * registration. Successful registrations are displayed with a green check mark and failed 
+ * registrations are displayed with a red x-mark and the reason for the failure. The dialog 
+ * box has one button, "OK". If the user clicks "OK", the dialog box is closed.
+ * 
+ * @param output An array containing the results of the registration.
+ * @return None
+ * 
+ ***************************************************************************************/
 function displayConfirmation(output) {
     var successful = output[0];
     var failed = output[1];
@@ -928,3 +1147,16 @@ function displayConfirmation(output) {
         }
     });
 }
+
+module.exports = {getDays, getTime, evalHexColor};
+
+
+// function updateColor(event, color) {
+//     //remove the events from the calendar
+//     //add event back to the calendar with the new color
+//     //update the color for the event in the first column of the table
+//     var table = document.getElementById("details");
+    
+//     calendar.getEventById(event.groupId).backgroundColor = color;
+//     calendar.render();
+// }

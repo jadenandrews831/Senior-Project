@@ -143,6 +143,7 @@ class Authenticate():
     #print(response.text)
     # FIXME: add logic here for successful and unsuccessful logins
     soup = bs(response.content, 'html.parser')
+    print(soup)
     url = soup.meta['content']          # url for second page after authentication FIXME: make this a regex
     #print(url)
     return (True, response.status_code) if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else (False, response.status_code)
@@ -234,7 +235,7 @@ class ScrAApe():
       response = self.post_request(uri, data, referrer)
     else:
       response = self.post_request(uri, data)
-    print(response.text)
+    print("Response:", response.text)
     self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
@@ -249,7 +250,7 @@ class ScrAApe():
       response = self.post_request(uri, data, referrer)
     else:
       response = self.post_request(uri, data)
-    #print(response.text)
+    print("Response:", response.text)
     self.auth.prev_site_ = uri
     content = response.text
     self.update_cookies(response)
@@ -324,6 +325,7 @@ class ScrAApe():
     lst = ['DUMMY']
     crns.extend(['']*(10-crns_len))
     lst.extend(crns)
+    print("Some Stuff", term, RSTS_IN, assoc_term_in, start_date_in, end_date_in, SUBJ)
     reg_data = {'term_in':term, 'RSTS_IN':RSTS_IN, 'assoc_term_in':assoc_term_in,
             'start_date_in':start_date_in, 'end_date_in':end_date_in, 'SUBJ':SUBJ, 'CRSE':CRSE, 
             'SEC':SEC, 'LEVL':LEVL, 'CRED':CRED, 'CRN_IN': lst, 
@@ -380,7 +382,6 @@ class ScrAApe():
     #print("RSTS_IN", RSTS_IN)
     return pkg
     
-
 
   # Finish-Me
   def get_profile(self):
@@ -774,8 +775,9 @@ if __name__ == "__main__":
       sid = d[0]
       pin = d[1]
       a = Authenticate(sid, pin)
-      #print(a)
-      pkg = (input('Term:'), input('Pin:'), ['40811', '40991', ])
+      print("Pin:", pin, sid)
+      print(a)
+      pkg = (input('Term:'), input('Pin:'), [ '40696', ])
       scrape = ScrAApe(a) # close the file
       reg = scrape.register(pkg)
 

@@ -1,4 +1,13 @@
-from .scrAApe import *
+import os
+import sys
+
+path = os.getcwd()
+parent = os.path.dirname(path)
+
+print(f'{parent}/AggieHub/pages/')
+sys.path.insert(0, f'{parent}/pages/')
+
+from scrAApe import *
 
 success = None
 

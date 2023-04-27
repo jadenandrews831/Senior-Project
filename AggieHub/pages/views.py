@@ -25,6 +25,7 @@ def login(request):
             if user is not None:
                 request.session['banner_id'] = form.cleaned_data['banner_id']
                 return redirect('home')
+            
     return render(request, 'login.html', {'form': loginForm})
     
 def get_subjects(request):

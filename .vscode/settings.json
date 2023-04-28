@@ -1,3 +1,6 @@
 {
-  "python.analysis.extraPaths": ["./AggieHub/pages"]
+  "python.analysis.extraPaths": [
+    "./AggieHub/pages",
+    "./AggieHub"
+  ]
 }

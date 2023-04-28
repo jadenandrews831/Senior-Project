@@ -1,5 +1,5 @@
-var calendar = null; /*!< the calendar object */
-var response = null; /*!< the registration response object */
+var calendar = null;
+var response = null;
 
 /****************************************************************************************
  * This event initializes the calendar and renders it to the page.
@@ -47,58 +47,44 @@ document.addEventListener('DOMContentLoaded', function() {
  * 
  ***************************************************************************************/
 function conflictTime(new_time, days) {
-    var table = document.getElementById("details"); /*!< the table containing the pre-selected classes */
-    var all_rows = table.rows.length; /*!< the number of rows in the table */
-    var section_time =  getTime(new_time); /*!< the start and end time of the selected section */
-    var start = section_time[0]; /*!< the start time of the selected section */
-    var end = section_time[1]; /*!< the end time of the selected section */
-    var clash = 0; /*!< the number of time conflicts */
+    var table = document.getElementById("details");
+    var all_rows = table.rows.length;
+    var section_time =  getTime(new_time);
+    var start = section_time[0];
+    var end = section_time[1];
+    var clash = 0;
 
-    var start_date = new Date("01/01/2021 " + start); /*!< the selected section's start time as a Date object */
-    var end_date = new Date("01/01/2021 " + end); /*!< the selected section's end time as a Date object  */
+    var start_date = new Date("01/01/2021 " + start);
+    var end_date = new Date("01/01/2021 " + end); 
     
     for (var i = 1; i < all_rows; i++) {
         if (table.rows[i].cells[8].innerHTML == "") { 
             return false;
         } else {
-            var row = table.rows[i]; /*!< the current row in the table */
-            var row_days = row.cells[3].innerText; /*!< the day(s) of the current row */
-            var row_time = row.cells[4].innerText; /*!< the time range of the current row */
+            var row = table.rows[i];
+            var row_days = row.cells[3].innerText;
+            var row_time = row.cells[4].innerText;
     
             if (row_time == "TBA") {
                 return false;
             }
     
-            var row_time_array = getTime(row_time); /*!< the start and end time of the current row */
-            var row_start = row_time_array[0]; /*!< the start time of the current row */
-            var row_end = row_time_array[1]; /*!< the end time of the current row */
+            var row_time_array = getTime(row_time); 
+            var row_start = row_time_array[0]; 
+            var row_end = row_time_array[1]; 
     
-            var row_start_date = new Date("01/01/2021 " + row_start); /*!< the start date of the current row as a Date object */
-            var row_end_date = new Date("01/01/2021 " + row_end); /*!< the end date of the current row as a Date object */
+            var row_start_date = new Date("01/01/2021 " + row_start);
+            var row_end_date = new Date("01/01/2021 " + row_end);
     
-            // if (start_date >= row_start_date && start_date < row_end_date && (row_days.includes(days) || days.includes(row_days))) {
-            //     clash++;
-            // } else if (end_date > row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
-            //     clash++;
-            // } else if (start_date <= row_start_date && end_date >= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
-            //     clash++;
-            // } else if (start_date >= row_start_date && end_date <= row_end_date && (row_days.includes(days) || days.includes(row_days))) {
-            //     clash++;
-            // } else if (start_date == row_start_date  && end_date == row_end_date && (row_days.includes(days) || days.includes(row_days))) {
-            //     clash++;
-            // } else {
-            //     continue;
-            // }
-
-            if ((((start_date <= row_start_date) && (start_date < row_end_date)) && ((end_date <= row_end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
+            if ((start_date >= row_start_date && start_date < row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
                 clash++;
-            } else if ((((row_start_date <= start_date) && (start_date < row_end_date)) && ((row_end_date <= end_date) && (end_date > row_start_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
+            } else if ((end_date > row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
                 clash++;
-            } else if ((((row_start_date <= start_date) && (start_date < row_end_date)) && ((end_date <= row_end_date) && (end_date > row_start_date)))  && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
+            } else if ((start_date <= row_start_date && end_date >= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
                 clash++;
-            } else if ((((start_date <= row_start_date) && (start_date < row_end_date)) && ((row_start_date < end_date) && (row_end_date <= end_date)))  && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
+            } else if ((start_date >= row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
                 clash++;
-            } else if ((((row_start_date == start_date) && (end_date == row_end_date))) && (row_days.includes(days) || days.includes(row_days) || row_days == days)) {
+            } else if ((start_date == row_start_date  && end_date == row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
                 clash++;
             } else {
                 continue;

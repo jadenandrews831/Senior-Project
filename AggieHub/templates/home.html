@@ -65,6 +65,9 @@
                     var answer = confirm("Changing the term will clear your current selections. Are you sure you want to change the term?");
                     if (answer == true) {
                         clearSchedule();
+                        $("#add").hide();
+                        $("#description").hide();
+                        $(".select_section").hide();
                         var all_sections = $("#available");
                         all_sections.empty();
                         var course_select = $("#select_course");

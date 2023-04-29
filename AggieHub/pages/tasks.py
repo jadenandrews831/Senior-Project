@@ -8,6 +8,7 @@ print(f'{parent}/AggieHub/pages/')
 sys.path.insert(0, f'{parent}/pages/')
 
 from scrAApe import *
+#from .scrAApe import *
 
 success = None
 
@@ -31,7 +32,7 @@ def task3(term):
     subjects = scrape.get_subject(term)
     return list(subjects.keys())
 
-#get courses - under construction
+#get courses
 def task4(subject):
     global success
     scrape = ScrAApe(success)

@@ -5,7 +5,6 @@ from .tasks import *
 #
 #  This backend is used to authenticate the student data.
 #  @param BaseBackend The base backend for the student data
-
 class StudentBackend(BaseBackend):
     def authenticate(username=None, password=None):
         try:

@@ -1,8 +1,30 @@
 #!/usr/bin/env python3
 
+'''@package scrAApe
+scrAApe is a tool that will fetch certain data from aggie access on your behalf.
+
+Usage
+  ______
+  scrAApe.py                                                                                          # authenticate a session manually, then serialize it for future use
+  scrAApe.py auth -d .shadow                                                                          # authenticate to Aggie Access with credentials from a protected file
+  scrAApe.py auth -u <username> -p <pin>                                                              # authenticate to Aggie Access with a given username and password
+  scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
+  scrAApe.py register -d .shadow                                                                      # registers the user for a given set of crns
 '''
-assoc_term_in=dummy&crn=dummy&start_date_in=dummy&end_date_in=dummy&rsts=dummy&subj=dummy&crse=dummy&sec=dummy&levl=dummy&gmod=dummy&cred=dummy&title=dummy&mesg=dummy&regs_row=0&wait_row=0&add_row=10&TERM_IN=202340&sel_crn=dummy&assoc_term_in=dummy&ADD_BTN=dummy&sel_crn=40811+202340&assoc_term_in=202340&ADD_BTN=Register
-'''
+
+##
+# @package argparse
+# @brief creates command line interface (CLI)
+# @package shelve 
+# @brief serializes session files for repeated use of the session
+# @package re
+# @brief module regular experssion
+# @package getpass.getpass
+# @brief securely and confidentially retrieves user password as input
+# @package requests.Session
+# @brief creates an http session with Aggie Access and is stored in the Authenticate Object
+# @package bs4.BeautifulSoup
+# @brief scrapes the data retrieved from the Session
 
 import argparse
 import shelve
@@ -12,8 +34,20 @@ from getpass import getpass
 from requests import Session
 from bs4 import BeautifulSoup as bs
 
+##
+# @var string NCAT_URI
+# @brief url to the Aggie Access login page
 NCAT_URI = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/twbkwbis.P_ValLogin'
+
+##
+# @var list rsrc_choices
+# @brief list of options available at the scrAApe CLI for retrieving different types of data
 rsrc_choices = ['term', 'subject', 'course', 'section', 'time', 'instructor', 'loc', 'crn', 'profile', 'session', 'register']
+
+##
+# @fn function debug_decorator(func)
+# @brief used to display debug content of a given function
+# @param func The function which will have debug info printed
 
 def debug_decorator(func):
   def inner(*args, **kwargs):
@@ -24,6 +58,12 @@ def debug_decorator(func):
 
   return inner
 
+##
+# @fn dict file_to_dict(filename)
+# @brief used to parse the .shadow file, which contains the user credentials for automatic sign in at the CLI
+# @param filename The name of the file to open, which will be parsed and returned as a dictionary of values
+# @file .shadow
+# @brief a file that stores the user credentials in the following form: key1:value1, key2:value2,... Only used for automatic sign in at the CLI
 @debug_decorator
 def file_to_dict(filename):
   """
@@ -39,10 +79,13 @@ def file_to_dict(filename):
     #print('d >>>',d)
     return d
   
-
+##
+# @struct User_Profile
+# @brief A class to store the user's profile information as detailed below
+#
 class User_Profile():
   """
-  
+  The constructor
   """
   def __init__(self):
     self.first = '*'
@@ -55,25 +98,51 @@ class User_Profile():
     self.college = '*'
     #print('New Profile Created')
 
+  '''add_headers: adds the property headers to the class
+  @param self The object pointer
+  @param headers The headers from the user request session
+  '''
   def add_headers(self, headers):
     self.headers_ = headers
 
+  '''set_name: sets the first and lasn name properties of the user
+  @param self The object pointer
+  @param first The user's first name
+  @param last The user's last name
+  '''
   def set_name(self, first, last):
     self.first = first
     self.last = last
 
+  '''set_class: sets the classification of the user
+  @param self The object pointer,
+  @param classification The user's classification
+  '''
   def set_class(self, classification):
     self.classification = classification
-
+  
+  '''set_dept: sets the department of the user
+  @param self The object pointer
+  @param dept The user's department
+  '''
   def set_dept(self, dept):
     self.dept = dept
 
+  '''set_banner: sets the banner id of the user
+  @param self The object pointer
+  @param banner The user's banner id
+  '''
   def set_banner(self, banner):
     self.banner = banner
 
+  '''set_major: sets the major id of the user
+  @param self The object pointer
+  @param major The user's major
+  '''
   def set_major(self, major):
     self.major = major
 
+  '''__str__: magic method for string form of the object'''
   def __str__(self):
     return f"""
 >>>User_Profile Object<<<
@@ -91,22 +160,23 @@ class User_Profile():
 
     """
   
-class Authenticate():
-  """
-  Authenticate: Creates a session with Aggie Access and logs in to the Main Menu.
 
-  Parameters
-  __________
-  usrnme: string - the SID passed to the server
-  psswd: string (int-like) - the PIN passed to the server
-  session: requests.Session - the current with Aggie Access
+"""
+  @struct Authenticate
+  @brief Creates a session with Aggie Access and logs in to the Main Menu.
 
   Attributes
   ____________
   # cookies_ : dictionary - stores the cookies for the current session
 
-  """
+  @param usrnme string - the SID passed to the server
+  @param psswd string (int-like) - the PIN passed to the server
+  @param session requests.Session - the current with Aggie Access
 
+  """
+class Authenticate():
+  
+  '''The constructor'''
   # @debug_decorator
   def __init__(self, usrnme, psswd):
     self.usrnme = usrnme
@@ -114,6 +184,10 @@ class Authenticate():
     self.session = Session()
     self.auth = self.login(NCAT_URI)       # is the session authenticatd
 
+  '''login: tries to log the user in to aggie access, then verifies is it was successful
+  @param self The object pointer
+  @param uri Aggie Access login page uri
+  '''
   # @debug_decorator
   def login(self, uri):
     self.profile_ = User_Profile()
@@ -128,11 +202,19 @@ class Authenticate():
 
     return url
 
+  '''format_cookies: takes cookies in the form of a dictionary and turns them into a string of `key=value` pairs for HTTP requests
+  @param self The object pointer
+  @param dic The dictionary to be formatted
+  '''
   # @debug_decorator
   def format_cookies(self, dic):
     s = ''.join([f'{key}={val};' for key, val in dic.items()])
     return s 
   
+  '''verifiy: checks a response for a successful login tag. Returns true if found, false otherwise
+  @param self The object pointer
+  @param response The requests.response obejct to be checked
+  '''
   # @debug_decorator
   def verify(self, response):
     '''
@@ -148,10 +230,15 @@ class Authenticate():
     #print(url)
     return (True, response.status_code) if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else (False, response.status_code)
 
+  '''print_headers: prints the headers of a given response
+  @param self The object pointer
+  @param response The requests.response object which contains the headers to be checked
+  '''
   def print_headers(self, response):
     for header, val in response.headers.items():
       print(f'{header}: {val}')
 
+  '''__str__: magic method for string form of the object'''
   def __str__(self):
     return f"""Authenticate Object:
   self.usrnme = {self.usrnme}
@@ -160,6 +247,10 @@ class Authenticate():
   self.__dict__ = {self.__dict__}
     """
 
+  '''save_data: serializes the Authenticate object as a shelf
+  @param self The object pointer
+  @param shelve_name string Name of the shelve object to be created
+  '''
   # pickle data for ScrAApe and database use
   @debug_decorator
   def save_data(self, shelve_name):
@@ -187,6 +278,10 @@ class Authenticate():
       
     return file
 
+  '''load_data: loads the data of a serialized Authenticate into an empty Authenticate object
+  @param self The object poniter
+  @param auth The deserialized authenticate shelve to load into the empty Authenticate object
+  '''
   def load_data(self, auth):
     #print("Loading Data: ")
     for key, val in auth.items():
@@ -195,29 +290,35 @@ class Authenticate():
 
     return self
   
-class ScrAApe():
-  """
-  ScrAApe: scrape data from aggie access with the authenticated session.
+  '''@struct ScrAApe
+  @brief scrape data from aggie access with the authenticated session.
 
   post request for 'SELECT A TERM'
   call_proc_in=bwskfcls.p_disp_dyn_ctlg&cat_term_in=202330
     - bwskfcls.p_disp_dyn_ctlg : the name of the resource retrieved at the 
-
-  Parameters
-  __________
-  auth: Authenticate - authenticated session with aggie access
-  scraped: list - scraped data from previous requests
 
   Attributes
   __________
   get_terms: dict - gets a list of school terms from aggie access
   get_subject:  dict - posts data from user, then gets the choices of subject
 
-  """
 
+  @param auth
+  @brief Authenticate - authenticated session with aggie access
+  @param
+  @brief scraped: list - scraped data from previous requests
+
+  '''
+class ScrAApe():
+  """
+  The constructor
+  """
   def __init__(self, auth):
     self.auth = auth
 
+  '''update_cookies: updates the cookies in the requests session
+  @param self The object pointer
+  @param response The response which containse the updated session cookies'''
   def update_cookies(self, response):
     #print("Response Headers: ", response.headers.items())
     try:
@@ -229,10 +330,18 @@ class ScrAApe():
       exit(0)
     #print('cookies >>> ',self.auth.cookies_)
 
+  '''get_data: posts a request then retrieves the first tag found in the response that meets the requirements set by the given input
+  @param self The object pointer
+  @param uri The uri to which the post request is made
+  @param data The data to be posted in the post request
+  @param sel The tag to select in the response body
+  @param attr The attribute of the tag selected
+  @param referer Defaults to None; The value of the referer header
+  '''
   # @debug_decorator
-  def get_data(self, uri, data, sel, attr, referrer=None):
-    if referrer:
-      response = self.post_request(uri, data, referrer)
+  def get_data(self, uri, data, sel, attr, referer=None):
+    if referer:
+      response = self.post_request(uri, data, referer)
     else:
       response = self.post_request(uri, data)
     print("Response:", response.text)
@@ -244,10 +353,18 @@ class ScrAApe():
 
     return select, soup
 
+  '''get_data: posts a request then retrieves a list of certain tags based on the given input
+  @param self The object pointer
+  @param uri The uri to which the post request is made
+  @param data The data to be posted in the post request
+  @param sel The tag to select in the response body
+  @param attr The attribute of the tag selected
+  @param referer Defaults to None; The value of the referer header
+  '''
   # @debug_decorator
-  def get_all_data(self, uri, data, sel, attr, referrer=None):
-    if referrer:
-      response = self.post_request(uri, data, referrer)
+  def get_all_data(self, uri, data, sel, attr, referer=None):
+    if referer:
+      response = self.post_request(uri, data, referer)
     else:
       response = self.post_request(uri, data)
     print("Response:", response.text)
@@ -258,10 +375,14 @@ class ScrAApe():
     select = soup.find_all(sel, attr)
 
     return select, soup
+  
   # Finish-Me
   def get_description(self):
     pass
-
+  '''register: registers the user for a set of classes
+  @param self The object pointer
+  @param pkg A list containing the term, pin, and crns of the user, which are used to register for the user's choices of section
+  '''
   def register(self, pkg):
 
 
@@ -338,7 +459,7 @@ class ScrAApe():
     for key, item in reg_data.items():
         print(key, '=', item, end=', ')
     [print()]
-    cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'summary': 'Current Schedule'}, referrer=chk_pin_uri)
+    cur_sch, soup = self.get_data(reg_page_uri, reg_data, 'table', {'summary': 'Current Schedule'}, referer=chk_pin_uri)
     print("cur_sch", cur_sch) 
     # AND GET: <input name="?" />, ?=CRN_IN,SUBJ,CRSE,SEC,LEVL,CRED,GMOD,TITLE
     soup_cp = soup
@@ -383,6 +504,9 @@ class ScrAApe():
     return pkg
     
 
+  '''get_progile: returns the user profile as a user profile object
+  @param self The object pointer
+  '''
   # Finish-Me
   def get_profile(self):
     uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
@@ -416,6 +540,10 @@ class ScrAApe():
     
     return self.auth.profile_
 
+  '''get_terms: returns a dictionary of terms:term_codes key value pairs
+  @param self The object pointer
+  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a term
+  '''
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
     #print("uri", uri)
     self.auth.prev_site_ = uri
@@ -447,16 +575,14 @@ class ScrAApe():
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
   
+  '''get_subject: returns a dictionary of Subject:SUBJ_IN key value pairs
+  @param self The object pointer
+  @param data The term that was previously selected
+  @param uri The uri for the Aggie Access page which allows users to search for a course by selecting a subject
+  '''
   # data should be selected term from get_terms()
   # @debug_decorator
   def get_subject(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckgens.p_proc_term_date'):
-    """
-    get_subject: 
-
-    Parameters
-    __________
-    data: dict - data to be posted
-    """
     if not data:
       data = input("Data: ")
     if self.auth.terms_w_codes_:
@@ -477,14 +603,13 @@ class ScrAApe():
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
 
+  '''get_course: returns a dictionary of CRS_IN:Course key value pairs
+  @param self The object pointer
+  @param data The subject that was previously selected
+  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a course
+  '''
   # @debug_decorator
   def get_course(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
-    """
-    get_course:
-
-    Parameters
-    __________
-    """
     if not data:
       data = input("Data: ")
     if self.auth.subjs_w_codes:
@@ -519,6 +644,10 @@ class ScrAApe():
 
     return self.auth.crss_
   
+  '''get_inputs: gets the form tags with a certain action attribute in order to pupulate the 'keys' in the 'key=value' pairs that make up the data in a POST request
+  @param self The object pointer
+  @param soup The bs4 object that is used to parse the data
+  '''
   def get_inputs(self, soup):
     heads = {}
     for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
@@ -538,14 +667,13 @@ class ScrAApe():
     print("Saved Heads")
     return heads
 
+  '''get_section: returns a dictionary of SCTS:Section key value pairs
+  @param self The object pointer
+  @param data The course that was previously selected
+  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a section
+  '''
   # @debug_decorator
   def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
-    """
-    get_section:
-
-    Parameters
-    __________
-    """
     if not data:
       data = input("Course: ")
     if self.auth.crss_:
@@ -614,10 +742,13 @@ class ScrAApe():
     #print(self.auth.profile_.scts_[0]['description'])
     return self.auth.profile_.scts_
 
+  '''post_request: automates the process to make a POST request 
+  @param self The object pointer
+  @param data The data to be posted
+  @param uri The uri for the Aggie Access page which will be posted to
+  @param referer The referer value in the request headers
+  '''
   def post_request(self, uri, data, referer=None):
-    """
-    post_request: takes an authenticated session, and posts data to the given uri
-    """
     if not referer: referer = self.auth.prev_site_
     #print('>'*8+'post_request() DEBUG STARTS'+'<'*8)
     #print('Cookies:', self.auth.cookies_)
@@ -652,21 +783,23 @@ class ScrAApe():
   
   def __str__(self):
     return f"""ScrAApe Object:
-  prev_site = {self.auth.prev_site}
-  cookies = {self.auth.cookies_}
-  self.__dict__{self.__dict__}
+    prev_site = {self.auth.prev_site}
+    cookies = {self.auth.cookies_}
+    self.__dict__{self.__dict__}
     """
   
+
+'''CLI: Command Line Interface'''
 if __name__ == "__main__":
   """
   Usage
   ______
-    scrAApe.py                                                                                          # authenticate a session manually, then serialize it for future use
-    scrAApe.py auth -d .shadow                                                                          # authenticate to Aggie Access with credentials from a protected file
-    scrAApe.py auth -u <username> -p <pin>                                                              # authenticate to Aggie Access with a given username and password
-    scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
-    scrAApe.py post {term, subject} <datafile> .<username>-sess.pickle                                   # post data to the given uri from a pickled session
-  """  
+  scrAApe.py                                                                                          # authenticate a session manually, then serialize it for future use
+  scrAApe.py auth -d .shadow                                                                          # authenticate to Aggie Access with credentials from a protected file
+  scrAApe.py auth -u <username> -p <pin>                                                              # authenticate to Aggie Access with a given username and password
+  scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
+  scrAApe.py register -d .shadow                                                                      # registers the user for a given set of crns
+  """
 
   parser = argparse.ArgumentParser(prog="scrAApe", description='The Aggie Access Authenticator and Web Scraper')
 

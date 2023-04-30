@@ -76,15 +76,15 @@ function conflictTime(new_time, days) {
             var row_start_date = new Date("01/01/2021 " + row_start);
             var row_end_date = new Date("01/01/2021 " + row_end);
     
-            if ((start_date >= row_start_date && start_date < row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
+            if ((start_date >= row_start_date && start_date < row_end_date) && (row_days.includes(days) || days.includes(row_days))) {
                 clash++;
-            } else if ((end_date > row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
+            } else if ((end_date > row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days))) {
                 clash++;
-            } else if ((start_date <= row_start_date && end_date >= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
+            } else if ((start_date <= row_start_date && end_date >= row_end_date) && (row_days.includes(days) || days.includes(row_days))) {
                 clash++;
-            } else if ((start_date >= row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
+            } else if ((start_date >= row_start_date && end_date <= row_end_date) && (row_days.includes(days) || days.includes(row_days))) {
                 clash++;
-            } else if ((start_date == row_start_date  && end_date == row_end_date) && (row_days.includes(days) || days.includes(row_days) || row_days.equals(days))) {
+            } else if ((start_date == row_start_date  && end_date == row_end_date) && (row_days.includes(days) || days.includes(row_days))) {
                 clash++;
             } else {
                 continue;
@@ -590,7 +590,8 @@ function addEvent(crn) {
     const textColor = evalHexColor(randomColor) ? 'black' : 'white';
 
     if (data == "virtual") {
-        document.getElementById(crn).cells[0].style.backgroundColor = "white";
+        document.getElementById(crn).cells[0].style.backgroundColor = "white"; 
+        document.getElementById(crn).cells[0].style.color = "black";
         return;
     }
 
@@ -705,7 +706,6 @@ function update() {
             showDialog(6);
             document.getElementById("register").style.backgroundColor = "#EACEC7";
             document.getElementById("register").style.cursor = "not-allowed";
-            document.getElementById("register").disabled = true;
             removeClass(table.rows[total_rows - 1].id);
         }
     }
@@ -1041,7 +1041,7 @@ function showDialog(options)
                 width: 400,
                 height: "auto",
                 modal: true,
-                title: 'Credit Limit Exceeded',
+                title: 'Credit Limit Reached',
                 buttons: {
                     "OK": function () {
                         $(this).dialog("close");

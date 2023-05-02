@@ -34,10 +34,10 @@
                     var p_term = response.p_term;
                     html = '';
                     $.each(terms, function(index, value) {
-                        if (!(value.includes("(View only)"))) {
+                        //if (!(value.includes("(View only)"))) {
                         html = '<option value="' + p_term[index] + '">' + value + '</option>';
                         new_terms.append(html);
-                        }
+                        //}
                     });
                 }
             });

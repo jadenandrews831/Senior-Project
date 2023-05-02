@@ -1,14 +1,14 @@
-import os
-import sys
+# import os
+# import sys
 
-path = os.getcwd()
-parent = os.path.dirname(path)
+# path = os.getcwd()
+# parent = os.path.dirname(path)
 
-print(f'{parent}/AggieHub/pages/')
-sys.path.insert(0, f'{parent}/pages/')
+# print(f'{parent}/AggieHub/pages/')
+# sys.path.insert(0, f'{parent}/pages/')
 
-from scrAApe import *
-#from .scrAApe import *
+# from scrAApe import *
+from .scrAApe import *
 
 success = None
 

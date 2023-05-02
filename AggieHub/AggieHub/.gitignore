@@ -1,0 +1,10 @@
+# ignore .shadow file
+.shadow
+
+# ignore any session files
+.*-sess.db
+.*-sess.pickle
+
+*950388894*
+
+*.pyc

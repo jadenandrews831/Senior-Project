@@ -141,8 +141,8 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # EMAIL CONFIGURATION (for contact form)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'be3115a3a83507'
-EMAIL_HOST_PASSWORD = '20fb9e0aede7ba'
-EMAIL_PORT = 2525
+EMAIL_HOST_USER = 'a0a3cc7065e403'
+EMAIL_HOST_PASSWORD = '95d63e5e4eaba6'
+EMAIL_PORT = '2525'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

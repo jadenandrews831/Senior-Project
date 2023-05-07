@@ -7,43 +7,56 @@
 # print(f'{parent}/AggieHub/pages/')
 # sys.path.insert(0, f'{parent}/pages/')
 
-<<<<<<< HEAD
-#from scrAApe import *
-=======
 # from scrAApe import *
->>>>>>> e1e26fa04e2c449b96c4bce0ba06e4d53ac9bbb1
 from .scrAApe import *
 
 success = None
 
-#verify user credentials
+
+##
+#task1 function
+#
+#Takes in banner ID and pin from login form and verifies user credentials.
 def task1(banner, pin):
     global success
     success = Authenticate(banner, pin)
     return success.auth
 
-#get terms
+
+##
+#task2 function
+#
+#Gets the desired term by pulling it off of Aggie Access.
 def task2():
     global success
     scrape = ScrAApe(success)
     terms = scrape.get_terms()
     return terms
 
-#get subjects
+##
+#task3 function
+#
+#Gets the subjects off of Aggie Access with the term that was selected prior.
 def task3(term):
     global success
     scrape = ScrAApe(success)
     subjects = scrape.get_subject(term)
     return list(subjects.keys())
 
-#get courses
+##
+#task4 function
+#
+#Gets the courses off of Aggie Access with the subject that was selected prior.
 def task4(subject):
     global success
     scrape = ScrAApe(success)
     courses = scrape.get_course(subject)
     return courses
 
-#pulls all sections for selected course
+##
+#task5 function
+#
+#Gets all the sections for the selected course from Aggie Access.
 def task5(course):
     global success
     scrape = ScrAApe(success)
@@ -51,7 +64,10 @@ def task5(course):
     print(sections)
     return sections
 
-#pulls student information
+##
+#task6 function
+#
+#Gets the student information off of Aggie Access.
 def task6():
     global success
     scrape = ScrAApe(success)
@@ -59,6 +75,10 @@ def task6():
     #print(profile)
     return profile
 
+##
+#task7 function
+#
+#Register's the student in Aggie Access.
 def task7(schedule):
     global success
     scrape = ScrAApe(success)

@@ -788,18 +788,7 @@ class ScrAApe():
     self.__dict__{self.__dict__}
     """
   
-
-'''CLI: Command Line Interface'''
 if __name__ == "__main__":
-  """
-  Usage
-  ______
-  scrAApe.py                                                                                          # authenticate a session manually, then serialize it for future use
-  scrAApe.py auth -d .shadow                                                                          # authenticate to Aggie Access with credentials from a protected file
-  scrAApe.py auth -u <username> -p <pin>                                                              # authenticate to Aggie Access with a given username and password
-  scrAApe.py get {term, subject} .<username>-sess.pickle                                              # get data from a given uri in a pickled session
-  scrAApe.py register -d .shadow                                                                      # registers the user for a given set of crns
-  """
 
   parser = argparse.ArgumentParser(prog="scrAApe", description='The Aggie Access Authenticator and Web Scraper')
 

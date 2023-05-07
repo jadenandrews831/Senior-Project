@@ -1,7 +1,9 @@
 import json
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.contrib.auth.signals import user_login_failed
 from django.conf import settings
 from .models import *
 from .forms import *
@@ -22,6 +24,9 @@ def login(request):
             if user is not None:
                 request.session['banner_id'] = form.cleaned_data['banner_id']
                 return redirect('home')
+            else:
+                messages.error(request,'Banner ID or PIN is invalid. Please try again.')
+                return redirect('login')
             
     return render(request, 'login.html', {'form': loginForm})
     
@@ -92,6 +97,7 @@ def contact(request):
             send_mail(topic, message, email, 
                     [settings.EMAIL_HOST_USER], 
                     fail_silently=False)
+            messages.success(request, 'Form submission successful')
         return render(request, 'contact.html')
     else:
         return redirect('login')

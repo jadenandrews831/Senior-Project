@@ -1,14 +1,24 @@
 {% load static %}
 
-
 <html>
     <head>
         <meta charset="UTF-8">
         <title>Log In</title>
         <link rel="stylesheet" href={% static 'css/loginpage.css' %}>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     </head>
 
     <body>
+        {% for message in messages %}
+        <div class="alert">
+            <div id="message">
+            {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+
         <form method="POST" action={%url 'login'%} enctype="multipart/form-data">
             <div class="login">
                 <h1>Log In</h1>

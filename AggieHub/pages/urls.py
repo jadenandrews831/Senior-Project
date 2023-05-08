@@ -3,6 +3,7 @@ from . import views
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
+## The URL patterns for the pages app
 urlpatterns = [
     path('', views.login, name='home'),
     path('login/', views.login, name='login'), 

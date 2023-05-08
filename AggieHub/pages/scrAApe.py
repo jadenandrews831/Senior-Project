@@ -98,47 +98,47 @@ class User_Profile():
     self.college = '*'
     #print('New Profile Created')
 
-  '''add_headers: adds the property headers to the class
-  @param self The object pointer
-  @param headers The headers from the user request session
-  '''
+  ##adds the property headers to the class
+  #@param self The object pointer
+  #@param headers The headers from the user request session
+  
   def add_headers(self, headers):
     self.headers_ = headers
 
-  '''set_name: sets the first and lasn name properties of the user
-  @param self The object pointer
-  @param first The user's first name
-  @param last The user's last name
-  '''
+  ##sets the first and lasn name properties of the user
+  #@param self The object pointer
+  #@param first The user's first name
+  #@param last The user's last name
+  
   def set_name(self, first, last):
     self.first = first
     self.last = last
 
-  '''set_class: sets the classification of the user
-  @param self The object pointer,
-  @param classification The user's classification
-  '''
+  ##sets the classification of the user
+  #@param self The object pointer,
+  #@param classification The user's classification
+  
   def set_class(self, classification):
     self.classification = classification
   
-  '''set_dept: sets the department of the user
-  @param self The object pointer
-  @param dept The user's department
-  '''
+  ##sets the department of the user
+  #@param self The object pointer
+  #@param dept The user's department
+  
   def set_dept(self, dept):
     self.dept = dept
 
-  '''set_banner: sets the banner id of the user
-  @param self The object pointer
-  @param banner The user's banner id
-  '''
+  ##sets the banner id of the user
+  #@param self The object pointer
+  #@param banner The user's banner id
+  
   def set_banner(self, banner):
     self.banner = banner
 
-  '''set_major: sets the major id of the user
-  @param self The object pointer
-  @param major The user's major
-  '''
+  ##sets the major id of the user
+  #@param self The object pointer
+  #@param major The user's major
+  
   def set_major(self, major):
     self.major = major
 
@@ -161,19 +161,18 @@ class User_Profile():
     """
   
 
-"""
-  @struct Authenticate
-  @brief Creates a session with Aggie Access and logs in to the Main Menu.
-
-  Attributes
-  ____________
-  # cookies_ : dictionary - stores the cookies for the current session
-
-  @param usrnme string - the SID passed to the server
-  @param psswd string (int-like) - the PIN passed to the server
-  @param session requests.Session - the current with Aggie Access
-
-  """
+##
+#  @struct Authenticate
+#  @brief Creates a session with Aggie Access and logs in to the Main Menu.
+#
+#  Attributes
+#  ____________
+#  # cookies_ : dictionary - stores the cookies for the current session
+#
+#  @param usrnme string - the SID passed to the server
+#  @param psswd string (int-like) - the PIN passed to the server
+#  @param session requests.Session - the current with Aggie Access
+#
 class Authenticate():
   
   '''The constructor'''
@@ -184,10 +183,10 @@ class Authenticate():
     self.session = Session()
     self.auth = self.login(NCAT_URI)       # is the session authenticatd
 
-  '''login: tries to log the user in to aggie access, then verifies is it was successful
-  @param self The object pointer
-  @param uri Aggie Access login page uri
-  '''
+  ##tries to log the user in to aggie access, then verifies is it was successful
+  #@param self The object pointer
+  #@param uri Aggie Access login page uri
+  
   # @debug_decorator
   def login(self, uri):
     self.profile_ = User_Profile()
@@ -202,19 +201,19 @@ class Authenticate():
 
     return url
 
-  '''format_cookies: takes cookies in the form of a dictionary and turns them into a string of `key=value` pairs for HTTP requests
-  @param self The object pointer
-  @param dic The dictionary to be formatted
-  '''
+  ##takes cookies in the form of a dictionary and turns them into a string of `key=value` pairs for HTTP requests
+  #@param self The object pointer
+  #@param dic The dictionary to be formatted
+
   # @debug_decorator
   def format_cookies(self, dic):
     s = ''.join([f'{key}={val};' for key, val in dic.items()])
     return s 
   
-  '''verifiy: checks a response for a successful login tag. Returns true if found, false otherwise
-  @param self The object pointer
-  @param response The requests.response obejct to be checked
-  '''
+  ##checks a response for a successful login tag. Returns true if found, false otherwise
+  #@param self The object pointer
+  #@param response The requests.response obejct to be checked
+  
   # @debug_decorator
   def verify(self, response):
     '''
@@ -230,10 +229,10 @@ class Authenticate():
     #print(url)
     return (True, response.status_code) if url == "0;url=/pls/NCATPROD/bzwkrvtrns.p_display_revtrans_from_login" else (False, response.status_code)
 
-  '''print_headers: prints the headers of a given response
-  @param self The object pointer
-  @param response The requests.response object which contains the headers to be checked
-  '''
+  ##prints the headers of a given response
+  #@param self The object pointer
+  #@param response The requests.response object which contains the headers to be checked
+  
   def print_headers(self, response):
     for header, val in response.headers.items():
       print(f'{header}: {val}')
@@ -247,10 +246,10 @@ class Authenticate():
   self.__dict__ = {self.__dict__}
     """
 
-  '''save_data: serializes the Authenticate object as a shelf
-  @param self The object pointer
-  @param shelve_name string Name of the shelve object to be created
-  '''
+  ##serializes the Authenticate object as a shelf
+  #@param self The object pointer
+  #@param shelve_name string Name of the shelve object to be created
+  
   # pickle data for ScrAApe and database use
   @debug_decorator
   def save_data(self, shelve_name):
@@ -278,10 +277,10 @@ class Authenticate():
       
     return file
 
-  '''load_data: loads the data of a serialized Authenticate into an empty Authenticate object
-  @param self The object poniter
-  @param auth The deserialized authenticate shelve to load into the empty Authenticate object
-  '''
+  ##loads the data of a serialized Authenticate into an empty Authenticate object
+  #@param self The object poniter
+  #@param auth The deserialized authenticate shelve to load into the empty Authenticate object
+  
   def load_data(self, auth):
     #print("Loading Data: ")
     for key, val in auth.items():
@@ -290,25 +289,24 @@ class Authenticate():
 
     return self
   
-  '''@struct ScrAApe
-  @brief scrape data from aggie access with the authenticated session.
+  ##@struct ScrAApe
+  #@brief scrape data from aggie access with the authenticated session.
+  #
+  #post request for 'SELECT A TERM'
+  #call_proc_in=bwskfcls.p_disp_dyn_ctlg&cat_term_in=202330
+  #  - bwskfcls.p_disp_dyn_ctlg : the name of the resource retrieved at the 
+  #
+  #Attributes
+  #__________
+  #get_terms: dict - gets a list of school terms from aggie access
+  #get_subject:  dict - posts data from user, then gets the choices of subject
+  #
+  #
+  #@param auth
+  #@brief Authenticate - authenticated session with aggie access
+  #@param
+  #@brief scraped: list - scraped data from previous requests
 
-  post request for 'SELECT A TERM'
-  call_proc_in=bwskfcls.p_disp_dyn_ctlg&cat_term_in=202330
-    - bwskfcls.p_disp_dyn_ctlg : the name of the resource retrieved at the 
-
-  Attributes
-  __________
-  get_terms: dict - gets a list of school terms from aggie access
-  get_subject:  dict - posts data from user, then gets the choices of subject
-
-
-  @param auth
-  @brief Authenticate - authenticated session with aggie access
-  @param
-  @brief scraped: list - scraped data from previous requests
-
-  '''
 class ScrAApe():
   """
   The constructor
@@ -316,9 +314,9 @@ class ScrAApe():
   def __init__(self, auth):
     self.auth = auth
 
-  '''update_cookies: updates the cookies in the requests session
-  @param self The object pointer
-  @param response The response which containse the updated session cookies'''
+  ##updates the cookies in the requests session
+  #@param self The object pointer
+  #@param response The response which containse the updated session cookies'''
   def update_cookies(self, response):
     #print("Response Headers: ", response.headers.items())
     try:
@@ -330,14 +328,14 @@ class ScrAApe():
       exit(0)
     #print('cookies >>> ',self.auth.cookies_)
 
-  '''get_data: posts a request then retrieves the first tag found in the response that meets the requirements set by the given input
-  @param self The object pointer
-  @param uri The uri to which the post request is made
-  @param data The data to be posted in the post request
-  @param sel The tag to select in the response body
-  @param attr The attribute of the tag selected
-  @param referer Defaults to None; The value of the referer header
-  '''
+  ##posts a request then retrieves the first tag found in the response that meets the requirements set by the given input
+  #@param self The object pointer
+  #@param uri The uri to which the post request is made
+  #@param data The data to be posted in the post request
+  #@param sel The tag to select in the response body
+  #@param attr The attribute of the tag selected
+  #@param referer Defaults to None; The value of the referer header
+  
   # @debug_decorator
   def get_data(self, uri, data, sel, attr, referer=None):
     if referer:
@@ -353,14 +351,14 @@ class ScrAApe():
 
     return select, soup
 
-  '''get_data: posts a request then retrieves a list of certain tags based on the given input
-  @param self The object pointer
-  @param uri The uri to which the post request is made
-  @param data The data to be posted in the post request
-  @param sel The tag to select in the response body
-  @param attr The attribute of the tag selected
-  @param referer Defaults to None; The value of the referer header
-  '''
+  ##posts a request then retrieves a list of certain tags based on the given input
+  #@param self The object pointer
+  #@param uri The uri to which the post request is made
+  #@param data The data to be posted in the post request
+  #@param sel The tag to select in the response body
+  #@param attr The attribute of the tag selected
+  #@param referer Defaults to None; The value of the referer header
+  
   # @debug_decorator
   def get_all_data(self, uri, data, sel, attr, referer=None):
     if referer:
@@ -379,10 +377,10 @@ class ScrAApe():
   # Finish-Me
   def get_description(self):
     pass
-  '''register: registers the user for a set of classes
-  @param self The object pointer
-  @param pkg A list containing the term, pin, and crns of the user, which are used to register for the user's choices of section
-  '''
+  ##registers the user for a set of classes
+  #@param self The object pointer
+  #@param pkg A list containing the term, pin, and crns of the user, which are used to register for the user's choices of section
+  
   def register(self, pkg):
 
 
@@ -504,9 +502,9 @@ class ScrAApe():
     return pkg
     
 
-  '''get_progile: returns the user profile as a user profile object
-  @param self The object pointer
-  '''
+  ##returns the user profile as a user profile object
+  #@param self The object pointer
+  
   # Finish-Me
   def get_profile(self):
     uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskgstu.P_StuInfo'
@@ -540,10 +538,10 @@ class ScrAApe():
     
     return self.auth.profile_
 
-  '''get_terms: returns a dictionary of terms:term_codes key value pairs
-  @param self The object pointer
-  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a term
-  '''
+  ##returns a dictionary of terms:term_codes key value pairs
+  #@param self The object pointer
+  #@param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a term
+  
   def get_terms(self, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.p_sel_crse_search'):
     #print("uri", uri)
     self.auth.prev_site_ = uri
@@ -575,11 +573,11 @@ class ScrAApe():
     self.auth.terms_w_codes_ = terms_w_codes
     return terms_w_codes
   
-  '''get_subject: returns a dictionary of Subject:SUBJ_IN key value pairs
-  @param self The object pointer
-  @param data The term that was previously selected
-  @param uri The uri for the Aggie Access page which allows users to search for a course by selecting a subject
-  '''
+  ##returns a dictionary of Subject:SUBJ_IN key value pairs
+  #@param self The object pointer
+  #@param data The term that was previously selected
+  #@param uri The uri for the Aggie Access page which allows users to search for a course by selecting a subject
+  
   # data should be selected term from get_terms()
   # @debug_decorator
   def get_subject(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwckgens.p_proc_term_date'):
@@ -603,11 +601,11 @@ class ScrAApe():
     self.auth.subjs_w_codes = subjs_w_codes
     return subjs_w_codes
 
-  '''get_course: returns a dictionary of CRS_IN:Course key value pairs
-  @param self The object pointer
-  @param data The subject that was previously selected
-  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a course
-  '''
+  ##returns a dictionary of CRS_IN:Course key value pairs
+  #@param self The object pointer
+  #@param data The subject that was previously selected
+  #@param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a course
+  
   # @debug_decorator
   def get_course(self, data=None, uri = 'https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     if not data:
@@ -644,10 +642,10 @@ class ScrAApe():
 
     return self.auth.crss_
   
-  '''get_inputs: gets the form tags with a certain action attribute in order to pupulate the 'keys' in the 'key=value' pairs that make up the data in a POST request
-  @param self The object pointer
-  @param soup The bs4 object that is used to parse the data
-  '''
+  ##gets the form tags with a certain action attribute in order to pupulate the 'keys' in the 'key=value' pairs that make up the data in a POST request
+  #@param self The object pointer
+  #@param soup The bs4 object that is used to parse the data
+  
   def get_inputs(self, soup):
     heads = {}
     for head in soup.find_all('form', {'action': '/pls/NCATPROD/bwskfcls.P_GetCrse'}):
@@ -667,11 +665,11 @@ class ScrAApe():
     print("Saved Heads")
     return heads
 
-  '''get_section: returns a dictionary of SCTS:Section key value pairs
-  @param self The object pointer
-  @param data The course that was previously selected
-  @param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a section
-  '''
+  ##returns a dictionary of SCTS:Section key value pairs
+  #@param self The object pointer
+  #@param data The course that was previously selected
+  #@param uri The uri for the Aggie Access page which allows users to search for a course by first selecting a section
+  
   # @debug_decorator
   def get_section(self, data=None, uri='https://ssbprod-ncat.uncecs.edu/pls/NCATPROD/bwskfcls.P_GetCrse'):
     if not data:
@@ -742,12 +740,12 @@ class ScrAApe():
     #print(self.auth.profile_.scts_[0]['description'])
     return self.auth.profile_.scts_
 
-  '''post_request: automates the process to make a POST request 
-  @param self The object pointer
-  @param data The data to be posted
-  @param uri The uri for the Aggie Access page which will be posted to
-  @param referer The referer value in the request headers
-  '''
+  ##automates the process to make a POST request 
+  #@param self The object pointer
+  #@param data The data to be posted
+  #@param uri The uri for the Aggie Access page which will be posted to
+  #@param referer The referer value in the request headers
+  
   def post_request(self, uri, data, referer=None):
     if not referer: referer = self.auth.prev_site_
     #print('>'*8+'post_request() DEBUG STARTS'+'<'*8)

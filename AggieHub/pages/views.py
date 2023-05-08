@@ -10,22 +10,19 @@ from .forms import *
 from .tasks import *
 from .authentication import StudentBackend
 
-##
-#home function 
-#
-#Checks to make sure that the request has the correct banner id in order to allow access to the home page.
+## render the home page
+# @param request The HTTP request
+# @return The rendered home page if the student is logged in, otherwise the login page
 def home(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'home.html')
     else:
         return redirect('login')
 
-##
-#login function
-#
-#Takes in the form input of the student's banner ID and their pin and authenticates it with Aggie Access.
-#Should both inputs be valid, then it will take them to the home function. If input isnt valid, it will post a messege
-#to user that "Banner ID or PIN is invalid. Please try again.".
+## authenticate the student and render the login page
+# if the student's credentials are invalid, an error message is displayed
+# @param request The HTTP request
+# @return The rendered login page if the student is not logged in, otherwise the home page
 def login(request):
     if (request.method == 'POST'): 
         form = loginForm(request.POST)
@@ -40,10 +37,9 @@ def login(request):
             
     return render(request, 'login.html', {'form': loginForm})
 
-##
-#get_subjects function
-#
-#Checks if the term has been posted, then lists out the subjects for that term.
+## load subjects based on the selected term
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of subjects
 def get_subjects(request):
     if (request.method == 'POST'):
         term = request.POST['term']
@@ -52,10 +48,9 @@ def get_subjects(request):
         }
     return JsonResponse(response)
 
-##
-#get_courses function
-#
-#Checks if the subject has been posted, then lists out the courses for the selected subject.
+## load courses based on the selected subject
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of lists of course ids and course names
 def get_courses(request):
     if (request.method == 'POST'):
         subject = request.POST['subject']
@@ -66,10 +61,9 @@ def get_courses(request):
         }
     return JsonResponse(response)
 
-##
-#get_sections function
-#
-#Checks if the course has been posted, then lists out the sections for that course.
+## load sections based on the selected course
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of section data
 def get_sections(request):
     if (request.method == 'POST'):
         course = request.POST['course']
@@ -78,18 +72,16 @@ def get_sections(request):
         }
     return JsonResponse(response)
 
-##
-#get_profile function
-#
-#Outputs the profile data of the student.
+## load student profile data
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of profile data
 def get_profile(request):
     if (request.method == 'POST'):
         return JsonResponse(task6().__dict__)
 
-##
-#get_terms function
-#
-#Lists out the available terms to be selected by the student.
+## load available terms for the student
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of lists of terms and their respective term codes
 def get_terms(request):
     if (request.method == 'POST'):
         terms = task2()
@@ -99,42 +91,36 @@ def get_terms(request):
         }
         return JsonResponse(response)
 
-##
-#register_student function
-#
-#Takes the created schedule made by the student and submits the CRN to Aggie Access to register student.
+## register the student for the selected sections
+# @param request The HTTP request
+# @return A JSON response containing a dictionary of the results of the registration
 def register_student(request):
     if (request.method == 'POST'):
         schedule = request.POST['schedule']
         response = task7((json.loads(schedule)['pkg']))
         return JsonResponse(response)
 
-##
-#override
-#
-#Checks to make sure that the request has the correct banner id in order to allow access to the override page.
+## render the override page
+# @param request The HTTP request
+# @return The rendered override page if the student is logged in, otherwise the login page
 def override(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'override.html')
     else:
         return redirect('login')
 
-##
-#override
-#
-#Checks to make sure that the request has the correct banner id in order to allow access to the guides page.
+## render the curriculum guides page
+# @param request The HTTP request
+# @return The rendered curriculum guides page if the student is logged in, otherwise the login page
 def guides(request):
     if(request.session.has_key('banner_id')):
         return render(request, 'guides.html')
     else:
         return redirect('login')
 
-##
-#override
-#
-#Checks to make sure that the request has the correct banner id in order to allow access to the contact page.
-#This function also controls the IT helpdesk form submission should the student need to reach out for IT support for the website.
-#It takes in the fields: email, topic, and message. After being submitted, it posts a message to the student "Form submission successful".
+## render the contact page and send an email if the form is submitted
+# @param request The HTTP request
+# @return The rendered contact page if the student is logged in, otherwise the login page
 def contact(request):
     if(request.session.has_key('banner_id')):
         if (request.method == 'POST'):
@@ -145,15 +131,13 @@ def contact(request):
             send_mail(topic, message, email, 
                     [settings.EMAIL_HOST_USER], 
                     fail_silently=False)
-            messages.success(request, 'Form submission successful')
         return render(request, 'contact.html')
     else:
         return redirect('login')
 
-##
-#logout function
-#
-#Logs out the student from the authenticated session and takes them back to the login page.
+## delete the student's session and redirect to the login page
+# @param request The HTTP request
+# @return The rendered login page
 def logout(request):
     del request.session['banner_id']
     return redirect('login')

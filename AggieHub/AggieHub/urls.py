@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 
+## The URL patterns for the AggieHub project
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),

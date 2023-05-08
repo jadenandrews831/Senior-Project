@@ -13,72 +13,62 @@ from .scrAApe import *
 success = None
 
 
-##
-#task1 function
-#
-#Takes in banner ID and pin from login form and verifies user credentials.
+## uses the ScrAApe function to authenticate the user with the given banner and pin
+#@param banner The student's banner ID
+#@param pin The student's PIN
+#@return True if the student was successfully authenticated, False otherwise
 def task1(banner, pin):
     global success
     success = Authenticate(banner, pin)
     return success.auth
 
 
-##
-#task2 function
-#
-#Gets the desired term by pulling it off of Aggie Access.
+## uses the authenticated session and the ScrAApe function to get the terms from Aggie Access
+#@return A dictionary of term code: term name key value pairs
 def task2():
     global success
     scrape = ScrAApe(success)
     terms = scrape.get_terms()
     return terms
 
-##
-#task3 function
-#
-#Gets the subjects off of Aggie Access with the term that was selected prior.
+## uses the authenticated session and the ScrAApe function to get the subjects from Aggie Access based on the term selected by the user
+#@param term The term code selected by the user
+#@return A list of subjects for the given term
 def task3(term):
     global success
     scrape = ScrAApe(success)
     subjects = scrape.get_subject(term)
     return list(subjects.keys())
 
-##
-#task4 function
-#
-#Gets the courses off of Aggie Access with the subject that was selected prior.
+## uses the authenticated session and the ScrAApe function to get the courses from Aggie Access based on the subject selected by the user
+#@param subject The subject selected by the user
+#@return A dictionary of course id: course name key value pairs
 def task4(subject):
     global success
     scrape = ScrAApe(success)
     courses = scrape.get_course(subject)
     return courses
 
-##
-#task5 function
-#
-#Gets all the sections for the selected course from Aggie Access.
+## uses the authenticated session and the ScrAApe function to get the sections from Aggie Access based on the course selected by the user
+# @param course The course selected by the user
+# @return A dictionary containing all available section(s) data for the given course
 def task5(course):
     global success
     scrape = ScrAApe(success)
     sections = scrape.get_section(course)
-    print(sections)
     return sections
 
-##
-#task6 function
-#
-#Gets the student information off of Aggie Access.
+## uses the authenticated session and the ScrAApe function to get the profile data from Aggie Access
+#@return A dictionary containing all available profile data for the student
 def task6():
     global success
     scrape = ScrAApe(success)
     profile = scrape.get_profile()
-    #print(profile)
     return profile
 
-##
-#task7 function
-#
-#Register's the student in Aggie Access.
+## uses the authenticated session and the ScrAApe function to register the student for the given schedule
+#@param schedule The student's registration PIN, selected term, and list of section(s) to be registered for
+#@return A dictionary containing the results of the registration
 def task7(schedule):
     global success
     scrape = ScrAApe(success)

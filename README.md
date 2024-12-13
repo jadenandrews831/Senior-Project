@@ -7,8 +7,8 @@ This is a web utility which aims to make the daily lives of students easier.
 Open your terminal and type the following:
 
 ```
-cd .../Senior Project/src        # First, locate the Senior Project Directory
-python3 -m pip install -r requirements.txt
+cd .../Senior Project        # First, locate the Senior Project Directory
+source ./snr_env/bin/activate
 python3 scrAApe.py
 ```
 
